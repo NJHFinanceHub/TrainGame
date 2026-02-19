@@ -23,7 +23,8 @@ public class TrainGame : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"Slate",
-			"SlateCore"
+			"SlateCore",
+			"UMG"
 		});
 	}
 }
