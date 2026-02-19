@@ -1,0 +1,710 @@
+# SNOWPIERCER: ETERNAL ENGINE — Comprehensive TODO
+
+> **Repo:** NJHFinanceHub/TrainGame
+> **Purpose:** Master task list for GasTown Mayor to decompose and assign to agents.
+> **Priority Levels:** P0 (blocks everything), P1 (core gameplay), P2 (important), P3 (polish/nice-to-have)
+
+---
+
+## 1. PLAYER CHARACTER
+
+### 1.1 Protagonist Definition — P0
+- [ ] Define protagonist identity: named character vs. custom character creator
+- [ ] If custom: define character creation options (gender, appearance, body type, voice)
+- [ ] If named: write character backstory, motivation, personality traits
+- [ ] Define protagonist's role in the Tail before the game starts (how long on the train, what they lost)
+- [ ] Decide: voice acted or silent protagonist
+  - If voice acted: define voice direction, emotional range, number of lines estimate
+  - If silent: define how player personality is expressed (dialogue choices, actions)
+- [ ] Define starting stats/attributes for the protagonist
+- [ ] Define protagonist's unique ability or trait that justifies why THEY lead the push forward
+
+### 1.2 Character Progression System — P0
+- [ ] Design stat system: define core attributes (e.g., Strength, Endurance, Cunning, Charisma, Perception, Survival)
+- [ ] Define how stats affect gameplay:
+  - Strength → melee damage, carry weight, forced entry
+  - Endurance → cold resistance, stamina pool, hunger rate
+  - Cunning → stealth effectiveness, lockpicking, crafting quality
+  - Charisma → dialogue options, faction rep gains, companion morale
+  - Perception → hidden item detection, enemy awareness range, environmental cues
+  - Survival → resource efficiency, medicine effectiveness, Kronole resistance
+- [ ] Design leveling system: XP-based, milestone-based (per car/zone), or hybrid
+- [ ] Define XP sources: combat, exploration, quest completion, moral choices, stealth
+- [ ] Design skill tree structure:
+  - Combat branch (melee specialization, weapon mastery, counter-attacks, crowd control)
+  - Stealth branch (silent movement, pickpocketing, disguise effectiveness, silent takedowns)
+  - Survival branch (crafting efficiency, cold resistance, resource scavenging, medicine brewing)
+  - Leadership branch (companion buffs, faction diplomacy, crowd manipulation, intimidation)
+  - Engineer branch (hacking, trap-setting, environmental manipulation, lock bypassing)
+- [ ] Define skill point acquisition rate — 1 per level? Per zone? Per major quest?
+- [ ] Define max level / soft cap
+- [ ] Design perk system: passive bonuses unlocked at level thresholds or via specific achievements
+  - Example perks: "Tail Survivor" (reduced hunger rate), "Kronole Tolerance" (reduced addiction buildup), "Silver Tongue" (extra dialogue options with First Class)
+- [ ] Define respec mechanic — can the player reallocate skill points? At what cost?
+- [ ] Balance progression curve: player should feel weak in Zone 1, competent by Zone 3, powerful by Zone 5, and challenged again in Zones 6-7
+
+### 1.3 Movement & Traversal — P1
+- [ ] Define base movement: walk speed, sprint speed, crouch speed, prone/crawl
+- [ ] Climbing system: ladders, pipes, shelving, stacked bunks — define what surfaces are climbable
+- [ ] Vent crawling: define vent network system per car, size constraints, can enemies follow?
+- [ ] Rooftop access: can the player go on top of the train? Define when/how
+  - Wind resistance mechanic at speed
+  - Cold exposure timer while outside
+  - Car-to-car rooftop traversal as alternate route
+- [ ] Under-car traversal: maintenance catwalks beneath the train floor
+- [ ] Jumping: limited or none? (Tight corridors make jumping weird — consider contextual mantling instead)
+- [ ] Swimming: any water cars (aquarium breach, flooded sections)?
+- [ ] Sliding/dodging: combat dodge roll or sidestep given narrow corridors?
+- [ ] Ladder/climbing speed affected by carry weight and injuries
+
+### 1.4 Death & Respawn — P0
+- [ ] Define death mechanic: permadeath? Checkpoint-based? Save-anywhere?
+- [ ] Checkpoint placement: per car entry? Mid-car for long cars? Before boss fights?
+- [ ] Define what is lost on death: nothing (reload), some resources, progress in current car?
+- [ ] Companion permadeath: separate from player death?
+- [ ] Define "downed" state before full death (can companions revive?)
+- [ ] Injury system: non-lethal damage that persists (broken arm = reduced melee, leg injury = slower movement) until healed
+- [ ] Cold death: separate mechanic — freezing is a gradual process with escalating debuffs before death
+
+---
+
+## 2. COMPANION SYSTEM
+
+### 2.1 Core Companion Mechanics — P1
+- [ ] Define max party size (recommendation: 2 companions + player = 3 total, keeps corridors manageable)
+- [ ] Define total recruitable companion count (recommendation: 12-15 across all zones, 8-10 survivable)
+- [ ] Can companions permanently die? Define permadeath triggers:
+  - Death in combat
+  - Consequences of moral choices
+  - Faction betrayal
+  - Scripted narrative deaths
+- [ ] Companion AI behavior modes: aggressive, defensive, passive, hold position
+- [ ] Companion pathfinding in tight train corridors — they must not block the player
+- [ ] Companion inventory: separate or shared with player?
+- [ ] Companion equipment: can they be equipped with weapons/armor?
+
+### 2.2 Companion Roster — P1
+- [ ] Design at minimum 12 unique companions across all zones:
+
+| # | Name | Zone Found | Class/Role | Combat Style | Unique Ability |
+|---|------|-----------|------------|-------------|----------------|
+| 1 | TBD | Tail | Brawler | Unarmed/blunt | Rally nearby Tailies in combat |
+| 2 | TBD | Tail | Medic | Support/knife | Field medicine, drug crafting |
+| 3 | TBD | Tail | Scout | Stealth/shiv | Vent navigation, lockpicking |
+| 4 | TBD | Third Class | Engineer | Traps/tools | Hack systems, disable security |
+| 5 | TBD | Third Class | Laborer | Heavy melee | Break through barricades, carry extra weight |
+| 6 | TBD | Second Class | Bureaucrat | Non-combat | Forge documents, political access |
+| 7 | TBD | Second Class | Teacher | Ranged/support | Child NPC interactions, intel gathering |
+| 8 | TBD | Working Spine | Mechanic | Improvised weapons | Repair/sabotage train systems |
+| 9 | TBD | First Class | Defector | Swordsmanship | First Class disguise access |
+| 10 | TBD | First Class | Entertainer | Distraction | Create diversions, social manipulation |
+| 11 | TBD | Sanctum | Ex-Priest | Kronole abilities | Order of the Engine intel |
+| 12 | TBD | Sanctum | Jackboot Deserter | Military combat | Armory access, tactical leadership |
+
+- [ ] Write full backstory for each companion (minimum 500 words each)
+- [ ] Define each companion's personal quest line (3-5 quests each)
+- [ ] Define companion relationship arcs — what builds trust, what breaks it
+
+### 2.3 Loyalty & Relationship System — P2
+- [ ] Design loyalty meter: hidden or visible to player?
+- [ ] Define loyalty thresholds: acquaintance → ally → trusted → devoted (or equivalent)
+- [ ] Define loyalty-affecting events: moral choices, dialogue, gifts, quest outcomes, faction alignment
+- [ ] Companion conflicts: what happens when two companions disagree? Can you lose one by siding with the other?
+- [ ] Romance system: yes/no decision
+  - If yes: how many romanceable companions? Any restrictions?
+  - Romance should not gate gameplay-critical content
+- [ ] Companion departure conditions: low loyalty, faction betrayal, moral dealbreakers
+- [ ] Companion-specific dialogue per car (at minimum for story-critical cars)
+
+---
+
+## 3. DIALOGUE SYSTEM
+
+### 3.1 Dialogue Architecture — P0
+- [ ] Define dialogue system type: branching tree, hub-and-spoke, or dynamic/procedural
+- [ ] Define max dialogue options per node (recommendation: 4 — direct, diplomatic, aggressive, investigate)
+- [ ] Design skill checks in dialogue:
+  - Charisma checks for persuasion
+  - Cunning checks for deception/manipulation
+  - Perception checks for detecting lies
+  - Strength checks for intimidation
+  - Engineer checks for technical arguments
+- [ ] Define skill check visibility: show required stat and pass/fail chance? Or hidden?
+- [ ] Timed dialogue decisions: any conversations where silence = a choice? Define timeout behavior.
+- [ ] Define dialogue consequence system: immediate, delayed, or both?
+- [ ] NPC memory: do NPCs remember what you said to them? How far back?
+- [ ] Interrupted dialogue: can combat or events interrupt conversations? How to resume?
+
+### 3.2 Dialogue Content Scope — P1
+- [ ] Estimate total word count for all dialogue (target range for scope)
+- [ ] Define dialogue density per zone:
+  - Tail: sparse, desperate, short exchanges
+  - Third Class: functional, transactional
+  - Second Class: verbose, political, layered
+  - First Class: performative, manipulative
+  - Sanctum: ritualistic, cryptic
+  - Engine: revelatory, philosophical
+- [ ] Write key NPC dialogue trees (priority: quest givers, faction leaders, companions, bosses, Wilford)
+- [ ] Define bark/ambient dialogue system for non-interactive NPCs
+- [ ] Propaganda PA system: define recurring train announcements per zone
+
+### 3.3 Persuasion/Intimidation/Deception Mechanics — P1
+- [ ] Design social combat system: can the player "win" encounters purely through dialogue?
+- [ ] Define which encounters can be fully bypassed via dialogue
+- [ ] Bribery mechanics: what can be offered, how does it interact with inventory?
+- [ ] Blackmail system: collect intel → use in dialogue → force compliance
+- [ ] Interrogation mechanics for captured enemies or NPCs
+- [ ] Lying system: can the player lie? Can they be caught? Consequences of being caught?
+
+---
+
+## 4. ECONOMY & CRAFTING
+
+### 4.1 Resource Taxonomy — P0
+- [ ] Define all resource types and where they're found:
+
+| Resource | Found In | Used For | Rarity |
+|----------|----------|----------|--------|
+| Metal Scrap | Tail, Third, Spine | Weapon crafting, repairs | Common |
+| Cloth/Fabric | All zones | Bandages, cold protection, disguises | Common |
+| Protein Blocks | Tail | Food (low quality) | Common in Tail |
+| Fresh Food | Second+ | Food (high quality), trading | Rare |
+| Medicine (Basic) | Third+ | Heal minor injuries, cure disease | Uncommon |
+| Medicine (Advanced) | First+ | Surgery, major healing | Rare |
+| Kronole (Raw) | All zones | Crafting, combat buffs, trading | Uncommon |
+| Kronole (Refined) | Kronole Network | Stronger buffs, explosive crafting | Rare |
+| Electronics | Spine, Second+ | Hacking tools, surveillance devices | Uncommon |
+| Chemicals | Spine labs | Poison, medicine, Kronole refinement | Rare |
+| Luxury Items | First Class | Trading, bribery, faction rep | Rare |
+| Ammunition | Armory, Jackboots | Ranged weapons | Very Rare |
+| Blueprints | Hidden/quest | Unlock new crafting recipes | Very Rare |
+| Engine Parts | Spine, Sanctum | Endgame crafting, critical quest items | Legendary |
+
+- [ ] Define carry weight / inventory slot system
+- [ ] Define resource stacking limits
+- [ ] Define resource degradation (does food spoil? Do chemicals decay?)
+
+### 4.2 Crafting System — P1
+- [ ] Define crafting station types and locations:
+  - Improvised Workbench (Tail) — basic weapons, bandages
+  - Machine Shop (Third Class) — intermediate weapons, tools
+  - Chemistry Station (Spine) — medicine, poisons, Kronole refinement
+  - Electronics Bench (Spine/Second) — hacking tools, surveillance
+  - Armorer's Station (Armory) — advanced weapons, armor reinforcement
+  - Tailor's Station (First Class) — disguises, cold gear
+- [ ] Define full crafting recipe list (minimum 50 recipes across all stations):
+  - Weapons: pipe club, shiv, reinforced axe, crossbow, nail bat, shock baton, Kronole grenade
+  - Armor: padded vest, metal plate guard, insulated coat, riot shield
+  - Tools: lockpick set, hacking device, grappling hook, torch, signal flare
+  - Consumables: bandage, medkit, antidote, Kronole dose, molotov, smoke bomb, poison vial
+  - Disguises: Third Class uniform, Jackboot armor, Second Class suit, First Class formal wear, Order robes
+  - Special: cold suit (exterior traversal), EMP device, explosive charge, radio transmitter
+- [ ] Define crafting skill requirements — does player need minimum stats to craft certain items?
+- [ ] Define crafting time — instant or requires waiting?
+- [ ] Define crafting failure chance — based on skill level?
+- [ ] Companion crafting: can companions craft? Auto-craft?
+- [ ] Weapon modification system: add attachments, improve stats, change damage type
+
+### 4.3 Weapon & Armor Tiers — P1
+- [ ] Define weapon tier system:
+  - Tier 1 (Improvised): Found/crafted in Tail. Low damage, breaks fast.
+  - Tier 2 (Functional): Third Class workshops. Moderate stats.
+  - Tier 3 (Military): Jackboot armory. High damage, durable.
+  - Tier 4 (Specialized): Unique weapons from quests/bosses. Special effects.
+  - Tier 5 (Legendary): One-of-a-kind. Endgame.
+- [ ] Define weapon categories: blunt, bladed, piercing, ranged, thrown, explosive
+- [ ] Define armor system: head, torso, legs, hands — or simplified slots?
+- [ ] Define armor stats: damage reduction, cold resistance, noise level, movement penalty
+- [ ] Define weapon degradation curve per tier
+- [ ] Define repair costs and requirements per tier
+- [ ] Weapon visual progression: should look more refined as tiers increase
+
+### 4.4 Trading & Barter Economy — P1
+- [ ] Define barter system rules — no universal currency, zone-specific value
+  - Tail: protein blocks, favors, information
+  - Third Class: rations, scrap, work vouchers
+  - Second Class: luxury items, medicine, influence
+  - First Class: secrets, blackmail, rare goods, Kronole
+- [ ] Define price fluctuation: does supply/demand change based on player actions?
+- [ ] Define merchant/trader NPCs per zone (minimum 2 per zone)
+- [ ] Define haggling mechanic: Charisma-based? Mini-game? Flat rates?
+- [ ] Black market system: Kronole Network operates across all zones, premium prices, exclusive items
+- [ ] Stolen goods: can player sell stolen items? Consequences if caught?
+- [ ] Faction discounts: aligned factions offer better rates
+
+---
+
+## 5. STEALTH SYSTEM
+
+### 5.1 Core Stealth Mechanics — P1
+- [ ] Detection model: line of sight + sound-based
+- [ ] Define sight detection:
+  - Cone of vision per enemy type
+  - Distance-based detection (near = instant, far = gradual)
+  - Lighting affects detection (dark = harder to spot)
+  - Movement speed affects visibility (crouching < walking < sprinting)
+- [ ] Define sound detection:
+  - Footstep noise by surface type and movement speed
+  - Combat noise radius
+  - Environmental noise masking (machinery, PA announcements)
+  - Player-created distractions (thrown objects, companion diversions)
+- [ ] Detection meter: visible indicator showing enemy awareness (unaware → suspicious → alerted → combat)
+- [ ] Alert propagation: how does one enemy alerting affect nearby enemies?
+- [ ] Alert states per car: can a car go to lockdown? How does it reset?
+- [ ] Hiding spots: under bunks, inside lockers, behind machinery, in vents
+- [ ] Body discovery: unconscious/dead bodies found → raises alert
+
+### 5.2 Disguise System — P2
+- [ ] Define disguise crafting/acquisition per zone
+- [ ] Disguise effectiveness by zone:
+  - Third Class uniform: free movement in Third Class, suspicious in Second+
+  - Jackboot armor: free movement in security areas, NPCs may test you
+  - Second Class suit: access to Second Class
+  - First Class formal: access to First Class (but behavior must match)
+  - Order robes: access to Sanctum
+- [ ] Disguise failure conditions: wrong behavior, staying too long, recognized by specific NPCs, carrying wrong items
+- [ ] Disguise durability: do they degrade? Can they be blown by combat?
+- [ ] NPC challenge system: NPCs may question disguised player, requiring dialogue skill checks
+- [ ] Zone-specific behaviors while disguised (must act differently in First Class vs Third Class)
+
+### 5.3 Non-Lethal Options — P1
+- [ ] Stealth takedowns: grab from behind, choke hold, knockout — define animation/timing
+- [ ] Non-lethal weapons: stun baton, tranquilizer crossbow bolt, sleep gas
+- [ ] Pacifist route viability: can the ENTIRE game be completed non-lethally?
+  - If not entirely, define which encounters REQUIRE lethal force
+- [ ] Unconscious NPC behavior: how long are they out? Can they be restrained? Do they wake and sound alarm?
+- [ ] Consequences of lethal vs non-lethal: faction rep impact, companion reactions, narrative branches
+
+---
+
+## 6. EXPLORATION & SECRETS
+
+### 6.1 Collectibles System — P2
+- [ ] Define collectible types:
+  - **Train Logs:** Written records from passengers/crew. Lore and worldbuilding.
+  - **Audio Recordings:** Pre-freeze memories, crew communications, Wilford's private recordings.
+  - **Artifacts:** Physical objects from the old world (photos, books, technology).
+  - **Blueprints:** Unlock crafting recipes (see Section 4).
+  - **Faction Intel:** Documents that reveal faction secrets, usable in dialogue/quests.
+  - **Passenger Manifest Pages:** Piece together who's on the train, reveal hidden connections.
+- [ ] Define total collectible count per type (recommendation: 200-300 total across all types)
+- [ ] Define collectible placement rules: some obvious, some hidden, some gated behind skills/factions
+- [ ] Collectible journal/codex UI — how does the player review collected items?
+- [ ] Collectible completion rewards: per zone, per type, total completion
+
+### 6.2 Hidden & Secret Cars — P2
+- [ ] Design 7-10 secret cars not accessible on the main path:
+  - **The Bunker Car:** Survivalist who sealed themselves off. Unique weapons/supplies.
+  - **The Ghost Car:** Seemingly empty, haunted by memories (audio/visual flashbacks).
+  - **The Rebel Archive:** Hidden history of every failed revolution.
+  - **The Outside Lab:** Scientists who've been secretly sending probes outside.
+  - **The Stowaway Car:** People living between the walls of other cars.
+  - **The Mirror Car:** Wilford's private blackmail vault — leverage on everyone.
+  - **The Prototype:** An experimental car with pre-freeze military technology.
+- [ ] Define access requirements for each secret car (faction rep, items, skill checks, quest chains)
+- [ ] Secret cars should contain unique rewards not available elsewhere
+- [ ] At least 2 secret cars should significantly affect ending availability
+
+### 6.3 Exterior Traversal — P1
+- [ ] Design rooftop traversal system:
+  - Accessible via roof hatches (specific cars only)
+  - Wind resistance: player moves slower, can be knocked off at curves
+  - Cold exposure: timer before frostbite debuffs begin
+  - Visibility: can scout ahead, spot enemies through skylights
+  - Combat on rooftop: extremely dangerous, environmental kills (wind, tunnels, ice)
+- [ ] Define cold suit mechanic for extended exterior time
+- [ ] Design "Breachman" encounters: NPCs who work on the exterior, potential allies/enemies
+- [ ] Exterior story moments: at least 3 scripted exterior sequences
+  - Emergency repair during a crisis
+  - Bypassing a heavily guarded car from outside
+  - Final sequence: seeing the thawing world
+- [ ] Car-to-car exterior traversal: skip cars by going over them (risk/reward)
+
+### 6.4 Maintenance Tunnels & Sub-Floor — P2
+- [ ] Design under-car crawlspace system connecting adjacent cars
+- [ ] Define what's found below: pipes, wiring, smuggler caches, rats, trapped passengers
+- [ ] Sub-floor as stealth bypass: slower but undetected
+- [ ] Sub-floor hazards: steam leaks, electrical shorts, structural collapses
+- [ ] Not all cars have accessible sub-floors — define which do
+
+### 6.5 Window & Exterior Viewing System — P2
+- [ ] Windows exist in all zones except Tail
+- [ ] Define what's visible outside per zone/story progression:
+  - Early game: nothing but white, frozen wasteland
+  - Mid game: frozen cities, landmarks
+  - Late game: signs of thaw — green patches, running water, animals
+- [ ] Interactive windows: can be broken (hull breach hazard), looked through for story moments
+- [ ] Window as combat mechanic: break window → enemies near it get sucked toward cold / take cold damage
+
+---
+
+## 7. OUTSIDE THE TRAIN / WORLD STATE
+
+### 7.1 World Lore Document — P0
+- [ ] Define the year the game takes place
+- [ ] Define what caused the freeze (CW-7 climate agent from film? Or original cause?)
+- [ ] Define how long the train has been running (recommendation: 7-10 years for societal decay)
+- [ ] Define current world state: completely frozen, or beginning to thaw?
+- [ ] Define train route: circular? Point-to-point? How long is one loop?
+- [ ] Define train population: total passengers, breakdown by class
+- [ ] Define other trains: does Big Alice exist? Other trains? Or is Snowpiercer alone?
+- [ ] Define pre-freeze world context: nations, technology level, what was lost
+- [ ] Write a 2-3 page "History of the Freeze" document for agent reference
+- [ ] Define Wilford's backstory: who built the train, why, how did ticket allocation work?
+
+### 7.2 Exterior Environment System — P2
+- [ ] Dynamic exterior visuals per train section / story progression
+- [ ] Weather system visible through windows: blizzards, clear skies, aurora borealis
+- [ ] Temperature display: external temp shown on UI as worldbuilding element
+- [ ] Frozen landmarks: recognizable cities/structures visible at specific points in the loop
+- [ ] Thaw progression: subtle environmental changes as story progresses (if thaw is part of narrative)
+
+### 7.3 EVA / Cold Suit Mechanics — P2
+- [ ] Define cold suit stats: time limit outside, movement restrictions, combat limitations
+- [ ] Cold suit acquisition: where found, can it be upgraded?
+- [ ] Define exterior objectives that require cold suit:
+  - Repair hull breaches
+  - Access cars from outside when interior is blocked
+  - Retrieve items from frozen exterior structures (stopped alongside ruins?)
+  - Endgame: exit the train entirely
+- [ ] Frostbite system: exposed extremities → progressive debuffs → death
+
+---
+
+## 8. DIFFICULTY & ACCESSIBILITY
+
+### 8.1 Difficulty Settings — P2
+- [ ] Define difficulty tiers:
+  - **Passenger:** Story focus. Reduced combat difficulty, generous resources, no companion permadeath.
+  - **Survivor:** Balanced. Standard resource scarcity, moderate combat, companion permadeath on.
+  - **Eternal Engine:** Hard. Scarce resources, aggressive AI, all permadeath active, no highlighted items.
+  - **Mr. Wilford:** Nightmare. One save slot, extreme scarcity, enemies deal massive damage, no HUD.
+- [ ] Define per-difficulty modifiers: enemy health, damage, detection range, resource spawn rates, crafting costs
+- [ ] Adaptive difficulty option: subtle adjustment based on death count per zone (optional toggle)
+- [ ] Can difficulty be changed mid-game?
+
+### 8.2 Accessibility Options — P1
+- [ ] Full subtitle system with speaker identification and sound descriptions
+- [ ] Subtitle size options (small, medium, large, extra large)
+- [ ] Colorblind modes: protanopia, deuteranopia, tritanopia
+- [ ] High contrast mode for UI elements
+- [ ] Screen reader support for menus (future consideration)
+- [ ] Full control remapping: keyboard, mouse, controller
+- [ ] One-handed controller layout option
+- [ ] Toggle vs hold options for: sprint, crouch, aim
+- [ ] Camera shake intensity slider
+- [ ] Motion blur toggle
+- [ ] Screen flash intensity reduction
+- [ ] Auto-aim assist toggle and strength slider
+- [ ] Text-to-speech for dialogue (if not voice acted)
+- [ ] Dyslexia-friendly font option
+
+---
+
+## 9. TUTORIAL & ONBOARDING
+
+### 9.1 Tutorial Design — P1
+- [ ] Tutorial must feel organic — NO tutorial pop-ups breaking immersion
+- [ ] Cars 1-5 serve as progressive tutorial:
+  - Car 1: Movement, camera, interaction (pick up items, open containers, read notes)
+  - Car 2: Crafting introduction (make first improvised tool)
+  - Car 3: Combat basics (unarmed → first weapon, blocking, dodging)
+  - Car 4: Moral choice tutorial (small-stakes choice to teach the system)
+  - Car 5: Quest/objective system, companion recruitment, faction introduction
+- [ ] Environmental teaching: use level design to teach mechanics (narrow path forces crouch, dark room forces torch use)
+- [ ] Companion dialogue as tutorial: companions explain systems in-character
+- [ ] New mechanics in later zones introduced via:
+  - NPC demonstrations
+  - Environmental necessity (MUST use the system to progress)
+  - Companion suggestions
+- [ ] Optional "advanced tips" loading screen hints for later mechanics
+- [ ] Practice rooms: can the player return to The Pit (Car 3) to practice combat?
+
+### 9.2 Tooltip & Hint System — P2
+- [ ] Context-sensitive tooltips: appear only when relevant, fade after first use
+- [ ] Hint system: if player is stuck >3 minutes, subtle environmental cue
+- [ ] Hint frequency tied to difficulty level (more hints on Passenger, none on Mr. Wilford)
+- [ ] Disable all hints toggle
+
+---
+
+## 10. AUDIO & MUSIC
+
+### 10.1 Music Direction — P2
+- [ ] Define overall musical identity:
+  - Industrial/mechanical base: rhythmic clanking, metallic resonance
+  - Zone-specific overlays:
+    - Tail: Sparse. Droning. Percussive with found-object sounds.
+    - Third Class: Working rhythm. Repetitive mechanical beats.
+    - Second Class: Subdued strings. Faded elegance.
+    - First Class: Orchestral. Lavish but unsettling undertones.
+    - Sanctum: Choral. Hymnal. Organ drones.
+    - Engine: Pure mechanical symphony. The Engine IS the music.
+- [ ] Adaptive music system:
+  - Exploration → low intensity ambient
+  - Detection/suspicion → tension layer added
+  - Combat → full intensity, percussion-driven
+  - Post-combat → gradual wind-down
+  - Moral choice → music drops to near-silence, isolated tones
+- [ ] Boss fight themes: unique musical motifs for each zone boss (7 total)
+- [ ] Title screen music: the sound of the train itself, building into a theme
+- [ ] Credits music: varies based on ending achieved
+
+### 10.2 Sound Design — P1
+- [ ] Constant train ambiance layer (never silent):
+  - Wheel-on-rail rhythm (varies with speed and curves)
+  - Metal creaking and groaning
+  - Distant mechanical hum from the Engine
+  - Wind against the exterior hull
+- [ ] Per-zone ambient design:
+  - Tail: dripping water, coughing, whispered conversations, rats
+  - Third Class: machinery, PA announcements, boots on metal, steam
+  - Second Class: muffled conversations, clinking glasses, distant music
+  - First Class: orchestral music, laughter, champagne, fountain water
+  - Sanctum: chanting, echoing footsteps, incense crackling
+  - Engine: overwhelming mechanical symphony, rhythmic pistons
+- [ ] Combat audio: impact sounds per weapon type, armor clanks, grunts, bone crunching
+- [ ] Environmental sounds: door mechanisms, pressure seals, hull breach wind howl
+- [ ] UI sounds: menu navigation, item pickup, quest update, level up
+
+### 10.3 Voice Acting Scope — P1
+- [ ] Decision: fully voice acted, partially voice acted, or text-only?
+- [ ] If voice acted: estimate total VO lines per character category:
+  - Protagonist: ~2000 lines (if voiced)
+  - Major NPCs (companions, faction leaders, bosses): ~500 lines each
+  - Minor NPCs: ~50 lines each
+  - Ambient/bark NPCs: ~10 lines each
+  - PA system announcements: ~50 unique messages
+- [ ] Casting direction notes per major character
+- [ ] Language: English primary, plan for localization (see Section 16)
+
+---
+
+## 11. UI/HUD DESIGN
+
+### 11.1 HUD Elements — P1
+- [ ] Health bar: segmented (body part damage?) or single bar?
+- [ ] Stamina bar: drain during sprint, combat, climbing
+- [ ] Cold exposure indicator: temperature gauge when in cold zones
+- [ ] Hunger meter: gradual drain, affects stamina regen
+- [ ] Morale indicator: party morale status (if companion system active)
+- [ ] Kronole addiction meter: visible only if player has used Kronole
+- [ ] Ammo/weapon durability indicator
+- [ ] Detection indicator: stealth awareness meter when enemies are near
+- [ ] Compass/direction indicator: subtle, always pointing toward the Engine (forward)
+- [ ] Interaction prompts: context-sensitive (pick up, talk, open, examine, hack)
+- [ ] Damage direction indicator: show where hits are coming from
+- [ ] HUD customization: toggle individual elements, opacity slider, size options
+- [ ] Minimal HUD mode: only show indicators when relevant (e.g., health only when damaged)
+
+### 11.2 Train Map / Progress Visualization — P1
+- [ ] SIGNATURE FEATURE: Full train diagram showing all 100+ cars as a linear map
+  - Current position highlighted
+  - Visited cars marked with status (cleared, allied, hostile, locked)
+  - Zone colors matching art direction
+  - Scrollable/zoomable
+  - Toggle: show/hide car names, faction control, resources found
+- [ ] Mini-map: top-down view of current car showing rooms, doors, enemies (if scouted)
+- [ ] Map fog of war: unvisited areas hidden until explored or intel gathered
+- [ ] Map markers: quest objectives, points of interest, companion locations, merchants
+- [ ] Car detail view: click on a car in the train map to see description, status, resources, NPCs
+
+### 11.3 Menus & Screens — P1
+- [ ] Inventory screen: grid or list? Weight display, sorting, filtering, comparison
+- [ ] Character screen: stats, skills, perks, equipped items, status effects
+- [ ] Quest log: active/completed/failed quests, main quest vs side quests, tracking toggle
+- [ ] Faction screen: reputation bars for all factions, relationship summary
+- [ ] Companion screen: loyalty, equipment, skills, personal quest progress
+- [ ] Crafting screen: available recipes, required materials, station requirements
+- [ ] Codex/journal: lore entries, collectibles tracker, passenger manifest progress
+- [ ] Settings: video, audio, controls, accessibility, gameplay, HUD customization
+- [ ] Photo mode (future consideration)
+
+---
+
+## 12. NARRATIVE GAPS
+
+### 12.1 Antagonist Design — P0
+- [ ] **Wilford (or equivalent):** Full character brief — personality, backstory, motivation, relationship to the Engine
+  - Is Wilford alive? A legend? A figurehead for someone else?
+  - Define Wilford's argument: why the class system is "necessary"
+  - Wilford must be compelling, not cartoonishly evil
+- [ ] **Mid-game antagonist:** The player needs someone to oppose before reaching Wilford
+  - Recommendation: Head of Jackboots or a Sanctum leader who operates independently
+  - This character should appear in Zone 2-3 and persist until Zone 5-6
+  - Personal connection to the player if possible
+- [ ] **Zone bosses:** Full character briefs for all 7 zone bosses
+  - Name, backstory, fighting style, motivation, potential for non-combat resolution
+- [ ] **The Mole:** Is there a traitor in the player's party? Define who and why.
+
+### 12.2 Named NPCs — P1
+- [ ] Create at minimum 30 named NPCs beyond companions and antagonists:
+  - 5 per zone × 6 non-Engine zones = 30 minimum
+  - Each needs: name, role, personality, 1-2 quests, faction alignment
+- [ ] Key named NPCs (require full character sheets):
+  - The Elder (Tail leader who sends you forward)
+  - The Black Marketeer (appears in multiple zones)
+  - The Kronole King/Queen (drug network leader)
+  - The Breachman Captain (exterior workers leader)
+  - The Archivist (keeper of train history)
+  - The Surgeon (performs "treatments" in Second Class)
+  - The Entertainer (First Class performer who knows secrets)
+  - The High Priest (Order of the Engine leader)
+  - The Child (taken from the Tail, now in the Engine — the emotional core)
+
+### 12.3 Previous Revolution Backstory — P0
+- [ ] Write full account of the last failed revolution (the one Curtis led, or equivalent)
+- [ ] Define how many revolutions have been attempted (recommendation: 3-4)
+- [ ] Each past revolution should have:
+  - Leader's name and fate
+  - How far they got
+  - Why they failed
+  - What changed on the train as a result
+  - Physical evidence the player finds in specific cars
+- [ ] The player's revolution should be informed by (and learn from) past failures
+- [ ] At least one survivor of a past revolution should be a recruitable companion or key NPC
+
+### 12.4 Timeline & World State — P0
+- [ ] Define complete timeline:
+  - Year of the freeze
+  - Year the train launched
+  - Year of each past revolution
+  - Year of the game's events
+  - Key events between (disasters, births, deaths, policy changes)
+- [ ] Define train demographics:
+  - Total population at launch vs now
+  - Birth rate, death rate
+  - Population per class
+  - How many Jackboots, Order members, etc.
+- [ ] Define the original ticket system and class assignment
+- [ ] Define what happens to the dead (ceremony? Recycling? Ejected?)
+
+### 12.5 Moral Choice Catalog — P1
+- [ ] Design and document ALL major moral choices (minimum 20 across the game):
+
+| # | Car(s) | Choice | Option A | Option B | Consequences |
+|---|--------|--------|----------|----------|--------------|
+| 1 | 4 | Children's rations | Steal food | Protect children | Hunger vs. morality, Tailie rep |
+| 2 | 9 | First blockade | Fight through | Find alternate path | Combat vs. stealth, casualties |
+| 3 | 25 | The Brig | Free prisoners | Leave them | Gain allies vs. maintain cover |
+| 4 | 28 | Hydroponics | Sabotage food | Protect production | Weaken First Class vs. feed everyone |
+| ... | ... | ... | ... | ... | ... |
+
+- [ ] Each choice must affect at least 2 of: faction rep, companion loyalty, accessible cars, ending path
+- [ ] No "obviously correct" answers — both options should have real trade-offs
+- [ ] Choices compound: late-game options should reference/be affected by early choices
+- [ ] Track choice flags in save system for ending calculation
+
+---
+
+## 13. REPLAYABILITY
+
+### 13.1 New Game+ — P2
+- [ ] Define what carries over: skills, recipes, collectible progress?
+- [ ] Define what changes: harder enemies, new dialogue options, hidden content unlocked?
+- [ ] New NG+ exclusive content: at minimum 1 secret car and 1 alternative quest path
+- [ ] NG+ difficulty scaling: enemies scale to player level
+
+### 13.2 Branching Path Tracking — P2
+- [ ] Post-game statistics screen: choices made, companions survived, factions aligned, ending achieved
+- [ ] "Road not taken" indicators: show player what they missed without spoiling specifics
+- [ ] Chapter/zone select after first completion: replay individual zones with current character
+- [ ] Completion percentage: per zone and total, visible in save file
+
+### 13.3 Procedural Elements — P3
+- [ ] Minor loot randomization per playthrough
+- [ ] NPC placement variation for non-critical NPCs
+- [ ] Optional daily/weekly challenge mode: randomly selected 10-car gauntlet with leaderboard
+- [ ] Roguelike mode: permadeath, randomized car order (subset of full game), run-based unlocks
+
+---
+
+## 14. STEAM & PUBLISHING
+
+### 14.1 Steam Integration — P1
+- [ ] Steam Achievements list (recommendation: 50-80 achievements):
+  - Story progression: 1 per zone completed (7)
+  - Endings: 1 per ending (5-6)
+  - Combat: kill milestones, boss-specific challenges, pacifist run
+  - Exploration: all collectibles per type, all secret cars, all cars visited
+  - Social: max loyalty with each companion, max rep with each faction
+  - Challenges: speedrun, no-death, minimal combat, Kronole-free, full addiction
+- [ ] Steam Cloud saves
+- [ ] Steam trading cards (if applicable)
+- [ ] Steam Workshop support (for mods — see 14.3)
+- [ ] Rich Presence: show current zone, playtime, completion % in Steam profile
+
+### 14.2 Store Page & Marketing — P2
+- [ ] Write Steam store description (short and long)
+- [ ] Define minimum system requirements and recommended specs
+- [ ] Plan screenshot set: 1 per zone minimum (7), plus combat, crafting, dialogue, exterior
+- [ ] Trailer plan: teaser trailer (30-60s), gameplay trailer (2-3min), launch trailer
+- [ ] Define Early Access strategy:
+  - EA launch with Zones 1-3 (Cars 1-48)?
+  - Full launch with all content?
+  - EA roadmap if applicable
+- [ ] Demo plan: free demo with Cars 1-10 (Tail only)?
+
+### 14.3 Content Rating — P1
+- [ ] Identify ESRB/PEGI-relevant content:
+  - Violence: melee combat, blood, environmental kills
+  - Drug use: Kronole as a core game mechanic
+  - Language: profanity level in dialogue
+  - Child endangerment: children in the Engine, children's rations theft
+  - Cannibalism: referenced in lore (from the film)
+  - Mature themes: class warfare, eugenics, human experimentation
+- [ ] Target rating: M (Mature) / PEGI 18 — confirm this is acceptable
+- [ ] Content warnings on store page
+- [ ] Sensitive content toggles in settings (reduce gore, skip disturbing scenes)?
+
+### 14.4 Mod Support — P3
+- [ ] Define mod scope: custom cars, custom items, total conversions?
+- [ ] Modding tools: custom car editor, item definition files, dialogue scripting
+- [ ] Steam Workshop integration for mod distribution
+- [ ] Mod load order management
+
+---
+
+## 15. TECHNICAL SPECIFICATIONS
+
+### 15.1 Engine Decision — P0
+- [ ] **CRITICAL DECISION:** Confirm engine choice and development workflow
+  - Option A: UE5 + Editor (requires visual editing, Megascans/Quixel for free assets)
+  - Option B: UE5 + procedural generation (all geometry from code, stylized aesthetic)
+  - Option C: Godot + procedural (better terminal-only workflow, GDScript/C#)
+  - Option D: Custom engine (maximum control, maximum effort)
+- [ ] Define art pipeline based on engine choice:
+  - If procedural: define modular geometry kit (wall panels, floor tiles, door frames, furniture blocks)
+  - If UE5: define Megascans material palette per zone
+  - If Godot: define shader/material approach
+
+### 15.2 Save System — P0
+- [ ] Save file format: JSON? Binary? SQLite?
+- [ ] Save data per car: NPC states, loot collected, doors opened, faction control, environmental changes
+- [ ] Global save data: player stats, inventory, quest progress, faction rep, choice flags, companion states
+- [ ] Save slot count: 3 manual saves + 1 autosave? More?
+- [ ] Autosave triggers: car entry, quest completion, major choice, timed interval
+- [ ] Save file size budget per slot
+- [ ] Save file versioning for patches/updates
+- [ ] Cloud save format compatible with Steam Cloud
+
+### 15.3 Car Streaming Architecture — P0
+- [ ] Define car loading strategy: max 3 cars in memory (current + 1 forward + 1 back)
+- [ ] Door opening animation = loading mask (define minimum animation time for loading budget)
+- [ ] Preloading: begin loading next car when player enters 2nd half of current car
+- [ ] Backtracking: keep previous car loaded until 2nd car back is requested
+- [ ] Memory budget per car: define max based on target hardware
+- [ ] LOD strategy for visible-but-not-entered cars (through windows, over rooftops)
+
+### 15.4 Performance Budgets — P1
+- [ ] Target framerate: 60fps on defined minimum spec
+- [ ] Define minimum spec hardware
+- [ ] Define recommended spec hardware
+- [ ] Per-car polygon budget
+- [ ] Per-car texture memory budget
+- [ ] Maximum concurrent NPCs per car
+- [ ] Maximum concurrent particle effects per car
+- [ ] Draw call budget
+- [ ] Physics object limit per car
+
+### 15.5 Networking & Steam — P1  `  
