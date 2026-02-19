@@ -87,8 +87,10 @@ enum class EDamageType : uint8
 	Physical	UMETA(DisplayName = "Physical"),
 	Thermal		UMETA(DisplayName = "Thermal"),
 	Electrical	UMETA(DisplayName = "Electrical"),
-	Cold		UMETA(DisplayName = "Cold"),
-	Explosive	UMETA(DisplayName = "Explosive")
+	Cold			UMETA(DisplayName = "Cold"),
+	Explosive		UMETA(DisplayName = "Explosive"),
+	StealthTakedown	UMETA(DisplayName = "Stealth Takedown"),
+	NonLethal		UMETA(DisplayName = "Non-Lethal")
 };
 
 /** Result of a combat hit */
