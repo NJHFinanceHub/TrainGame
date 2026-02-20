@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "UI/SEEUISubsystem.h"
 #include "SEEPlayerController.generated.h"
 
 UENUM(BlueprintType)
@@ -19,6 +20,7 @@ class SNOWPIERCEREE_API ASEEPlayerController : public APlayerController
     GENERATED_BODY()
 
 public:
+    // Camera
     UFUNCTION(BlueprintCallable, Category="Camera")
     void ToggleViewMode();
 
@@ -31,7 +33,43 @@ public:
     UPROPERTY(BlueprintAssignable, Category="Camera")
     FOnSEEViewModeChanged OnViewModeChanged;
 
+    // UI Screen Management
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleInventory();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleCharacterScreen();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleQuestLog();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleTrainMap();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleFactions();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleCompanions();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleCrafting();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void ToggleCodex();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void TogglePauseMenu();
+
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void CloseCurrentUI();
+
 protected:
+    virtual void SetupInputComponent() override;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Camera")
     ESEEViewMode ViewMode = ESEEViewMode::ThirdPerson;
+
+private:
+    USEEUISubsystem* GetUISubsystem() const;
 };
