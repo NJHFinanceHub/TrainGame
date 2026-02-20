@@ -84,7 +84,7 @@ docs/                          Design documentation
 
 ## Technical Stack
 
-- **Engine:** Unreal Engine 5.5
+- **Engine:** Unreal Engine 5.7
 - **Language:** C++ (no Blueprints in source -- all gameplay logic in code)
 - **Target:** PC (Steam), 60fps at minimum spec
 - **Architecture:** Car streaming (max 3 loaded), sublevel-per-car, door-animation load masking
@@ -93,7 +93,7 @@ docs/                          Design documentation
 ## Building
 
 ### Prerequisites
-- Unreal Engine 5.5 (source or Epic Games Launcher)
+- Unreal Engine 5.7.3 (source or Epic Games Launcher)
 - Visual Studio 2022 or Rider (Windows), Xcode (macOS), clang (Linux)
 
 ### Steps
@@ -104,7 +104,7 @@ docs/                          Design documentation
 
 ### Command Line (Linux)
 ```bash
-/path/to/UE_5.5/Engine/Binaries/Linux/UnrealEditor \
+/path/to/UE_5.7/Engine/Binaries/Linux/UnrealEditor \
   "$(pwd)/unreal/SnowpiercerEE/SnowpiercerEE.uproject"
 ```
 
