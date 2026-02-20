@@ -9,7 +9,7 @@
 
 /** Window types with different view properties */
 UENUM(BlueprintType)
-enum class ESEESEEWindowType : uint8
+enum class ESEEWindowType : uint8
 {
 	Passenger       UMETA(DisplayName = "Passenger (frost-covered)"),
 	Porthole        UMETA(DisplayName = "Porthole (small, steamed)"),
