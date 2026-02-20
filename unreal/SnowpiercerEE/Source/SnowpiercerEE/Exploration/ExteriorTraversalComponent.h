@@ -50,7 +50,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWindIntensityChanged, EWindIntens
  * Attach to the player character.
  */
 UCLASS(ClassGroup=(Exploration), meta=(BlueprintSpawnableComponent))
-class UExteriorTraversalComponent : public UActorComponent
+class SNOWPIERCEREE_API UExteriorTraversalComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

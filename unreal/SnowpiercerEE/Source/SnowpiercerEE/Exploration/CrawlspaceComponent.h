@@ -40,7 +40,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHazardTriggered, ECrawlspaceHazar
  * Attach to the player character alongside ExteriorTraversalComponent.
  */
 UCLASS(ClassGroup=(Exploration), meta=(BlueprintSpawnableComponent))
-class UCrawlspaceComponent : public UActorComponent
+class SNOWPIERCEREE_API UCrawlspaceComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

@@ -18,7 +18,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnManifestCrossReference, FName, Ma
  * and manifest reconstruction. Persists across level transitions.
  */
 UCLASS()
-class UCollectibleJournalSubsystem : public UGameInstanceSubsystem
+class SNOWPIERCEREE_API UCollectibleJournalSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

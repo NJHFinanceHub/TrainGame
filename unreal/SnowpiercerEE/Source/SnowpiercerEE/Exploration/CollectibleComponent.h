@@ -16,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCollectibleProximity, FName, Col
  * Handles proximity detection, stat-gated access, and pickup logic.
  */
 UCLASS(ClassGroup=(Exploration), meta=(BlueprintSpawnableComponent))
-class UCollectibleComponent : public UActorComponent
+class SNOWPIERCEREE_API UCollectibleComponent : public UActorComponent
 {
 	GENERATED_BODY()
 

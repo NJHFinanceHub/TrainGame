@@ -77,7 +77,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSecretCarMilestone, int32, TotalD
  * Manages secret car discovery state, access validation, and cumulative rewards.
  */
 UCLASS()
-class USecretCarManager : public UGameInstanceSubsystem
+class SNOWPIERCEREE_API USecretCarManager : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 
