@@ -7,6 +7,25 @@
 
 ---
 
+## LAUNCH BLOCKERS — Must Fix Before Ship 🚨
+
+> These items were identified from the current demo and must be resolved.
+
+- ⬜ **NO SOUND** — Demo is completely silent. Sound design is now P1 (see Phase 7)
+- ⬜ **CAR SCALE** — Cars are ~10x too small. Train should feel MASSIVE. Rework all car geometry
+- ⬜ **NO CHARACTERS** — No player model, no NPCs, no companions visible. Need at minimum:
+  - ⬜ Player character model (protagonist) — visible in 3rd person
+  - ⬜ Basic NPC models per zone (crowd, workers, guards, civilians)
+  - ⬜ Jackboot guard models (primary antagonist NPCs)
+  - ⬜ Companion character models (at least first 2-3 recruitable)
+  - ⬜ Character animations (idle, walk, run, combat, interact)
+- ⬜ **NO DATATABLES** — C++ systems exist but zero game data (items, quests, dialogue, collectibles)
+- ⬜ **NO PICKUP/NPC BLUEPRINTS** — No placeable actors to put items or NPCs in the world
+- ⬜ **LOWER TRANSPORT DECK** — Second layer beneath 3rd-1st Class with mini-rail (see Phase 4.1b)
+- ⬜ **ORPHANED CODE** — ~6000 lines in Source/SnowyEngine + Source/TrainGame not compiled
+
+---
+
 ## PHASE 1: DESIGN (COMPLETE)
 All design documents completed. See `/docs/`, `/design/`, `/narrative/` directories.
 - ✅ Protagonist definition, backstory, stats
@@ -110,7 +129,10 @@ All design documents completed. See `/docs/`, `/design/`, `/narrative/` director
 > This is what separates "code framework" from "game."
 
 ### 4.0 CRITICAL BLOCKERS — Must fix before anything else
-- ⬜ **Create Item DataTable** (DT_Items) — 20+ items: food (bread, rations, rat meat), medicine (bandage, painkillers, antiseptic), weapons (pipe, shiv, wrench, machete), crafting materials (scrap metal, cloth, chemicals), quest items
+- ⬜ **SCALE REWORK** — increase all car dimensions ~10x from current demo size — P0
+  > Demo cars are WAY too small. This train is MASSIVE — think aircraft carrier
+  > on rails. Each car should feel like a building interior, not a closet.
+- ⬜ **Create Item DataTable** (DT_Items) — 20+ items: food, medicine, weapons, crafting materials, quest items
 - ⬜ **Create Weapon DataTable** — stats for 8-10 weapons across 5 tiers
 - ⬜ **Create Quest DataTable** — Zone 1 main quest + 5 side quests
 - ⬜ **Create Dialogue DataTable** — 5-10 NPC conversation trees for Zone 1
@@ -124,6 +146,20 @@ All design documents completed. See `/docs/`, `/design/`, `/narrative/` director
 - ✅ import_assets.py — batch asset import with PBR classification
 - ✅ setup_demo_level.py — builds DevTestCar with geometry, lights, actors
 - ✅ rebuild_demo_level.py — procedural 100-car train generation
+
+### 4.1b Lower Transport Layer — P1
+> Below the main passenger level (Third Class through First Class), there is a
+> second lower deck used for cargo transport. Has its own mini-rail system for
+> moving goods between zones. Accessible via hatches/stairs from above.
+
+- ⬜ **Lower deck geometry** — runs beneath cars 15-82 (Third through First Class)
+- ⬜ **Mini-rail system** — small rail carts for cargo transport between zones
+- ⬜ **Cargo types** — food crates, medical supplies, luxury goods, contraband
+- ⬜ **Access points** — hatches, freight elevators, maintenance stairs from upper level
+- ⬜ **Stealth route** — player can use lower deck to bypass checkpoints/guards
+- ⬜ **Smuggling gameplay** — Kronole Network runs contraband through lower deck
+- ⬜ **Environmental design** — industrial, dim lighting, cramped but functional
+- ⬜ **Mini-rail mechanics** — ride carts, switch tracks, avoid automated security
 
 ### 4.2 Character & Animation — P0
 - ⬜ **Player mesh** — skeletal mesh (Mannequin placeholder or custom)
@@ -198,17 +234,74 @@ All design documents completed. See `/docs/`, `/design/`, `/narrative/` director
 
 ---
 
-## PHASE 7: AUDIO & VFX — P2
+## PHASE 7: AUDIO & VFX — P1 🔨
 
-### 7.1 Audio
-- ✅ train_interior.mp3 and train_whistle.mp3 imported
-- ⬜ **Zone ambient layers** — Tail (dripping, coughing), Third (machinery), etc.
-- ⬜ **Adaptive music** — exploration → suspicion → combat → wind-down
-- ⬜ **Combat SFX** — weapon impacts per type, armor clanks, grunts
+> **NOTE:** Demo currently has NO sound. This is a top priority for launch.
+> Each zone has a distinct sonic identity reflecting its culture and class.
+> 2 audio files imported so far: train_interior.mp3, train_whistle.mp3
+
+### 7.1 Zone Sound Design — Sonic Identity Per Class
+
+#### Tail (Cars 0-14) — Raw, Industrial, Desperate
+- ⬜ **Base layer** — bumpy train rhythm, rattling metal, loose bolts, uneven track noise
+- ⬜ **Ambient** — dripping water, distant coughing, hushed voices, crying children
+- ⬜ **Wind** — howling/whooshing wind through hull breaches and thin walls
+- ⬜ **Music** — sparse, percussive, improvised instruments (banging pipes, rhythmic chanting)
+- ⬜ **Creaking** — constant structural stress sounds, the train fighting to hold together
+
+#### Third Class (Cars 15-29) — Techno-Punk, Blue Collar Energy
+- ⬜ **Base layer** — heavy machinery hum, rhythmic piston sounds, steam releases
+- ⬜ **Ambient** — factory noise, welding sparks, tools clanking, work chatter
+- ⬜ **Music** — techno-punk/industrial beats, gritty electronic rhythms, worker anthems
+- ⬜ **Crowd** — boisterous workers, arguments, laughing in mess hall, union rallying
+- ⬜ **Shift horns** — industrial buzzers marking shift changes
+
+#### Second Class (Cars 30-49) — Calm, Refined, Comfortable
+- ⬜ **Base layer** — smooth train movement, barely perceptible sway, dampened track noise
+- ⬜ **Ambient** — soft conversation, children playing, pages turning, gentle clinking of glasses
+- ⬜ **Music** — calm ambient piano, soft jazz, acoustic guitar, relaxing lounge music
+- ⬜ **Atmosphere** — families at dinner, teachers lecturing, quiet wealth, muted sophistication
+- ⬜ **Nature sounds** — greenhouse/garden cars have birds, trickling water, leaf rustling
+
+#### First Class (Cars 63-82) — Full Orchestra, Live Music, Opulence
+- ⬜ **Base layer** — near-silent train (premium sound dampening), pristine mechanical hum
+- ⬜ **Live Music Car** — dedicated car with live orchestra/chamber ensemble performing
+- ⬜ **Music** — full symphonic scores, classical compositions, opera arias, grand waltzes
+- ⬜ **Ambient** — champagne glasses clinking, formal laughter, rustling silk, fine dining
+- ⬜ **Ballroom** — sweeping waltz music, echoing grand hall acoustics
+- ⬜ **Casino** — jazz combo, chips clicking, slot machine chimes
+- ⬜ **Opera House** — full vocal performances, dramatic scores, audience whispers
+
+#### Working Spine (Cars 50-62) — Functional, Mechanical, Clean
+- ⬜ **Base layer** — powerful generator hum, clean turbine whir, precise mechanical rhythm
+- ⬜ **Ambient** — pressurized air systems, computer terminals beeping, flow meters
+- ⬜ **Music** — minimal electronic, functional tones, system-status audio cues
+- ⬜ **Character** — functional but polished, like a well-maintained submarine
+
+#### Sanctum (Cars 83-95) — Sacred, Unsettling, Reverberant
+- ⬜ **Base layer** — deep resonant hum, almost subliminal bass drone
+- ⬜ **Ambient** — choral chanting, incense crackling, echoing footsteps on marble
+- ⬜ **Music** — pipe organ, religious choir, ethereal/disturbing hymns
+- ⬜ **Tension** — subtle dissonance, heartbeat-like pulses in experimental cars
+
+#### Engine (Cars 96-99) — Mechanical Cathedral, Clean Power
+- ⬜ **Base layer** — the Engine's rhythmic heartbeat, powerful and steady
+- ⬜ **Ambient** — pristine mechanical precision, cool air systems, quiet authority
+- ⬜ **Music** — grand but restrained, the Engine's rhythm IS the music
+- ⬜ **Character** — functional and clean, high-tech, imposing without being dirty
+
+### 7.2 Cross-Zone Audio Systems
+- ⬜ **Adaptive music** — exploration → suspicion → combat → wind-down (per zone)
+- ⬜ **Zone crossfade** — seamless sonic transitions as player moves between zones
+- ⬜ **7 boss fight themes** — each reflecting the zone's sonic identity
+- ⬜ **Combat SFX** — weapon impacts per type, armor clanks, grunts, contextual to zone
 - ⬜ **Environmental SFX** — doors, pressure seals, hull breach, machinery
 - ⬜ **UI SFX** — pickup, quest update, level up, menu navigation
+- ⬜ **PA system** — zone-specific announcements (looping, tone shifts per class)
+- ⬜ **Train constant** — underlying train movement sound present everywhere, quality varies by zone
+- ⬜ **Dynamic wind** — wind intensity changes with hull integrity, exterior sections, speed
 
-### 7.2 VFX
+### 7.3 VFX
 - ⬜ **Steam/smoke** — pipes, vents, kitchen areas
 - ⬜ **Sparks** — electrical systems, combat impacts on metal
 - ⬜ **Cold breath** — visible in freezer sections
@@ -259,20 +352,32 @@ All design documents completed. See `/docs/`, `/design/`, `/narrative/` director
 
 ---
 
-## WHAT'S BLOCKING THE DEMO RIGHT NOW
+## CURRENT SPRINT: Launch Blockers + Phase 4
 
-**In priority order — fix these and you have a playable game:**
+> **Status:** Demo is playable but has no sound, no characters, and cars are
+> too small. Extensive work remains for launch. All planned features from
+> design phase must be deployed.
 
-1. **No DataTables** — Inventory, quests, dialogue, collectibles all have C++ systems but zero data. The game literally has nothing to pick up, no quests to track, no NPCs to talk to.
+**Immediate Priorities (from demo feedback):**
+1. Car scale rework (10x larger)
+2. Sound design implementation (full zone-specific audio)
+3. Character models & animations (player, NPCs, Jackboots, companions)
+4. Lower transport deck with mini-rail system
+5. DataTables + Blueprints (items, quests, dialogue, pickups, NPCs)
+6. Orphaned code consolidation (~6000 lines to integrate)
 
-2. **No character mesh/animations** — Player is invisible. Need at minimum UE5 Mannequin placeholder with basic anim blueprint.
+**Previous Polecats (all need recycle):**
+| Polecat | Bead | Assignment | Status |
+|---------|------|------------|--------|
+| rust | hq-bsztm | Player Character Systems | Shell died — needs recycle |
+| chrome | hq-qnc2b | Combat System | Failed to start — needs recycle |
+| guzzle | hq-b36xd | UI/HUD | Active |
+| nitro | hq-t3h4m | Stealth & NPC AI | Failed to start — needs recycle |
 
-3. **No pickup/NPC Blueprints** — C++ components exist but there are no placeable actors in the editor to put items or NPCs into the world.
-
-4. **No persisted materials** — Materials only exist while the Python script session is active. They need to be saved as .uasset files.
-
-5. **~6000 lines of orphaned code** — Source/SnowyEngine and Source/TrainGame have stealth, companions, crafting, economy, Kronole, and full Slate UI widgets that aren't compiled because they're not in the .uproject.
-
-6. **Only 1 map** — DevTestCar is a box with pipes. Zone 1 needs 15 unique car layouts.
-
-7. **2 audio files** — Need ambient, combat SFX, footsteps, UI sounds at minimum.
+**Next beads to create:**
+- Car Scale Rework (P0 — 10x size increase)
+- Sound Design: Zone Audio Identity (P1)
+- Character Models & Animation (P0 — no characters in demo)
+- Lower Transport Deck + Mini-Rail (P1)
+- DataTables & Blueprints (P0 — items, quests, dialogue, pickups)
+- Orphaned Code Consolidation (P1)
