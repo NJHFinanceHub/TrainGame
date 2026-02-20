@@ -52,7 +52,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnExteriorDiscovery, FName, Discove
  * and telescope mechanics.
  */
 UCLASS(ClassGroup=(Exploration), meta=(BlueprintSpawnableComponent))
-class UWindowViewComponent : public UActorComponent
+class SNOWPIERCEREE_API UWindowViewComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
