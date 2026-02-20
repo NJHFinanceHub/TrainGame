@@ -8,9 +8,6 @@
 #include "Widgets/Layout/SScrollBox.h"
 #include "Widgets/Text/STextBlock.h"
 
-// Forward-declared struct reference for car data
-#include "SnowpiercerEE/SEETypes.h"
-
 void SSEETrainMap::Construct(const FArguments& InArgs)
 {
 	ChildSlot
@@ -77,16 +74,17 @@ void SSEETrainMap::Tick(const FGeometry& AllottedGeometry, const double InCurren
 	PulseTimer += InDeltaTime;
 }
 
-void SSEETrainMap::SetCarData(const TArray<FSEECarData>& Cars)
+void SSEETrainMap::SetCarData(const TArray<FName>& CarNames, const TArray<int32>& ZoneIndices)
 {
 	CarEntries.Empty();
-	CarEntries.Reserve(Cars.Num());
+	const int32 Count = FMath::Min(CarNames.Num(), ZoneIndices.Num());
+	CarEntries.Reserve(Count);
 
-	for (const FSEECarData& Car : Cars)
+	for (int32 i = 0; i < Count; ++i)
 	{
 		FCarDisplayEntry Entry;
-		Entry.Name = FText::FromName(Car.CarName);
-		Entry.ZoneIndex = static_cast<int32>(Car.Zone);
+		Entry.Name = FText::FromName(CarNames[i]);
+		Entry.ZoneIndex = ZoneIndices[i];
 		Entry.bVisited = false;
 		Entry.bCompleted = false;
 		CarEntries.Add(Entry);

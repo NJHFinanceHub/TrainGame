@@ -5,9 +5,6 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 
-struct FSEECarData;
-struct FSEECarState;
-
 /**
  * SSEETrainMap
  *
@@ -33,7 +30,8 @@ public:
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
 	// Update the car data displayed on the map
-	void SetCarData(const TArray<FSEECarData>& Cars);
+	// Takes car name + zone index pairs to avoid circular dependency on SnowpiercerEE module
+	void SetCarData(const TArray<FName>& CarNames, const TArray<int32>& ZoneIndices);
 
 	// Update the state of a specific car (visited, completed, etc.)
 	void UpdateCarState(int32 CarIndex, bool bVisited, bool bCompleted);

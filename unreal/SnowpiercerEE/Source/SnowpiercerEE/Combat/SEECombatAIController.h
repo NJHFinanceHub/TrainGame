@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "CombatTypes.h"
+#include "TrainGame/Core/CombatTypes.h"
 #include "SEECombatAIController.generated.h"
 
 class USEECombatComponent;

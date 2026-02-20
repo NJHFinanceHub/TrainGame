@@ -18,7 +18,16 @@ public class SnowpiercerEE : ModuleRules
             "SlateCore",
             "AIModule",
             "NavigationSystem",
-            "GameplayTasks"
+            "GameplayTasks",
+            "TrainGame",
+            "SnowyEngine"
+        });
+
+        PrivateDependencyModuleNames.AddRange(new string[]
+        {
+            "AudioMixer",
+            "MetasoundFrontend",
+            "MetasoundEngine"
         });
     }
 }

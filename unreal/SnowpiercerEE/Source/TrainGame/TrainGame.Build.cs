@@ -1,12 +1,16 @@
 // Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
 
 using UnrealBuildTool;
+using System.IO;
 
 public class TrainGame : ModuleRules
 {
 	public TrainGame(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		// Allow module-qualified includes (e.g. "TrainGame/Core/CombatTypes.h")
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, ".."));
 
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
@@ -17,7 +21,8 @@ public class TrainGame : ModuleRules
 			"EnhancedInput",
 			"GameplayAbilities",
 			"GameplayTags",
-			"GameplayTasks"
+			"GameplayTasks",
+			"SnowyEngine"
 		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]
@@ -27,7 +32,9 @@ public class TrainGame : ModuleRules
 			"UMG",
 			"AudioMixer",
 			"MetasoundFrontend",
-			"MetasoundEngine"
+			"MetasoundEngine",
+			"AIModule",
+			"NavigationSystem"
 		});
 	}
 }
