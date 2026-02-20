@@ -1,0 +1,166 @@
+[
+  {
+    "Name": "Ending_TheNewWilford",
+    "EndingID": "TheNewWilford",
+    "EndingTitle": "The New Wilford",
+    "EndingSubtitle": "The train endures. Under new management.",
+    "Description": "The player seizes control of the Engine. The class system continues with modifications. Whether this new regime is better depends on the player's choices — who they allied with, who they betrayed, what institutions they preserved or destroyed. The Hidden Ledger determines whether the revolution becomes benevolent dictatorship, enlightened autocracy, or a mirror of Wilford's regime.",
+    "UnlockConditions": {
+      "MinMercyVsPragmatism": -20,
+      "RequiredFlags": ["Reached_Engine"],
+      "Notes": "Pragmatic players who accumulated power. Condemned Gilliam, took the sword, expanded Kronole, turned Volkov."
+    },
+    "WilfordDialogue": {
+      "Ideal": "You understand now. The weight of it. The necessity. Welcome to the Engine.",
+      "Good": "I'd say you'll do better, but I've heard that before.",
+      "Bittersweet": "Look at you. You became me. Was it worth it?",
+      "Dark": "You're worse than I ever was. At least I felt guilty."
+    },
+    "EpilogueNarration": {
+      "Ideal": "The train runs. The system persists, refined by someone who walked its length. The Engine hums the same note. But the hand on the lever is different — and perhaps, for now, that is enough.",
+      "Good": "Order is maintained. The compromises are smaller — but they are still compromises. The Tail eats better. First Class grumbles. The train continues.",
+      "Bittersweet": "The train runs. The names change. The old patterns assert themselves with new faces.",
+      "Dark": "The train runs. The names change. The suffering does not."
+    },
+    "CreditsMusic": "/Game/Audio/Music/Credits_NewWilford",
+    "CutsceneSequence": "/Game/Cinematics/Endings/LS_Ending_NewWilford",
+    "DisplayPriority": 20
+  },
+  {
+    "Name": "Ending_TheRevolution",
+    "EndingID": "TheRevolution",
+    "EndingTitle": "The Revolution",
+    "EndingSubtitle": "The class system falls. The train is everyone's.",
+    "Description": "The player abolishes the class system and establishes democratic governance. A new Council — representing all zones — takes control. Whether this new democracy functions depends on the player's alliances, the factions preserved, and the institutions left standing. The Ledger determines whether it becomes genuine democracy, fractious committee, or mob rule.",
+    "UnlockConditions": {
+      "MinIndividualVsCollective": -15,
+      "MinCompanionsSurvived": 3,
+      "RequiredFlags": ["Reached_Engine"],
+      "Notes": "Balanced mercy/force, popular support, truth-telling. Forgave Gilliam, shared rations, compromised on Kronole, spared enemies."
+    },
+    "WilfordDialogue": {
+      "Ideal": "You did what no one else could. I hope they're worth it.",
+      "Good": "Democracy on a train. I give it three years.",
+      "Bittersweet": "You burned it all down. Now what?",
+      "Dark": "Congratulations. You've traded one tyranny for another. At least mine worked."
+    },
+    "EpilogueNarration": {
+      "Ideal": "The Council governs. Not perfectly — never perfectly — but openly. The Tail eats the same food as the Engine. Children play in cars they were never meant to see. The train is loud with argument and laughter.",
+      "Good": "The Council meets. Arguments last for hours. Progress is slow. But the doors between zones are open, and no one is hungry.",
+      "Bittersweet": "The vote is held. The factions argue. The old wounds fester beneath the new democracy. But the system is open, and that matters.",
+      "Dark": "The mob rules. What replaced the system is chaos wearing the mask of freedom."
+    },
+    "CreditsMusic": "/Game/Audio/Music/Credits_Revolution",
+    "CutsceneSequence": "/Game/Cinematics/Endings/LS_Ending_Revolution",
+    "DisplayPriority": 10
+  },
+  {
+    "Name": "Ending_TheDerailment",
+    "EndingID": "TheDerailment",
+    "EndingTitle": "The Derailment",
+    "EndingSubtitle": "The Engine dies. The cold comes.",
+    "Description": "The player destroys the Engine — not to free people, but to end the experiment. The train stops. The doors don't open. What happens next is left ambiguous. The darkest ending, reserved for players who found no hope in 103 cars.",
+    "UnlockConditions": {
+      "MaxMercyVsPragmatism": -10,
+      "MaxTruthVsStability": -10,
+      "MaxCompanionsSurvived": 5,
+      "RequiredFlags": ["Reached_Engine"],
+      "Notes": "Nihilistic pattern. Lost companions, destroyed recording, shut down Den, killed Volkov."
+    },
+    "WilfordDialogue": {
+      "Ideal": "...",
+      "Good": "You're killing everyone. You know that.",
+      "Bittersweet": "None of us deserved this. Not the suffering. Not the survival. Not any of it.",
+      "Dark": "Then we die. Together, at least."
+    },
+    "EpilogueNarration": {
+      "Bittersweet": "The Engine goes silent. The train slows. What comes next is unclear — but the machine that demanded so much suffering is finally, mercifully, still.",
+      "Dark": "Silence. Cold. The experiment ends."
+    },
+    "CreditsMusic": "/Game/Audio/Music/Credits_Derailment",
+    "CutsceneSequence": "/Game/Cinematics/Endings/LS_Ending_Derailment",
+    "DisplayPriority": 50
+  },
+  {
+    "Name": "Ending_TheExodus",
+    "EndingID": "TheExodus",
+    "EndingTitle": "The Exodus",
+    "EndingSubtitle": "The doors open. The world is cold, but it is the world.",
+    "Description": "The player stops the Engine and opens the train. Survivors walk into a world that is cold but warming. Not everyone survives. But the train — and everything it represents — ends. The highest-risk, highest-reward ending. The Ledger determines how many survive and what kind of society they build outside.",
+    "UnlockConditions": {
+      "MinPresentVsFuture": -20,
+      "RequiredFlags": ["Reached_Engine", "Thaw_Evidence_Found"],
+      "Notes": "Hope-driven, evidence-based. Saved Frost, studied the outside in Car 11, listened to Glass's prophecy, kept Yuri's quest."
+    },
+    "WilfordDialogue": {
+      "Ideal": "I... I never checked. I never looked outside. What if you're right?",
+      "Good": "You're gambling with 2,800 lives on temperature readings and hope.",
+      "Bittersweet": "Some will die out there. You're trading certain suffering for uncertain survival.",
+      "Dark": "Open the doors. Kill them faster than I ever did."
+    },
+    "EpilogueNarration": {
+      "Ideal": "They walk into the cold. Not all of them survive — but those who do see the sun for the first time in seventeen years. The snow is melting. Children touch grass they've only seen in books. It is painful and beautiful and terrifyingly real.",
+      "Good": "The exodus begins. Some turn back. Most press forward. The temperature data was right — barely. The first settlement is built from train cars. It is small and cold and free.",
+      "Bittersweet": "They walk out. The cold is real. The losses are real. But so is the sky.",
+      "Dark": "The doors open. The cold rushes in. Some walk out. Not all of them come back."
+    },
+    "CreditsMusic": "/Game/Audio/Music/Credits_Exodus",
+    "CutsceneSequence": "/Game/Cinematics/Endings/LS_Ending_Exodus",
+    "DisplayPriority": 30
+  },
+  {
+    "Name": "Ending_TheEternalLoop",
+    "EndingID": "TheEternalLoop",
+    "EndingTitle": "The Eternal Loop",
+    "EndingSubtitle": "The truth exists now. What comes next is up to them.",
+    "Description": "The player refuses to make the final choice. The train continues. Nothing changes immediately — but everything has been documented. The truth exists in the Archive. Future generations will have what this one lacked: the complete record. Whether this is wisdom or cowardice, the Ledger decides.",
+    "UnlockConditions": {
+      "MinTruthVsStability": 25,
+      "MinCollectiblesFound": 50,
+      "RequiredFlags": ["Reached_Engine", "Gilliam_Truth_Revealed"],
+      "Notes": "Truth-seeker pattern. Told everyone about Gilliam, read all lore entries, questioned every system."
+    },
+    "WilfordDialogue": {
+      "Ideal": "Honesty. Finally. You don't know either. But at least you documented everything.",
+      "Good": "You walked 103 cars and found... questions. How very human.",
+      "Bittersweet": "So the train keeps running. Nothing changes. But everyone knows.",
+      "Dark": "You saw everything and did nothing. That's not wisdom. That's cowardice."
+    },
+    "EpilogueNarration": {
+      "Ideal": "The train continues. The truth is archived. Future generations will have what this one lacked: the complete record. Whether they do better is their choice to make.",
+      "Good": "The loop continues. But this time, everyone on the train knows the shape of the track. Knowledge is not freedom — but it is the prerequisite.",
+      "Bittersweet": "The train runs. The truth sits in the Archive, read by some, ignored by others. Change is deferred. Not denied.",
+      "Dark": "Nothing changes. The loop continues. The truth rots in a cabinet."
+    },
+    "CreditsMusic": "/Game/Audio/Music/Credits_EternalLoop",
+    "CutsceneSequence": "/Game/Cinematics/Endings/LS_Ending_EternalLoop",
+    "DisplayPriority": 40
+  },
+  {
+    "Name": "Ending_TheBridge",
+    "EndingID": "TheBridge",
+    "EndingTitle": "The Bridge",
+    "EndingSubtitle": "We are not alone.",
+    "Description": "The secret ending. The player proposes something Wilford hasn't considered: connection. Not exile, not isolation — a bridge between trains. The train stops periodically in warming zones, allowing controlled exterior access while maintaining the Engine as a mobile base. Requires maximum exploration, diplomatic skill, Thaw evidence, Engine modification capability, and a coalition across all factions.",
+    "UnlockConditions": {
+      "MinMercyVsPragmatism": 15,
+      "MinTruthVsStability": 15,
+      "MinPresentVsFuture": -15,
+      "MinCompanionsSurvived": 6,
+      "MinCollectiblesFound": 100,
+      "RequiredFlags": ["Reached_Engine", "Thaw_Evidence_Found", "Radio_Contact_Made", "Nix_Radio_Used", "Nix_Two_Comm_Used", "All_Listening_Post_Intel"],
+      "Notes": "The rarest and most hopeful ending. Requires maximum exploration and diplomatic skill across all five Ledger axes."
+    },
+    "WilfordDialogue": {
+      "Ideal": "Another train. I... there's another train. All this time...",
+      "Good": "Connection. Not exile, not isolation. I never considered that."
+    },
+    "EpilogueNarration": {
+      "Ideal": "The signal is answered. Across the frozen waste, another engine hums. The bridge between them — fragile, impossible, necessary — begins to form. Humanity is no longer a single train. It is a network. The children born on rails will walk between worlds.",
+      "Good": "Contact is made. The response is cautious. But real. Somewhere out there, another group of survivors has been enduring, adapting, hoping. The bridge will take years. But the first message has been sent: 'We are here. We are alive. We are not alone.'"
+    },
+    "CreditsMusic": "/Game/Audio/Music/Credits_Bridge",
+    "CutsceneSequence": "/Game/Cinematics/Endings/LS_Ending_Bridge",
+    "DisplayPriority": 60
+  }
+]

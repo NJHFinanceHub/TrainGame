@@ -4,6 +4,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "GameFramework/SaveGame.h"
 #include "SEETypes.h"
+#include "Endings/SEEEndingTypes.h"
 #include "SEESaveGameSubsystem.generated.h"
 
 UCLASS()
@@ -14,6 +15,18 @@ class SNOWPIERCEREE_API USEESaveGameData : public USaveGame
 public:
     UPROPERTY(SaveGame)
     TMap<int32, FSEECarState> CarStates;
+
+    UPROPERTY(SaveGame)
+    FSEELedgerSnapshot LedgerScores;
+
+    UPROPERTY(SaveGame)
+    TMap<FName, bool> GlobalFlags;
+
+    UPROPERTY(SaveGame)
+    TMap<FName, int32> GlobalIntFlags;
+
+    UPROPERTY(SaveGame)
+    TArray<FSEELedgerEntry> ChoiceHistory;
 };
 
 UCLASS()
