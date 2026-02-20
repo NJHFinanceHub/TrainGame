@@ -1,0 +1,123 @@
+[
+  {
+    "Name": "Ending_NewWilford",
+    "EndingType": "EEndingType::TheNewWilford",
+    "EndingTitle": "The New Wilford",
+    "EndingEpilogue": "You take Wilford's seat. The Engine hums beneath you — not a machine, but a throne. The train runs on. The hierarchy endures. The only thing that changed is the name at the top. In the Tail, they whisper about the next revolution. They always do.",
+    "CreditsMusic": "ECreditsMusic::Triumphant",
+    "CutsceneDuration": 75.0,
+    "RequiredFlags": ["ReachedEngine"],
+    "MoralProfile": {
+      "MercyVsPragmatism": "Pragmatism",
+      "IndividualVsCollective": "Collective",
+      "ForceVsCunning": "Force"
+    },
+    "TriggerAction": "SeizeEngine",
+    "CompanionEpilogues": {
+      "Edgar": "Edgar watches from the shadows. He remembers what you said about equality. He says nothing. For now.",
+      "Marta": "Marta refuses to serve in your guard. She disappears into Third Class. Some say she's organizing.",
+      "Samuel": "Samuel becomes your enforcer. He's good at it. Too good. You try not to think about what that means.",
+      "FatherBrennan": "Father Brennan holds a vigil in the chapel car. He prays for your soul. He prays for all of them."
+    }
+  },
+  {
+    "Name": "Ending_Revolution",
+    "EndingType": "EEndingType::TheRevolution",
+    "EndingEpilogue": "The class system falls. Elections are held in the dining car — one person, one vote, Engine to Tail. It's messy. It's slow. People argue about water rationing for three days. But nobody is taken from the Tail in the night anymore. Nobody bows to a ticket they were born with. The train runs on, and for the first time, it belongs to everyone.",
+    "CreditsMusic": "ECreditsMusic::Triumphant",
+    "CutsceneDuration": 90.0,
+    "RequiredFlags": ["ReachedEngine"],
+    "MoralProfile": {
+      "TruthVsStability": "Truth",
+      "IndividualVsCollective": "Collective",
+      "MercyVsPragmatism": "Mercy"
+    },
+    "TriggerAction": "HoldElection",
+    "CompanionEpilogues": {
+      "Edgar": "Edgar runs for the first Council. He loses. He runs again. He keeps running. That's the point.",
+      "Marta": "Marta becomes the first elected Head of Medical. She finally has the supplies she needs.",
+      "Samuel": "Samuel struggles with democracy. He's used to orders, not debates. But he learns. Slowly.",
+      "FatherBrennan": "Father Brennan opens the chapel to all faiths. 'Even the Engine deserves a prayer,' he says."
+    }
+  },
+  {
+    "Name": "Ending_Derailment",
+    "EndingType": "EEndingType::TheDerailment",
+    "EndingEpilogue": "The explosion tears through the Engine. Metal screams. The eternal motion stops. For the first time in years, the world is silent. Snow drifts through the breach. Some passengers make it to the wreckage of First Class, where the insulation holds. Others don't. In the cold, there are no classes. There is only survival. And above, through the broken roof — is that sunlight?",
+    "CreditsMusic": "ECreditsMusic::Somber",
+    "CutsceneDuration": 80.0,
+    "RequiredFlags": ["ReachedEngine", "AcquiredKronoleExplosives"],
+    "MoralProfile": {
+      "ForceVsCunning": "Force",
+      "MercyVsPragmatism": "Pragmatism",
+      "TruthVsStability": "Truth"
+    },
+    "TriggerAction": "DetonateEngine",
+    "CompanionEpilogues": {
+      "Edgar": "Edgar pulls children from the wreckage. He doesn't stop until his hands bleed. He doesn't stop after, either.",
+      "Marta": "Marta triages the survivors. There are so many wounded. There are never enough supplies. Some things never change.",
+      "Samuel": "Samuel organizes the survivors into scavenging parties. The military structure he built saves lives now.",
+      "FatherBrennan": "Father Brennan leads the dead rites. There are many. He does not falter."
+    }
+  },
+  {
+    "Name": "Ending_Exodus",
+    "EndingType": "EEndingType::TheExodus",
+    "EndingEpilogue": "The front door opens. The cold rushes in — but it's not the killing cold of legend. It's cold, yes. Bitter. But survivable. The first footprints in virgin snow belong to a child from the Tail who has never seen the sky. She looks up. She starts to cry. You step out after her. The train sits behind you, still humming, still warm. Some passengers refuse to leave. That's their choice now. But you — you walk forward. Into the white. Into the unknown. Into the world.",
+    "CreditsMusic": "ECreditsMusic::Hopeful",
+    "CutsceneDuration": 100.0,
+    "RequiredFlags": ["ReachedEngine", "DiscoveredThawEvidence"],
+    "MoralProfile": {
+      "MercyVsPragmatism": "Mercy",
+      "PresentVsFuture": "Future",
+      "TruthVsStability": "Truth"
+    },
+    "TriggerAction": "OpenFrontDoor",
+    "CompanionEpilogues": {
+      "Edgar": "Edgar is the first to volunteer for the scouting party. He's never been outside. He's never been so alive.",
+      "Marta": "Marta catalogs every plant they find. Most are dead. Some aren't. She guards the living ones like children.",
+      "Samuel": "Samuel builds the first shelter. It's ugly. It's warm. He builds another. And another.",
+      "FatherBrennan": "Father Brennan plants a cross in the snow. Then he plants a seed beside it. The seed grows first."
+    }
+  },
+  {
+    "Name": "Ending_EternalLoop",
+    "EndingType": "EEndingType::TheEternalLoop",
+    "EndingEpilogue": "The archive tells you everything. Every revolt. Every leader. Every time someone reached the Engine and was offered the same choice. You are the seventh. Or the seventeenth. The records are incomplete — deliberately. Wilford designed the cycle: pressure builds in the Tail, a leader emerges, the revolution burns through the train, and the winner either takes the throne or destroys everything. Either way, the Engine endures. You stand in the Engine room, holding the truth. Behind you, your companions wait for the decision. You could tell them. You could burn the archive. Or you could sit down, and wait for the next one.",
+    "CreditsMusic": "ECreditsMusic::Unsettling",
+    "CutsceneDuration": 85.0,
+    "RequiredFlags": ["ReachedEngine", "ArchiveFragmentsComplete", "DiscoveredRevoltCycle"],
+    "MoralProfile": {
+      "ForceVsCunning": "Cunning",
+      "TruthVsStability": "Stability",
+      "PresentVsFuture": "Future"
+    },
+    "TriggerAction": "AccessArchive",
+    "CompanionEpilogues": {
+      "Edgar": "Edgar reads the archive. He's quiet for a long time. 'So none of it mattered?' he asks. You don't answer.",
+      "Marta": "Marta destroys her copy of the records. 'Some truths are medicine,' she says. 'This one is poison.'",
+      "Samuel": "Samuel salutes you. Old habit. He doesn't know what else to do with the knowledge.",
+      "FatherBrennan": "Father Brennan reads the archive and weeps. Not for the dead. For the living who will do it all again."
+    }
+  },
+  {
+    "Name": "Ending_Bridge",
+    "EndingType": "EEndingType::TheBridge",
+    "EndingEpilogue": "The signal is real. Another train, running a parallel track on the far side of the continent. They call themselves the Aurora. They've been listening for years. When you make contact, the voice on the other end says: 'We thought we were the last ones.' A bridge. Not between cars, but between worlds. Two trains. Two thousand survivors each. The first conversation between strangers in seven years. Everything changes. Everything.",
+    "CreditsMusic": "ECreditsMusic::Mysterious",
+    "CutsceneDuration": 95.0,
+    "RequiredFlags": ["ReachedEngine", "TransmitterAssembled", "OtherTrainSignalDiscovered", "ATLASDecryptedTransmission"],
+    "MoralProfile": {
+      "ForceVsCunning": "Cunning",
+      "TruthVsStability": "Truth",
+      "PresentVsFuture": "Future"
+    },
+    "TriggerAction": "ActivateTransmitter",
+    "CompanionEpilogues": {
+      "Edgar": "Edgar volunteers for the diplomatic team. 'Someone has to make sure they're not like us,' he says. He means the old us.",
+      "Marta": "Marta exchanges medical knowledge with the Aurora's doctor. They save three lives in the first week.",
+      "Samuel": "Samuel coordinates the security protocols for the first physical meeting. He insists on going unarmed.",
+      "FatherBrennan": "Father Brennan broadcasts a prayer across both trains. The Aurora has their own chaplain. They pray together."
+    }
+  }
+]
