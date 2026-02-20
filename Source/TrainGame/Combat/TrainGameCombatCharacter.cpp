@@ -2,6 +2,8 @@
 
 #include "TrainGameCombatCharacter.h"
 #include "CombatComponent.h"
+#include "RangedCombatComponent.h"
+#include "StealthTakedownComponent.h"
 #include "TrainGame/Weapons/WeaponComponent.h"
 #include "Components/InputComponent.h"
 
@@ -11,24 +13,20 @@ ATrainGameCombatCharacter::ATrainGameCombatCharacter()
 
 	CombatComp = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	WeaponComp = CreateDefaultSubobject<UWeaponComponent>(TEXT("WeaponComponent"));
+	RangedCombatComp = CreateDefaultSubobject<URangedCombatComponent>(TEXT("RangedCombatComponent"));
+	StealthComp = CreateDefaultSubobject<UStealthTakedownComponent>(TEXT("StealthTakedownComponent"));
 }
 
 void ATrainGameCombatCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// Weapon degradation is handled in the input handlers (Input_AttackHigh/Mid/Low)
-	// where we check the hit result and apply durability loss accordingly.
-	// A full implementation would use a delegate-based approach.
 }
 
 void ATrainGameCombatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Bind combat actions
-	// These use the legacy input system for the prototype.
-	// Full game will use Enhanced Input (UE5).
+	// Melee combat
 	PlayerInputComponent->BindAction("AttackHigh", IE_Pressed, this, &ATrainGameCombatCharacter::Input_AttackHigh);
 	PlayerInputComponent->BindAction("AttackMid", IE_Pressed, this, &ATrainGameCombatCharacter::Input_AttackMid);
 	PlayerInputComponent->BindAction("AttackLow", IE_Pressed, this, &ATrainGameCombatCharacter::Input_AttackLow);
@@ -45,7 +43,20 @@ void ATrainGameCombatCharacter::SetupPlayerInputComponent(UInputComponent* Playe
 	PlayerInputComponent->BindAction("DodgeBack", IE_Pressed, this, &ATrainGameCombatCharacter::Input_DodgeBack);
 
 	PlayerInputComponent->BindAction("KronoleMode", IE_Pressed, this, &ATrainGameCombatCharacter::Input_ToggleKronoleMode);
+
+	// Ranged combat
+	PlayerInputComponent->BindAction("FireRanged", IE_Pressed, this, &ATrainGameCombatCharacter::Input_FireRanged);
+	PlayerInputComponent->BindAction("ThrowObject", IE_Pressed, this, &ATrainGameCombatCharacter::Input_ThrowObject);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &ATrainGameCombatCharacter::Input_Reload);
+
+	// Stealth
+	PlayerInputComponent->BindAction("StealthTakedown", IE_Pressed, this, &ATrainGameCombatCharacter::Input_StealthTakedown);
+	PlayerInputComponent->BindAction("StealthChokehold", IE_Pressed, this, &ATrainGameCombatCharacter::Input_StealthChokehold);
 }
+
+// ============================================================================
+// Melee Input
+// ============================================================================
 
 void ATrainGameCombatCharacter::Input_AttackHigh()
 {
@@ -135,4 +146,53 @@ void ATrainGameCombatCharacter::Input_ToggleKronoleMode()
 		CombatComp->DeactivateKronoleMode();
 	else
 		CombatComp->ActivateKronoleMode();
+}
+
+// ============================================================================
+// Ranged Input
+// ============================================================================
+
+void ATrainGameCombatCharacter::Input_FireRanged()
+{
+	if (!RangedCombatComp) return;
+
+	// Fire forward (aim direction from camera/character facing)
+	FVector AimDir = GetActorForwardVector();
+	RangedCombatComp->FireRangedWeapon(AimDir);
+}
+
+void ATrainGameCombatCharacter::Input_ThrowObject()
+{
+	if (!RangedCombatComp) return;
+
+	FVector ThrowDir = GetActorForwardVector();
+	RangedCombatComp->ThrowObject(ThrowDir);
+}
+
+void ATrainGameCombatCharacter::Input_Reload()
+{
+	if (RangedCombatComp)
+	{
+		RangedCombatComp->StartReload();
+	}
+}
+
+// ============================================================================
+// Stealth Input
+// ============================================================================
+
+void ATrainGameCombatCharacter::Input_StealthTakedown()
+{
+	if (StealthComp)
+	{
+		StealthComp->AttemptTakedown(EStealthTakedownType::Knockout);
+	}
+}
+
+void ATrainGameCombatCharacter::Input_StealthChokehold()
+{
+	if (StealthComp)
+	{
+		StealthComp->AttemptTakedown(EStealthTakedownType::Chokehold);
+	}
 }
