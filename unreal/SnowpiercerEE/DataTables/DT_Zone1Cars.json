@@ -1,0 +1,122 @@
+[
+  {
+    "Name": "Car00_Caboose",
+    "CarIndex": 0,
+    "CarName": "Caboose",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car00_Caboose"
+  },
+  {
+    "Name": "Car01_TailQuartersA",
+    "CarIndex": 1,
+    "CarName": "Tail_Quarters_A",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car01_Tail_Quarters_A"
+  },
+  {
+    "Name": "Car02_TailQuartersB",
+    "CarIndex": 2,
+    "CarName": "Tail_Quarters_B",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car02_Tail_Quarters_B"
+  },
+  {
+    "Name": "Car03_ThePit",
+    "CarIndex": 3,
+    "CarName": "The_Pit",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car03_The_Pit"
+  },
+  {
+    "Name": "Car04_Nursery",
+    "CarIndex": 4,
+    "CarName": "Nursery",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car04_Nursery"
+  },
+  {
+    "Name": "Car05_EldersCar",
+    "CarIndex": 5,
+    "CarName": "Elders_Car",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car05_Elders_Car"
+  },
+  {
+    "Name": "Car06_Sickbay",
+    "CarIndex": 6,
+    "CarName": "Sickbay",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car06_Sickbay"
+  },
+  {
+    "Name": "Car07_Workshop",
+    "CarIndex": 7,
+    "CarName": "Workshop",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car07_Workshop"
+  },
+  {
+    "Name": "Car08_ListeningPost",
+    "CarIndex": 8,
+    "CarName": "Listening_Post",
+    "Zone": "Tail",
+    "PrimaryFaction": "Tailies",
+    "SubLevelName": "Zone1_Car08_Listening_Post"
+  },
+  {
+    "Name": "Car09_Blockade",
+    "CarIndex": 9,
+    "CarName": "Blockade",
+    "Zone": "Tail",
+    "PrimaryFaction": "Jackboots",
+    "SubLevelName": "Zone1_Car09_Blockade"
+  },
+  {
+    "Name": "Car10_DarkCar",
+    "CarIndex": 10,
+    "CarName": "Dark_Car",
+    "Zone": "Tail",
+    "PrimaryFaction": "Neutral",
+    "SubLevelName": "Zone1_Car10_Dark_Car"
+  },
+  {
+    "Name": "Car11_FreezerBreach",
+    "CarIndex": 11,
+    "CarName": "Freezer_Breach",
+    "Zone": "Tail",
+    "PrimaryFaction": "Neutral",
+    "SubLevelName": "Zone1_Car11_Freezer_Breach"
+  },
+  {
+    "Name": "Car12_KronoleDen",
+    "CarIndex": 12,
+    "CarName": "Kronole_Den",
+    "Zone": "Tail",
+    "PrimaryFaction": "KronoleNetwork",
+    "SubLevelName": "Zone1_Car12_Kronole_Den"
+  },
+  {
+    "Name": "Car13_SmugglersCache",
+    "CarIndex": 13,
+    "CarName": "Smugglers_Cache",
+    "Zone": "Tail",
+    "PrimaryFaction": "Neutral",
+    "SubLevelName": "Zone1_Car13_Smugglers_Cache"
+  },
+  {
+    "Name": "Car14_MartyrsGate",
+    "CarIndex": 14,
+    "CarName": "Martyrs_Gate",
+    "Zone": "Tail",
+    "PrimaryFaction": "Jackboots",
+    "SubLevelName": "Zone1_Car14_Martyrs_Gate"
+  }
+]

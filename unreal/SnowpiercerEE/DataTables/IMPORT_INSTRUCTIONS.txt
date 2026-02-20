@@ -14,6 +14,7 @@ METHOD 1 — Reimport via Editor (Recommended)
      DT_Dialogue_Zone1.json -> FSEEDialogueNode
      DT_Quests.json         -> FSEEQuest  (requires FTableRowBase wrapper)
      DT_Collectibles.json   -> FCollectibleData
+     DT_Zone1Cars.json      -> FSEECarData
 4. Name the DataTable (e.g., DT_Items).
 5. Right-click the new DataTable > Reimport > select the JSON file.
 6. Save the asset.
@@ -36,6 +37,7 @@ STRUCT MAPPING
   DT_Dialogue_Zone1 -> FSEEDialogueNode    (SEEDialogueManager.h)
   DT_Quests         -> FSEEQuest            (SEEQuestManager.h)
   DT_Collectibles   -> FCollectibleData     (Exploration/CollectibleTypes.h)
+  DT_Zone1Cars      -> FSEECarData          (SEETypes.h)
 
 NOTE: FSEEQuest does not extend FTableRowBase in the current C++ code.
       To use it as a DataTable row struct, either:

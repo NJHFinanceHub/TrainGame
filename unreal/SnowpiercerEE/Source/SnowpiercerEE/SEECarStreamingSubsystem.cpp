@@ -24,6 +24,25 @@ void USEECarStreamingSubsystem::RegisterCarLevel(int32 CarIndex, FName LevelName
     CarLevelByIndex.Add(CarIndex, LevelName);
 }
 
+void USEECarStreamingSubsystem::RegisterFromDataTable(UDataTable* CarDataTable)
+{
+    if (!CarDataTable)
+    {
+        return;
+    }
+
+    TArray<FSEECarData*> AllRows;
+    CarDataTable->GetAllRows<FSEECarData>(TEXT("RegisterFromDataTable"), AllRows);
+
+    for (const FSEECarData* Row : AllRows)
+    {
+        if (Row && !Row->SubLevelName.IsNone())
+        {
+            RegisterCarLevel(Row->CarIndex, Row->SubLevelName);
+        }
+    }
+}
+
 void USEECarStreamingSubsystem::EnterCar(int32 CarIndex)
 {
     if (CarIndex < 0)

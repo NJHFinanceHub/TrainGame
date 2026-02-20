@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "SEETypes.generated.h"
 
 UENUM(BlueprintType)
@@ -30,7 +31,7 @@ enum class ESEEFaction : uint8
 };
 
 USTRUCT(BlueprintType)
-struct SNOWPIERCEREE_API FSEECarData
+struct SNOWPIERCEREE_API FSEECarData : public FTableRowBase
 {
     GENERATED_BODY()
 

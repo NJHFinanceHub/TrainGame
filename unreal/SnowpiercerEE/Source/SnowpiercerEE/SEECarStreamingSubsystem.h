@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "Engine/DataTable.h"
+#include "SEETypes.h"
 #include "SEECarStreamingSubsystem.generated.h"
 
 UCLASS()
@@ -15,6 +17,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Streaming")
     void RegisterCarLevel(int32 CarIndex, FName LevelName);
+
+    UFUNCTION(BlueprintCallable, Category="Streaming")
+    void RegisterFromDataTable(UDataTable* CarDataTable);
 
     UFUNCTION(BlueprintCallable, Category="Streaming")
     void EnterCar(int32 CarIndex);
