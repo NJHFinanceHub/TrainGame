@@ -1,0 +1,165 @@
+# Snowpiercer: Eternal Engine — Asset Manifest
+
+## Quick Start
+1. Open project in UE 5.7
+2. Tools > Execute Python Script > browse to `Scripts/import_assets.py`
+3. Wait for import to complete (~200 assets)
+4. Open materials in `/Game/Materials/` and connect texture nodes
+5. Create `DevTestCar` map in `/Game/Maps/`
+
+## Source → Content Mapping
+
+### 3D Models (FBX) — 13 meshes
+| Source | UE Destination | Description |
+|--------|---------------|-------------|
+| `ModularPipes/PipeKit_Base_Floor.fbx` | `/Game/Meshes/ModularPipes/` | Floor-mounted pipe base |
+| `ModularPipes/PipeKit_Base_Wall.fbx` | `/Game/Meshes/ModularPipes/` | Wall-mounted pipe base |
+| `ModularPipes/PipeKit_Connector_*.fbx` (x8) | `/Game/Meshes/ModularPipes/` | Pipe connectors (2-way, 3-way, 4-way, 6-way, crossover, straight) |
+| `ModularPipes/PipeKit_Pipe_*.fbx` (x3) | `/Game/Meshes/ModularPipes/` | Pipe segments (short, medium, long) |
+
+### PBR Texture Sets — 4 pipe material sets
+| Source | UE Material | Channels |
+|--------|------------|----------|
+| `ModularPipes/Textures/BareMetal/` | `/Game/Materials/ModularPipes/M_BareMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `ModularPipes/Textures/PaintedMetal/` | `/Game/Materials/ModularPipes/M_PaintedMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `ModularPipes/Textures/RustyMetal/` | `/Game/Materials/ModularPipes/M_RustyMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `ModularPipes/Textures/RustyPaintedMetal/` | `/Game/Materials/ModularPipes/M_RustyPaintedMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+
+### Brass PBR Set — 4K
+| Source | UE Destination |
+|--------|---------------|
+| `brass-4K/4K-Brass_Base Color.jpg` | `/Game/Textures/Brass/` |
+| `brass-4K/4K-Brass_Height.jpg` | `/Game/Textures/Brass/` |
+| `brass-4K/4K-Brass_Metallic.jpg` | `/Game/Textures/Brass/` |
+| `brass-4K/4K-Brass_Normal.jpg` | `/Game/Textures/Brass/` |
+| `brass-4K/4K-Brass_Roughness.jpg` | `/Game/Textures/Brass/` |
+| **Material** | `/Game/Materials/Metals/M_Brass_4K` |
+
+### Baked Prop Textures — ~100 textures, ~20 props
+Each prop has Diffuse + Normal + Specular + AO channels.
+
+| Prop | Files | UE Material |
+|------|-------|-------------|
+| big_tank | 5 (diff, diff_edited, norm, spec, ao) | `/Game/Materials/Props/M_big_tank` |
+| chimney | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_chimney` |
+| container | 3 (diff, norm, spec) | `/Game/Materials/Props/M_container` |
+| control_terminal | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_control_terminal` |
+| garage | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_garage` |
+| garage_2 | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_garage_2` |
+| ladder | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_ladder` |
+| ladder_base | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_ladder_base` |
+| roof_thing | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_roof_thing` |
+| roof_thing_2 | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_roof_thing_2` |
+| roof_thing_3 | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_roof_thing_3` |
+| station | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_station` |
+| tank | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tank` |
+| tank_2 | 5 (diff, diff_edited, norm, spec, ao) | `/Game/Materials/Props/M_tank_2` |
+| tank_capsule | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tank_capsule` |
+| tank_control_panel | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tank_control_panel` |
+| tank_sphere | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tank_sphere` |
+| tank_sphere_holder | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tank_sphere_holder` |
+| tower | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tower` |
+| tower_2 | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tower_2` |
+| tower_part | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_tower_part` |
+| vent | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_vent` |
+| vent_2 | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_vent_2` |
+| vent_3 | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_vent_3` |
+| wall_thing | 4 (diff, norm, spec, ao) | `/Game/Materials/Props/M_wall_thing` |
+
+### Loose Metal/Environment Textures — ~45 textures
+| Source | UE Destination | Notes |
+|--------|---------------|-------|
+| `brushed_metal*.jpg/png` (x4) | `/Game/Textures/Metals/` | Diff, variant, normal, spec |
+| `concrete*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `concrete_wall*.jpg` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `dirty_metal*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `marble001_color_2k.png` | `/Game/Textures/Metals/` | First Class car marble |
+| `metal001_color_2k.png` | `/Game/Textures/Metals/` | Generic metal |
+| `metal1*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `metal2*.jpg` (x2) | `/Game/Textures/Metals/` | Diff, spec |
+| `metal_ground*.jpg` (x3) | `/Game/Textures/Metals/` | Floor panels |
+| `metal_orange*.jpg` (x2) | `/Game/Textures/Metals/` | Painted metal |
+| `metal_pipe*.jpg` (x4) | `/Game/Textures/Metals/` | Pipe detail textures |
+| `metal_planks.png` | `/Game/Textures/Metals/` | Walking surface |
+| `metal_plate*.jpg/png` (x4) | `/Game/Textures/Metals/` | Wall/floor plates |
+| `metal_stuff*.jpg` (x4) | `/Game/Textures/Metals/` | Industrial detail |
+| `metals_norm.jpg` | `/Game/Textures/Metals/` | Shared normal |
+| `red_metal*.jpg` (x3) | `/Game/Textures/Metals/` | Emergency/signage |
+| `rusty_metal_04_diff_4k.png` | `/Game/Textures/Metals/` | 4K rust overlay |
+| `scratchy_metal*.jpg` (x4) | `/Game/Textures/Metals/` | Worn surfaces |
+| `wire*.jpg/png` (x3) | `/Game/Textures/Metals/` | Electrical wiring |
+| `textures/crepe_satin_diff_4k.png` | `/Game/Textures/Environment/` | First Class fabric |
+
+### Audio — 2 files
+| Source | UE Destination | Usage |
+|--------|---------------|-------|
+| `audio/train_interior.mp3` | `/Game/Audio/` | Ambient loop for SEETrainMovementComponent |
+| `audio/train_whistle.mp3` | `/Game/Audio/` | Event SFX |
+
+### Concept Art — 6 reference images
+| Source | UE Destination |
+|--------|---------------|
+| `concept_art/engine_concept.png` | `/Game/Reference/ConceptArt/` |
+| `concept_art/first_class_concept.png` | `/Game/Reference/ConceptArt/` |
+| `concept_art/sanctum_concept.png` | `/Game/Reference/ConceptArt/` |
+| `concept_art/second_class_concept.png` | `/Game/Reference/ConceptArt/` |
+| `concept_art/tail_zone_concept.png` | `/Game/Reference/ConceptArt/` |
+| `concept_art/third_class_concept.png` | `/Game/Reference/ConceptArt/` |
+
+### Blender Source Files (NOT imported — reference only)
+| Source | Description |
+|--------|-------------|
+| `industrial_final.blend` | Final industrial scene (export FBX for additional props) |
+| `industrial_old.blend` | Legacy version |
+
+## Content Directory Structure (after import)
+```
+Content/
+├── Audio/
+│   ├── train_interior          (SoundWave)
+│   └── train_whistle           (SoundWave)
+├── Blueprints/                 (future BP actors)
+├── DataTables/                 (future CollectibleDataTable)
+├── Maps/
+│   ├── MainMenu                (to create)
+│   └── DevTestCar              (to create)
+├── Materials/
+│   ├── Metals/
+│   │   └── M_Brass_4K
+│   ├── ModularPipes/
+│   │   ├── M_BareMetal
+│   │   ├── M_PaintedMetal
+│   │   ├── M_RustyMetal
+│   │   └── M_RustyPaintedMetal
+│   └── Props/
+│       ├── M_big_tank
+│       ├── M_chimney
+│       ├── M_container
+│       └── ... (25 prop materials)
+├── Meshes/
+│   └── ModularPipes/
+│       ├── PipeKit_Base_Floor
+│       ├── PipeKit_Base_Wall
+│       ├── PipeKit_Connector_*  (x8)
+│       └── PipeKit_Pipe_*       (x3)
+├── Reference/
+│   └── ConceptArt/              (6 zone concepts)
+└── Textures/
+    ├── BakedProps/              (~100 prop textures)
+    ├── Brass/                   (5 PBR channels)
+    ├── Environment/             (fabric, satin)
+    └── Metals/                  (~45 metal/surface textures)
+```
+
+## Demo Build Checklist
+- [ ] Run `import_assets.py` in UE Editor
+- [ ] Connect texture nodes in all M_* materials
+- [ ] Create `DevTestCar` level — BSP box 12m x 3m x 2.8m
+- [ ] Place modular pipes along walls/ceiling
+- [ ] Apply metal materials to BSP surfaces
+- [ ] Place `PlayerStart` actor
+- [ ] Attach `SEETrainMovementComponent` to level BP
+- [ ] Set `train_interior` SoundWave as TrainLoopSound
+- [ ] Place test `CollectibleComponent` actors
+- [ ] Set DevTestCar as Editor Startup Map
+- [ ] PIE test: walk around, pick up collectibles, toggle view (V key)
