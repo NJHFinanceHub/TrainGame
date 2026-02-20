@@ -18,7 +18,8 @@ public class SnowpiercerEE : ModuleRules
             "SlateCore",
             "AIModule",
             "NavigationSystem",
-            "GameplayTasks"
+            "GameplayTasks",
+            "Niagara"
         });
     }
 }

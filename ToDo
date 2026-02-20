@@ -302,11 +302,14 @@ All design documents completed. See `/docs/`, `/design/`, `/narrative/` director
 - ⬜ **Dynamic wind** — wind intensity changes with hull integrity, exterior sections, speed
 
 ### 7.3 VFX
-- ⬜ **Steam/smoke** — pipes, vents, kitchen areas
-- ⬜ **Sparks** — electrical systems, combat impacts on metal
-- ⬜ **Cold breath** — visible in freezer sections
-- ⬜ **Blood/damage** — hit feedback
-- ⬜ **Kronole effects** — visual distortion, slow-mo
+- ✅ **Steam/smoke** — SteamVentVFXComponent: Niagara-based, continuous/burst/intermittent modes
+- ✅ **Sparks** — SparkVFXComponent: ambient periodic + on-demand burst, light flash
+- ✅ **Cold breath** — ColdBreathVFXComponent: breath-synced puffs, exertion scaling
+- ✅ **Blood/damage** — CombatVFXComponent: hit impacts, blood splatter, decals, block sparks
+- ✅ **Kronole effects** — KronoleVFXComponent: post-process distortion, chromatic aberration, motes
+- ✅ **Weather through windows** — WeatherWindowComponent: blizzard/aurora/clear/white-out/night
+- ✅ **Lighting flickers** — LightFlickerComponent: occasional/nervous/dying/strobing patterns
+- ✅ **Zone VFX profiles** — ZoneVFXProfile data asset + VFXSubsystem world coordinator
 
 ---
 
