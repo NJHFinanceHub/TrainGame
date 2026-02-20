@@ -1,0 +1,284 @@
+{
+  "Tail": {
+    "lighting": {
+      "key_color": [180, 200, 220],
+      "key_intensity": 1500.0,
+      "fill_color": [120, 100, 80],
+      "fill_intensity": 600.0,
+      "accent_color": [200, 180, 100],
+      "accent_intensity": 400.0,
+      "radius": 5000.0,
+      "temperature": 6500.0,
+      "description": "Dark, flickering fluorescent. Cold and oppressive."
+    },
+    "postprocess": {
+      "saturation": [0.60, 0.60, 0.60, 1.0],
+      "contrast": [1.20, 1.20, 1.20, 1.0],
+      "vignette": 0.65,
+      "grain": 0.40,
+      "bloom": 0.25,
+      "exposure_bias": -1.5,
+      "color_gain": [0.85, 0.90, 1.0, 1.0],
+      "description": "Heavily desaturated, high contrast, lots of film grain, cold blue-green push."
+    },
+    "fog": {
+      "density": 0.008,
+      "inscattering": [0.04, 0.04, 0.06],
+      "max_opacity": 0.70,
+      "volumetric": true,
+      "description": "Cold, dark, dense interior haze."
+    },
+    "materials": {
+      "palette": "Near-black surfaces, rust, grime, soot, worn wood",
+      "surfaces": [
+        {"name": "Tail_Floor", "rgb": [0.03, 0.03, 0.03], "roughness": 0.90, "metallic": 0.70},
+        {"name": "Tail_Wall", "rgb": [0.05, 0.04, 0.03], "roughness": 0.85, "metallic": 0.60},
+        {"name": "Tail_Ceiling", "rgb": [0.04, 0.03, 0.02], "roughness": 0.80, "metallic": 0.50},
+        {"name": "Tail_Door", "rgb": [0.07, 0.05, 0.04], "roughness": 0.75, "metallic": 0.80},
+        {"name": "Tail_Trim", "rgb": [0.06, 0.04, 0.03], "roughness": 0.70, "metallic": 0.85}
+      ],
+      "accents": [
+        {"name": "Tail_RustyPipe", "rgb": [0.10, 0.05, 0.03], "roughness": 0.80, "metallic": 0.90},
+        {"name": "Tail_GrimeMetal", "rgb": [0.04, 0.03, 0.03], "roughness": 0.90, "metallic": 0.75},
+        {"name": "Tail_WornFabric", "rgb": [0.06, 0.05, 0.04], "roughness": 0.95, "metallic": 0.05},
+        {"name": "Tail_Soot", "rgb": [0.02, 0.02, 0.02], "roughness": 0.95, "metallic": 0.10},
+        {"name": "Tail_BunkWood", "rgb": [0.08, 0.06, 0.04], "roughness": 0.85, "metallic": 0.10}
+      ]
+    }
+  },
+  "Third": {
+    "lighting": {
+      "key_color": [220, 210, 150],
+      "key_intensity": 3000.0,
+      "fill_color": [180, 200, 140],
+      "fill_intensity": 1200.0,
+      "accent_color": [255, 220, 100],
+      "accent_intensity": 800.0,
+      "radius": 6000.0,
+      "temperature": 4200.0,
+      "description": "Industrial yellow-green. Buzzing sodium-vapor overhead lights."
+    },
+    "postprocess": {
+      "saturation": [0.75, 0.80, 0.65, 1.0],
+      "contrast": [1.10, 1.10, 1.10, 1.0],
+      "vignette": 0.40,
+      "grain": 0.25,
+      "bloom": 0.35,
+      "exposure_bias": -0.5,
+      "color_gain": [0.95, 1.0, 0.80, 1.0],
+      "description": "Yellow-green color shift, moderate grain and vignette."
+    },
+    "fog": {
+      "density": 0.005,
+      "inscattering": [0.08, 0.09, 0.05],
+      "max_opacity": 0.50,
+      "volumetric": true,
+      "description": "Hazy yellow-green industrial atmosphere."
+    },
+    "materials": {
+      "palette": "Industrial gray-green, yellow safety markings, concrete, work surfaces",
+      "surfaces": [
+        {"name": "Third_Floor", "rgb": [0.08, 0.07, 0.05], "roughness": 0.85, "metallic": 0.60},
+        {"name": "Third_Wall", "rgb": [0.10, 0.09, 0.06], "roughness": 0.80, "metallic": 0.50},
+        {"name": "Third_Ceiling", "rgb": [0.12, 0.11, 0.08], "roughness": 0.75, "metallic": 0.40},
+        {"name": "Third_Door", "rgb": [0.09, 0.08, 0.05], "roughness": 0.70, "metallic": 0.75},
+        {"name": "Third_Trim", "rgb": [0.07, 0.06, 0.04], "roughness": 0.65, "metallic": 0.80}
+      ],
+      "accents": [
+        {"name": "Third_IndustPipe", "rgb": [0.06, 0.07, 0.04], "roughness": 0.80, "metallic": 0.90},
+        {"name": "Third_YellowPaint", "rgb": [0.18, 0.16, 0.04], "roughness": 0.70, "metallic": 0.20},
+        {"name": "Third_GreenPanel", "rgb": [0.05, 0.08, 0.04], "roughness": 0.75, "metallic": 0.30},
+        {"name": "Third_ConcretePad", "rgb": [0.12, 0.11, 0.10], "roughness": 0.90, "metallic": 0.10},
+        {"name": "Third_WorkBench", "rgb": [0.07, 0.06, 0.04], "roughness": 0.80, "metallic": 0.15}
+      ]
+    }
+  },
+  "Second": {
+    "lighting": {
+      "key_color": [255, 210, 150],
+      "key_intensity": 4000.0,
+      "fill_color": [220, 180, 130],
+      "fill_intensity": 1800.0,
+      "accent_color": [255, 190, 100],
+      "accent_intensity": 1200.0,
+      "radius": 7000.0,
+      "temperature": 3200.0,
+      "description": "Warm amber. Wood-paneled walls lit by amber lamps."
+    },
+    "postprocess": {
+      "saturation": [0.90, 0.85, 0.75, 1.0],
+      "contrast": [1.05, 1.05, 1.05, 1.0],
+      "vignette": 0.30,
+      "grain": 0.15,
+      "bloom": 0.45,
+      "exposure_bias": 0.0,
+      "color_gain": [1.05, 0.95, 0.85, 1.0],
+      "description": "Warm amber tones, subtle vignette, moderate bloom."
+    },
+    "fog": {
+      "density": 0.003,
+      "inscattering": [0.10, 0.08, 0.05],
+      "max_opacity": 0.40,
+      "volumetric": true,
+      "description": "Warm amber haze, cozy atmosphere."
+    },
+    "materials": {
+      "palette": "Warm wood, leather, amber lamp glow, carpet, brass fixtures",
+      "surfaces": [
+        {"name": "Second_Floor", "rgb": [0.12, 0.09, 0.06], "roughness": 0.75, "metallic": 0.30},
+        {"name": "Second_Wall", "rgb": [0.15, 0.12, 0.08], "roughness": 0.70, "metallic": 0.20},
+        {"name": "Second_Ceiling", "rgb": [0.18, 0.15, 0.10], "roughness": 0.65, "metallic": 0.15},
+        {"name": "Second_Door", "rgb": [0.14, 0.10, 0.07], "roughness": 0.60, "metallic": 0.40},
+        {"name": "Second_Trim", "rgb": [0.10, 0.08, 0.05], "roughness": 0.55, "metallic": 0.50}
+      ],
+      "accents": [
+        {"name": "Second_WarmWood", "rgb": [0.16, 0.10, 0.06], "roughness": 0.75, "metallic": 0.05},
+        {"name": "Second_Leather", "rgb": [0.12, 0.08, 0.05], "roughness": 0.80, "metallic": 0.10},
+        {"name": "Second_AmberLamp", "rgb": [0.25, 0.18, 0.08], "roughness": 0.40, "metallic": 0.60},
+        {"name": "Second_Carpet", "rgb": [0.10, 0.06, 0.04], "roughness": 0.95, "metallic": 0.02},
+        {"name": "Second_Brass", "rgb": [0.20, 0.15, 0.05], "roughness": 0.30, "metallic": 0.95}
+      ]
+    }
+  },
+  "First": {
+    "lighting": {
+      "key_color": [255, 230, 180],
+      "key_intensity": 6000.0,
+      "fill_color": [255, 240, 200],
+      "fill_intensity": 3000.0,
+      "accent_color": [255, 215, 120],
+      "accent_intensity": 2000.0,
+      "radius": 8000.0,
+      "temperature": 2800.0,
+      "description": "Gold chandelier light. Art deco luxury, crystal reflections."
+    },
+    "postprocess": {
+      "saturation": [1.15, 1.10, 1.00, 1.0],
+      "contrast": [1.05, 1.05, 1.05, 1.0],
+      "vignette": 0.20,
+      "grain": 0.05,
+      "bloom": 0.60,
+      "exposure_bias": 0.8,
+      "color_gain": [1.10, 1.05, 0.90, 1.0],
+      "description": "Rich saturated colors, lush bloom, gold tint. Almost no grain."
+    },
+    "fog": {
+      "density": 0.002,
+      "inscattering": [0.12, 0.10, 0.06],
+      "max_opacity": 0.30,
+      "volumetric": true,
+      "description": "Faint golden dust motes in the air."
+    },
+    "materials": {
+      "palette": "Gold leaf, crystal, red velvet, mahogany, marble",
+      "surfaces": [
+        {"name": "First_Floor", "rgb": [0.18, 0.14, 0.08], "roughness": 0.50, "metallic": 0.20},
+        {"name": "First_Wall", "rgb": [0.22, 0.18, 0.12], "roughness": 0.45, "metallic": 0.15},
+        {"name": "First_Ceiling", "rgb": [0.25, 0.22, 0.18], "roughness": 0.40, "metallic": 0.10},
+        {"name": "First_Door", "rgb": [0.20, 0.16, 0.10], "roughness": 0.35, "metallic": 0.50},
+        {"name": "First_Trim", "rgb": [0.30, 0.25, 0.10], "roughness": 0.25, "metallic": 0.90}
+      ],
+      "accents": [
+        {"name": "First_GoldLeaf", "rgb": [0.40, 0.30, 0.08], "roughness": 0.20, "metallic": 0.95},
+        {"name": "First_Crystal", "rgb": [0.80, 0.80, 0.85], "roughness": 0.05, "metallic": 0.10},
+        {"name": "First_Velvet", "rgb": [0.15, 0.04, 0.04], "roughness": 0.90, "metallic": 0.02},
+        {"name": "First_Mahogany", "rgb": [0.12, 0.06, 0.03], "roughness": 0.65, "metallic": 0.08},
+        {"name": "First_Marble", "rgb": [0.35, 0.33, 0.30], "roughness": 0.30, "metallic": 0.15}
+      ]
+    }
+  },
+  "Sanctum": {
+    "lighting": {
+      "key_color": [240, 245, 255],
+      "key_intensity": 8000.0,
+      "fill_color": [220, 225, 235],
+      "fill_intensity": 4000.0,
+      "accent_color": [200, 210, 230],
+      "accent_intensity": 2500.0,
+      "radius": 9000.0,
+      "temperature": 7500.0,
+      "description": "White marble, sterile. Clinical fluorescent, no shadows."
+    },
+    "postprocess": {
+      "saturation": [0.85, 0.85, 0.90, 1.0],
+      "contrast": [1.00, 1.00, 1.00, 1.0],
+      "vignette": 0.10,
+      "grain": 0.02,
+      "bloom": 0.40,
+      "exposure_bias": 1.2,
+      "color_gain": [0.95, 0.97, 1.05, 1.0],
+      "description": "Flat, clinical, bright. Cool sterile tint, minimal grain."
+    },
+    "fog": {
+      "density": 0.001,
+      "inscattering": [0.08, 0.08, 0.10],
+      "max_opacity": 0.15,
+      "volumetric": false,
+      "description": "Near-invisible haze. Clean, sterile air."
+    },
+    "materials": {
+      "palette": "White marble, chrome, glass, linen, polished steel",
+      "surfaces": [
+        {"name": "Sanctum_Floor", "rgb": [0.70, 0.68, 0.65], "roughness": 0.25, "metallic": 0.10},
+        {"name": "Sanctum_Wall", "rgb": [0.75, 0.73, 0.70], "roughness": 0.20, "metallic": 0.08},
+        {"name": "Sanctum_Ceiling", "rgb": [0.80, 0.78, 0.75], "roughness": 0.15, "metallic": 0.05},
+        {"name": "Sanctum_Door", "rgb": [0.60, 0.58, 0.55], "roughness": 0.30, "metallic": 0.40},
+        {"name": "Sanctum_Trim", "rgb": [0.65, 0.63, 0.60], "roughness": 0.20, "metallic": 0.50}
+      ],
+      "accents": [
+        {"name": "Sanctum_WhiteMarble", "rgb": [0.85, 0.83, 0.80], "roughness": 0.15, "metallic": 0.08},
+        {"name": "Sanctum_Chrome", "rgb": [0.70, 0.72, 0.75], "roughness": 0.10, "metallic": 0.95},
+        {"name": "Sanctum_Glass", "rgb": [0.90, 0.90, 0.92], "roughness": 0.05, "metallic": 0.05},
+        {"name": "Sanctum_Linen", "rgb": [0.75, 0.73, 0.70], "roughness": 0.90, "metallic": 0.02},
+        {"name": "Sanctum_SteelPanel", "rgb": [0.55, 0.57, 0.60], "roughness": 0.25, "metallic": 0.85}
+      ]
+    }
+  },
+  "Engine": {
+    "lighting": {
+      "key_color": [255, 160, 80],
+      "key_intensity": 5000.0,
+      "fill_color": [200, 120, 60],
+      "fill_intensity": 2000.0,
+      "accent_color": [255, 100, 40],
+      "accent_intensity": 3000.0,
+      "radius": 7000.0,
+      "temperature": 2200.0,
+      "description": "Brass, copper, steam. Furnace glow, molten orange light."
+    },
+    "postprocess": {
+      "saturation": [1.10, 0.85, 0.65, 1.0],
+      "contrast": [1.15, 1.15, 1.15, 1.0],
+      "vignette": 0.50,
+      "grain": 0.30,
+      "bloom": 0.80,
+      "exposure_bias": 0.3,
+      "color_gain": [1.15, 0.90, 0.70, 1.0],
+      "description": "Orange-shifted saturation, high contrast, heavy bloom for furnace glow."
+    },
+    "fog": {
+      "density": 0.012,
+      "inscattering": [0.15, 0.08, 0.04],
+      "max_opacity": 0.65,
+      "volumetric": true,
+      "description": "Thick orange steam. Dense volumetric fog for light shafts."
+    },
+    "materials": {
+      "palette": "Brass, copper, cast iron, steam pipes, furnace glow",
+      "surfaces": [
+        {"name": "Engine_Floor", "rgb": [0.06, 0.04, 0.03], "roughness": 0.85, "metallic": 0.80},
+        {"name": "Engine_Wall", "rgb": [0.08, 0.05, 0.03], "roughness": 0.80, "metallic": 0.85},
+        {"name": "Engine_Ceiling", "rgb": [0.05, 0.04, 0.03], "roughness": 0.75, "metallic": 0.70},
+        {"name": "Engine_Door", "rgb": [0.10, 0.06, 0.04], "roughness": 0.60, "metallic": 0.90},
+        {"name": "Engine_Trim", "rgb": [0.12, 0.08, 0.04], "roughness": 0.50, "metallic": 0.92}
+      ],
+      "accents": [
+        {"name": "Engine_Brass", "rgb": [0.25, 0.18, 0.06], "roughness": 0.30, "metallic": 0.95},
+        {"name": "Engine_Copper", "rgb": [0.22, 0.12, 0.08], "roughness": 0.35, "metallic": 0.90},
+        {"name": "Engine_CastIron", "rgb": [0.04, 0.04, 0.04], "roughness": 0.85, "metallic": 0.85},
+        {"name": "Engine_SteamPipe", "rgb": [0.15, 0.12, 0.08], "roughness": 0.60, "metallic": 0.80},
+        {"name": "Engine_FurnaceGlow", "rgb": [0.35, 0.10, 0.02], "roughness": 0.50, "metallic": 0.70}
+      ]
+    }
+  }
+}
