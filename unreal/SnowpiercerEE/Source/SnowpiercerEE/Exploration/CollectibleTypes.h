@@ -5,6 +5,8 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
+#include "Sound/SoundBase.h"
+#include "Engine/StaticMesh.h"
 #include "CollectibleTypes.generated.h"
 
 /** Category of collectible item */
@@ -124,19 +126,19 @@ struct FCollectibleData : public FTableRowBase
 	// Type-specific references
 
 	/** Audio asset for Audio Recordings */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == ECollectibleType::AudioRecording"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<USoundBase> AudioAsset;
 
 	/** Mesh for 3D-inspectable Artifacts */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == ECollectibleType::Artifact"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TSoftObjectPtr<UStaticMesh> InspectMesh;
 
 	/** Crafting recipe ID unlocked by Blueprints */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == ECollectibleType::Blueprint"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName UnlockedRecipeID;
 
 	/** Faction affected by Faction Intel */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (EditCondition = "Type == ECollectibleType::FactionIntel"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName FactionID;
 };
 
