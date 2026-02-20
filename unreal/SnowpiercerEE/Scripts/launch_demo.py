@@ -57,6 +57,17 @@ def game_content_exists():
     ]
     return all(editor_util.does_asset_exist(p) for p in checks)
 
+def zone_lighting_exists():
+    """Check if zone lighting profiles have been created."""
+    checks = [
+        "/Game/Blueprints/PostProcess/BP_PP_TailZone",
+        "/Game/Blueprints/PostProcess/BP_PP_ThirdZone",
+        "/Game/Blueprints/PostProcess/BP_PP_FirstZone",
+        "/Game/Blueprints/PostProcess/BP_PP_EngineZone",
+        "/Game/Materials/Zones/M_Zone_Tail_Accent",
+    ]
+    return all(editor_util.does_asset_exist(p) for p in checks)
+
 def zone1_exists():
     """Check if Zone 1 map exists."""
     return editor_util.does_asset_exist("/Game/Maps/Zone1_Tail")
@@ -65,7 +76,7 @@ def zone1_exists():
 # Main
 # ---------------------------------------------------------------------------
 
-TOTAL_STEPS = 5
+TOTAL_STEPS = 6
 
 def run():
     unreal.log("")
@@ -109,10 +120,22 @@ def run():
     else:
         unreal.log(f">>> STEP 3/{TOTAL_STEPS}: Game content already exists — skipping")
 
-    # Step 4: Build Zone 1 (15 cars)
+    # Step 4: Zone lighting profiles
+    if not zone_lighting_exists():
+        unreal.log("")
+        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Creating zone lighting & atmosphere profiles...")
+        try:
+            import setup_zone_lighting
+        except Exception as e:
+            unreal.log_warning(f"  Zone lighting setup had issues: {e}")
+            unreal.log_warning("  Some lighting profiles may need manual creation")
+    else:
+        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Zone lighting profiles already exist — skipping")
+
+    # Step 5: Build Zone 1 (15 cars)
     if not zone1_exists():
         unreal.log("")
-        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Building Zone 1: The Tail (15 unique cars)...")
+        unreal.log(f">>> STEP 5/{TOTAL_STEPS}: Building Zone 1: The Tail (15 unique cars)...")
         try:
             import build_zone1
             # build_zone1 auto-runs on import via run() call at module level
@@ -120,11 +143,11 @@ def run():
             unreal.log_warning(f"  Zone 1 build had issues: {e}")
             unreal.log_warning("  The level may be partially built — check the editor")
     else:
-        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Zone 1 map already exists — skipping")
+        unreal.log(f">>> STEP 5/{TOTAL_STEPS}: Zone 1 map already exists — skipping")
 
-    # Step 5: Verify everything
+    # Step 6: Verify everything
     unreal.log("")
-    unreal.log(f">>> STEP 5/{TOTAL_STEPS}: Verifying demo setup...")
+    unreal.log(f">>> STEP 6/{TOTAL_STEPS}: Verifying demo setup...")
 
     checks = {
         "Zone1_Tail map":       "/Game/Maps/Zone1_Tail",
@@ -136,6 +159,10 @@ def run():
         "NPC BP (civilian)":    "/Game/Blueprints/NPCs/BP_NPC_Civilian",
         "NPC BP (jackboot)":    "/Game/Blueprints/NPCs/BP_NPC_Jackboot",
         "Tail post-process":    "/Game/Blueprints/PostProcess/BP_PP_TailZone",
+        "Third post-process":   "/Game/Blueprints/PostProcess/BP_PP_ThirdZone",
+        "First post-process":   "/Game/Blueprints/PostProcess/BP_PP_FirstZone",
+        "Engine post-process":  "/Game/Blueprints/PostProcess/BP_PP_EngineZone",
+        "Zone accent material": "/Game/Materials/Zones/M_Zone_Tail_Accent",
         "Metal material":       "/Game/Materials/ModularPipes/M_BareMetal",
     }
 

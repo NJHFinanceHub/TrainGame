@@ -147,6 +147,7 @@ def get_material(name, r, g, b, roughness=0.7, metallic=0.8):
         mat_lib.connect_material_property(metal_node, "", unreal.MaterialProperty.MP_METALLIC)
 
     mat_lib.recompile_material(mat)
+    editor_util.save_asset(mat_path, only_if_is_dirty=False)
     _mat_cache[name] = mat
     return mat
 
@@ -1406,9 +1407,10 @@ def run():
     build_zone1()
     setup_atmosphere()
 
-    # Save
+    # Save level and all dirty assets (materials, etc.)
     level_subsystem = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
     level_subsystem.save_current_level()
+    unreal.EditorLoadingAndSavingUtils.save_dirty_packages(True, True)
 
     set_startup_map(map_path)
 
