@@ -72,3 +72,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueChoiceSelected, FName, Ch
 
 // Delegate fired when dialogue is dismissed (no choices, player pressed continue)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDialogueDismissed);
+
+// Generic HUD action delegate (used by pause menu, death screen, etc.)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnHUDAction);

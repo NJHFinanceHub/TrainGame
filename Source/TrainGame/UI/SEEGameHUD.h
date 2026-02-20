@@ -13,6 +13,13 @@ class SSEEDialoguePanel;
 class SSEETrainMap;
 class SSEECraftingPanel;
 class SSEEFactionPanel;
+class SSEECharacterScreen;
+class SSEEQuestLog;
+class SSEECompanionPanel;
+class SSEECodexPanel;
+class SSEEMainMenu;
+class SSEEPauseMenu;
+class SSEEDeathScreen;
 
 class USurvivalComponent;
 class UCombatComponent;
@@ -20,6 +27,10 @@ class UWeaponComponent;
 class UInventoryComponent;
 class UCraftingComponent;
 class UKronoleComponent;
+class USEEStatsComponent;
+class USEEQuestManager;
+class UCompanionRosterSubsystem;
+class UCollectibleJournalSubsystem;
 class USEECarStreamingSubsystem;
 
 /**
@@ -30,8 +41,9 @@ class USEECarStreamingSubsystem;
  * Binds to gameplay components on the player pawn via delegates.
  *
  * Panel visibility is managed here - inventory, crafting, train map,
- * and faction panels are toggle-able overlays. Survival bars and combat
- * overlay are always visible during gameplay.
+ * faction, character, quest, companion, and codex panels are toggle-able
+ * overlays. Survival bars and combat overlay are always visible during
+ * gameplay. Main menu, pause menu, and death screen are special overlays.
  */
 UCLASS()
 class TRAINGAME_API ASEEGameHUD : public AHUD
@@ -55,6 +67,18 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void ToggleFactionPanel();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleCharacter();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleQuestLog();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleCompanionPanel();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleCodex();
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void CloseAllPanels();
@@ -83,6 +107,42 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "HUD|Faction")
 	void SetFactionReputations(const TArray<FFactionReputation>& Reputations);
+
+	// --- Pause Menu ---
+
+	UFUNCTION(BlueprintCallable, Category = "HUD|Pause")
+	void ShowPauseMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD|Pause")
+	void HidePauseMenu();
+
+	UFUNCTION(BlueprintPure, Category = "HUD|Pause")
+	bool IsPauseMenuVisible() const;
+
+	// --- Death Screen ---
+
+	UFUNCTION(BlueprintCallable, Category = "HUD|Death")
+	void ShowDeathScreen(const FText& DeathMessage);
+
+	UFUNCTION(BlueprintCallable, Category = "HUD|Death")
+	void HideDeathScreen();
+
+	// --- Death/Pause Delegates ---
+
+	UPROPERTY(BlueprintAssignable, Category = "HUD|Death")
+	FOnHUDAction OnReloadCheckpoint;
+
+	UPROPERTY(BlueprintAssignable, Category = "HUD|Death")
+	FOnHUDAction OnQuitToMenu;
+
+	UPROPERTY(BlueprintAssignable, Category = "HUD|Pause")
+	FOnHUDAction OnSaveGame;
+
+	UPROPERTY(BlueprintAssignable, Category = "HUD|Pause")
+	FOnHUDAction OnLoadGame;
+
+	UPROPERTY(BlueprintAssignable, Category = "HUD|Pause")
+	FOnHUDAction OnOpenSettings;
 
 protected:
 	// Find and cache component references from the player pawn
@@ -115,6 +175,9 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UKronoleComponent> KronoleComp;
 
+	UPROPERTY()
+	TWeakObjectPtr<USEEStatsComponent> StatsComp;
+
 private:
 	// Slate widget references
 	TSharedPtr<SSEESurvivalBars> SurvivalBarsWidget;
@@ -124,6 +187,12 @@ private:
 	TSharedPtr<SSEETrainMap> TrainMapWidget;
 	TSharedPtr<SSEECraftingPanel> CraftingWidget;
 	TSharedPtr<SSEEFactionPanel> FactionWidget;
+	TSharedPtr<SSEECharacterScreen> CharacterWidget;
+	TSharedPtr<SSEEQuestLog> QuestLogWidget;
+	TSharedPtr<SSEECompanionPanel> CompanionWidget;
+	TSharedPtr<SSEECodexPanel> CodexWidget;
+	TSharedPtr<SSEEPauseMenu> PauseMenuWidget;
+	TSharedPtr<SSEEDeathScreen> DeathScreenWidget;
 
 	// Track which full-screen panel is open (only one at a time)
 	TSharedPtr<SWidget> ActivePanel;

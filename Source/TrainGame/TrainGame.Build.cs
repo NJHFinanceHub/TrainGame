@@ -27,7 +27,8 @@ public class TrainGame : ModuleRules
 			"UMG",
 			"AudioMixer",
 			"MetasoundFrontend",
-			"MetasoundEngine"
+			"MetasoundEngine",
+			"SnowpiercerEE"
 		});
 	}
 }
