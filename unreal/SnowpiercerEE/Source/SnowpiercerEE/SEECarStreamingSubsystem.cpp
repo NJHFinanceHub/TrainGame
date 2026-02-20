@@ -112,6 +112,11 @@ void USEECarStreamingSubsystem::StreamLevel(FName LevelName, bool bShouldLoad)
     }
 
     FLatentActionInfo LatentInfo;
+    LatentInfo.CallbackTarget = nullptr;
+    LatentInfo.ExecutionFunction = NAME_None;
+    LatentInfo.Linkage = 0;
+    LatentInfo.UUID = GetTypeHash(LevelName);
+
     if (bShouldLoad)
     {
         UGameplayStatics::LoadStreamLevel(this, LevelName, true, false, LatentInfo);

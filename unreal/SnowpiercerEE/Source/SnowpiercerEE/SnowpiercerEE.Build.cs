@@ -12,7 +12,10 @@ public class SnowpiercerEE : ModuleRules
             "CoreUObject",
             "Engine",
             "InputCore",
-            "EnhancedInput"
+            "EnhancedInput",
+            "UMG",
+            "Slate",
+            "SlateCore"
         });
     }
 }
