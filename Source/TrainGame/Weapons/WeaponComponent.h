@@ -10,15 +10,16 @@
 // ============================================================================
 // UWeaponComponent
 //
-// Manages equipped weapon state, degradation, and swapping.
+// Manages equipped weapon state, degradation, ammo, and swapping.
 // Weapons break with use, lose effectiveness as durability drops,
-// and must be repaired or replaced. Improvised weapons from the Tail
-// break fast; military-grade from the Armory last much longer.
+// and must be repaired or replaced. Ranged weapons consume ammo.
 // ============================================================================
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponEquipped, const FWeaponStats&, Weapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponBroken);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDurabilityChanged, float, Current, float, Max);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoChanged, int32, Current, int32, Max);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAmmoEmpty);
 
 UCLASS(ClassGroup=(Combat), meta=(BlueprintSpawnableComponent))
 class TRAINGAME_API UWeaponComponent : public UActorComponent
@@ -48,6 +49,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void RepairWeapon(float RepairAmount);
 
+	/** Consume one round of ammo (for ranged weapons) */
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool ConsumeAmmo();
+
+	/** Add ammo to current weapon */
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void AddAmmo(int32 Amount);
+
 	/** Get current weapon stats */
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	const FWeaponStats& GetCurrentWeapon() const { return CurrentWeapon; }
@@ -57,6 +66,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	bool IsWeaponBroken() const { return bHasWeapon && CurrentWeapon.IsBroken(); }
+
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	bool IsRangedWeapon() const { return bHasWeapon && CurrentWeapon.IsRanged(); }
+
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	bool HasAmmo() const { return bHasWeapon && CurrentWeapon.HasAmmo(); }
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	float GetDurabilityPercent() const;
@@ -70,35 +85,49 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Weapon")
 	FOnDurabilityChanged OnDurabilityChanged;
 
+	UPROPERTY(BlueprintAssignable, Category = "Weapon")
+	FOnAmmoChanged OnAmmoChanged;
+
+	UPROPERTY(BlueprintAssignable, Category = "Weapon")
+	FOnAmmoEmpty OnAmmoEmpty;
+
 	// --- Preset Weapon Factory Methods ---
 
-	/** Create a pipe club (Tier 1 - Tail) */
+	// Tail (Improvised)
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
 	static FWeaponStats MakePipeClub();
-
-	/** Create a shiv (Tier 1 - Tail) */
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
 	static FWeaponStats MakeShiv();
-
-	/** Create a reinforced axe (Tier 2 - Third Class) */
-	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
-	static FWeaponStats MakeReinforcedAxe();
-
-	/** Create a nail bat (Tier 1 - Tail) */
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
 	static FWeaponStats MakeNailBat();
 
-	/** Create a Jackboot baton (Tier 3 - Military) */
+	// Third Class (Functional)
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
+	static FWeaponStats MakeReinforcedAxe();
+
+	// Military (Jackboot)
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
 	static FWeaponStats MakeJackbootBaton();
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
+	static FWeaponStats MakeOfficerSword();
 
-	/** Create a crossbow (Tier 2 - Ranged) */
+	// Ranged
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
 	static FWeaponStats MakeCrossbow();
-
-	/** Create an improvised firearm (Tier 2 - Ranged) */
 	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
 	static FWeaponStats MakeImprovisedFirearm();
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
+	static FWeaponStats MakeFirstClassPistol();
+
+	// Thrown
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
+	static FWeaponStats MakeThrowingKnife();
+
+	// Specialized (Enemy-unique)
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
+	static FWeaponStats MakeZealotBlade();
+	UFUNCTION(BlueprintCallable, Category = "Weapon|Presets")
+	static FWeaponStats MakeElectricProd();
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")

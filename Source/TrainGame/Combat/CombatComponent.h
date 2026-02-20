@@ -8,12 +8,14 @@
 #include "CombatComponent.generated.h"
 
 class UWeaponComponent;
+class AProjectileBase;
 
 // ============================================================================
 // UCombatComponent
 //
 // Core combat component attached to any combatant (player or NPC).
-// Handles attacks, blocks, dodges, stamina, fatigue, and Kronole mode.
+// Handles melee attacks, ranged attacks, blocks, dodges, stamina, fatigue,
+// Kronole mode, and stealth takedown reception.
 // Designed for tight corridor positional combat on a train.
 // ============================================================================
 
@@ -25,6 +27,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaDepleted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKronoleModeActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKronoleModeDeactivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, Killer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStealthTakedown, AActor*, Attacker, ETakedownType, TakedownType);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGrappled);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGrappleEscaped);
 
 UCLASS(ClassGroup=(Combat), meta=(BlueprintSpawnableComponent))
 class TRAINGAME_API UCombatComponent : public UActorComponent
@@ -36,7 +41,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	// --- Actions ---
+	// --- Melee Actions ---
 
 	/** Initiate a melee attack in the given direction */
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -57,6 +62,30 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	FHitResult_Combat ReceiveAttack(float IncomingDamage, EAttackDirection Direction, EDamageType DamageType, AActor* Attacker);
 
+	// --- Ranged Actions ---
+
+	/** Fire a ranged weapon, spawning a projectile actor */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Ranged")
+	bool PerformRangedAttack(FVector AimDirection);
+
+	/** Throw current weapon (consumes it) */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Ranged")
+	bool ThrowWeapon(FVector ThrowDirection);
+
+	// --- Stealth Takedown Reception ---
+
+	/** Receive a stealth takedown from behind */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Stealth")
+	FHitResult_Combat ReceiveStealthTakedown(AActor* Attacker, ETakedownType TakedownType, bool bLethal);
+
+	/** Attempt to grapple this combatant (grab from behind) */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Stealth")
+	bool BeginGrapple(AActor* Grappler);
+
+	/** Escape from being grappled (mash to escape) */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Stealth")
+	bool AttemptGrappleEscape();
+
 	// --- Kronole System ---
 
 	/** Activate Kronole mode (slow-motion perception, costs health) */
@@ -66,6 +95,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat|Kronole")
 	void DeactivateKronoleMode();
 
+	// --- Damage Resistance ---
+
+	/** Set resistance to a specific damage type (0-1) */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SetDamageResistance(EDamageType Type, float Resistance);
+
+	/** Set stagger resistance (0 = normal, 1 = immune) */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SetStaggerResistance(float Resistance);
+
 	// --- Queries ---
 
 	UFUNCTION(BlueprintPure, Category = "Combat")
@@ -73,6 +112,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Combat")
 	float GetCurrentHealth() const { return CurrentHealth; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetMaxHealth() const { return MaxHealth; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetHealthPercent() const { return MaxHealth > 0.f ? CurrentHealth / MaxHealth : 0.f; }
 
 	UFUNCTION(BlueprintPure, Category = "Combat")
 	float GetCurrentStamina() const { return StaminaState.CurrentStamina; }
@@ -91,6 +136,20 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Combat")
 	bool IsStaggered() const { return CurrentStance == ECombatStance::Staggered; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	bool IsGrappled() const { return CurrentStance == ECombatStance::Grappled; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	bool CanBeTakenDown() const { return bCanBeTakenDown; }
+
+	/** Set the health (for boss phase transitions, etc.) */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SetMaxHealth(float NewMaxHealth);
+
+	/** Heal the combatant */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void Heal(float Amount);
 
 	// --- Delegates ---
 
@@ -118,6 +177,15 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Combat")
 	FOnDeath OnDeath;
 
+	UPROPERTY(BlueprintAssignable, Category = "Combat|Stealth")
+	FOnStealthTakedown OnStealthTakedown;
+
+	UPROPERTY(BlueprintAssignable, Category = "Combat|Stealth")
+	FOnGrappled OnGrappled;
+
+	UPROPERTY(BlueprintAssignable, Category = "Combat|Stealth")
+	FOnGrappleEscaped OnGrappleEscaped;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -128,6 +196,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat|Health")
 	float CurrentHealth = 100.f;
+
+	/** Whether this combatant can be stealth takedown'd */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Health")
+	bool bCanBeTakenDown = true;
 
 	// --- Stamina & Fatigue ---
 
@@ -226,16 +298,34 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Attack")
 	float CriticalHitMultiplier = 2.f;
 
+	// --- Grapple ---
+
+	/** Time to escape a grapple (button mashing reduces this) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Grapple")
+	float GrappleEscapeTime = 3.f;
+
+	/** Resistance to stagger (0 = normal, 1 = immune) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Defense", meta = (ClampMin = "0", ClampMax = "1"))
+	float StaggerResistance = 0.f;
+
+	// --- Ranged ---
+
+	/** Projectile class to spawn for ranged attacks */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Ranged")
+	TSubclassOf<AProjectileBase> ProjectileClass;
+
 private:
 	void SetStance(ECombatStance NewStance);
 	void ConsumeStamina(float Amount);
 	void RegenerateStamina(float DeltaTime);
 	void UpdateFatigue(float DeltaTime);
 	void UpdateKronoleMode(float DeltaTime);
+	void UpdateGrapple(float DeltaTime);
 	void ApplyDamage(float Damage, AActor* DamageSource);
 	void Die(AActor* Killer);
 	float CalculateBlockReduction(EAttackDirection AttackDir) const;
 	bool DoesBlockMatchAttack(EAttackDirection AttackDir) const;
+	float ApplyDamageResistance(float Damage, EDamageType Type) const;
 
 	/** Perform a melee trace to find targets */
 	AActor* PerformMeleeTrace(float TraceRange) const;
@@ -255,4 +345,13 @@ private:
 	float AttackCooldownTimer = 0.f;
 	float StaggerTimer = 0.f;
 	float TimeSinceLastCombatAction = 0.f;
+
+	// Grapple state
+	UPROPERTY()
+	AActor* Grappler = nullptr;
+	float GrappleTimer = 0.f;
+	int32 GrappleEscapeProgress = 0;
+
+	// Damage resistances
+	TMap<EDamageType, float> DamageResistances;
 };

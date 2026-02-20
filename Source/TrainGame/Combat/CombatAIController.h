@@ -8,16 +8,19 @@
 #include "CombatAIController.generated.h"
 
 class UCombatComponent;
+class UWeaponComponent;
 
 // ============================================================================
 // ACombatAIController
 //
-// Basic AI for melee enemies in tight train corridors.
-// Enemies in Snowpiercer fight differently than in open fields:
-// - They can't surround you if you control the corridor width
-// - They form queues and take turns or try to flank through vents
-// - They use the environment (push you into hazards)
-// - Jackboots are disciplined; Tailies are desperate
+// AI for enemies in tight train corridors. Supports 6 enemy profiles with
+// distinct combat behaviors:
+// - Desperate (Tailies): Wild, unpredictable, poor defense
+// - Disciplined (Jackboots): Formation fighters, coordinated attacks
+// - Cunning (Smugglers): Dirty fighters, environmental exploitation
+// - Brute (Heavies): Slow, devastating, hard to stagger
+// - Captain (Jackboot Officers): Command buffs, ranged + melee switching
+// - Zealot (Order of Wilford): Fanatical, relentless, self-sacrifice
 // ============================================================================
 
 /** Combat AI behavior profile */
@@ -34,7 +37,16 @@ enum class ECombatAIProfile : uint8
 	Cunning		UMETA(DisplayName = "Cunning"),
 
 	/** Slow but powerful, hard to stagger - Laborers/Heavies */
-	Brute		UMETA(DisplayName = "Brute")
+	Brute		UMETA(DisplayName = "Brute"),
+
+	/** Jackboot officers - commands nearby troops, switches melee/ranged */
+	Captain		UMETA(DisplayName = "Captain"),
+
+	/** Order of Wilford zealots - fanatical, relentless, suicidal charges */
+	Zealot		UMETA(DisplayName = "Zealot"),
+
+	/** First Class personal guards - precise, defensive, counter-attackers */
+	FirstClassGuard	UMETA(DisplayName = "First Class Guard")
 };
 
 UCLASS()
@@ -47,6 +59,14 @@ public:
 
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
+
+	/** Get this AI's combat profile */
+	UFUNCTION(BlueprintPure, Category = "CombatAI")
+	ECombatAIProfile GetProfile() const { return Profile; }
+
+	/** Set combat profile (recalculates modifiers) */
+	UFUNCTION(BlueprintCallable, Category = "CombatAI")
+	void SetProfile(ECombatAIProfile NewProfile);
 
 protected:
 	/** AI behavior profile */
@@ -77,13 +97,44 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
 	int32 MaxSimultaneousAttackers = 2;
 
+	/** Chance to use ranged attack when in range (for Captain/Guard profiles) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	float RangedAttackChance = 0.f;
+
+	/** Preferred range for ranged attacks */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	float PreferredRangedRange = 800.f;
+
+	/** Chance for Zealots to perform suicidal charge at low health */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	float SuicidalChargeChance = 0.f;
+
+	/** Health threshold below which Zealots become frenzied */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI", meta = (ClampMin = "0", ClampMax = "1"))
+	float FrenzyHealthThreshold = 0.3f;
+
+	/** Captain command radius — buffs nearby allies within this range */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	float CommandRadius = 500.f;
+
+	/** Counter-attack chance after perfect block (First Class Guard) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	float CounterAttackChance = 0.f;
+
 private:
 	void MakeDecision();
 	void MoveToTarget();
 	void PerformAttack();
+	void PerformRangedAttack();
 	void ConsiderBlock();
 	void ConsiderEnvironmentalKill();
 	void ApplyProfileModifiers();
+
+	// Profile-specific behaviors
+	void ExecuteCaptainBehavior();
+	void ExecuteZealotBehavior();
+	void ExecuteGuardBehavior();
+	void BuffNearbyAllies();
 
 	/** Find the player or nearest enemy */
 	AActor* FindTarget() const;
@@ -95,11 +146,15 @@ private:
 	UCombatComponent* CombatComp = nullptr;
 
 	UPROPERTY()
+	UWeaponComponent* WeaponComp = nullptr;
+
+	UPROPERTY()
 	AActor* CurrentTarget = nullptr;
 
 	float DecisionTimer = 0.f;
 	bool bIsAttacking = false;
 	bool bIsApproaching = false;
+	bool bIsFrenzied = false;
 
 	/** Corridor-aware: tracks how many other AI are already engaging the same target */
 	int32 GetEngagingAICount() const;

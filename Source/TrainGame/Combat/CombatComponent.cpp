@@ -1,6 +1,8 @@
 // Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
 
 #include "CombatComponent.h"
+#include "ProjectileBase.h"
+#include "TrainGame/Weapons/WeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -68,10 +70,11 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	RegenerateStamina(DeltaTime);
 	UpdateFatigue(DeltaTime);
 	UpdateKronoleMode(DeltaTime);
+	UpdateGrapple(DeltaTime);
 }
 
 // ============================================================================
-// Actions
+// Melee Actions
 // ============================================================================
 
 FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
@@ -81,7 +84,8 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 	// Can't attack if not in a valid stance
 	if (CurrentStance == ECombatStance::Staggered ||
 		CurrentStance == ECombatStance::Downed ||
-		CurrentStance == ECombatStance::Dodging)
+		CurrentStance == ECombatStance::Dodging ||
+		CurrentStance == ECombatStance::Grappled)
 	{
 		return Result;
 	}
@@ -95,12 +99,21 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 	float StaminaCost = 10.f;
 	float Range = 150.f;
 	float Speed = 1.f;
-	float DurabilityLoss = 0.f;
+	EDamageType WeaponDamageType = EDamageType::Blunt; // Unarmed = blunt
 
-	if (WeaponComp)
+	if (WeaponComp && WeaponComp->HasWeaponEquipped() && !WeaponComp->IsWeaponBroken())
 	{
-		// WeaponComponent provides stats - for now use unarmed as fallback
-		// This will be connected when WeaponComponent is attached
+		const FWeaponStats& Weapon = WeaponComp->GetCurrentWeapon();
+
+		// Ranged weapons shouldn't be used for melee attacks (use PerformRangedAttack)
+		if (!Weapon.IsRanged())
+		{
+			Damage = Weapon.GetEffectiveDamage();
+			StaminaCost = Weapon.StaminaCostPerSwing;
+			Range = Weapon.Range;
+			Speed = Weapon.AttackSpeed;
+			WeaponDamageType = Weapon.GetDamageType();
+		}
 	}
 
 	// Check stamina
@@ -128,7 +141,7 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 	{
 		Result.bHit = true;
 		Result.AttackDirection = Direction;
-		Result.DamageType = EDamageType::Physical;
+		Result.DamageType = WeaponDamageType;
 
 		// Check for critical hit
 		Result.bCritical = FMath::FRand() < CriticalHitChance;
@@ -148,7 +161,7 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 		UCombatComponent* TargetCombat = HitTarget->FindComponentByClass<UCombatComponent>();
 		if (TargetCombat)
 		{
-			FHitResult_Combat TargetResult = TargetCombat->ReceiveAttack(FinalDamage, Direction, EDamageType::Physical, GetOwner());
+			FHitResult_Combat TargetResult = TargetCombat->ReceiveAttack(FinalDamage, Direction, WeaponDamageType, GetOwner());
 			Result.bBlocked = TargetResult.bBlocked;
 			Result.bDodged = TargetResult.bDodged;
 			Result.DamageDealt = TargetResult.DamageDealt;
@@ -156,6 +169,15 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 		else
 		{
 			Result.DamageDealt = FinalDamage;
+		}
+
+		// Apply weapon durability loss
+		if (WeaponComp && WeaponComp->HasWeaponEquipped())
+		{
+			if (Result.bBlocked)
+				WeaponComp->ApplyBlockDurabilityLoss();
+			else
+				WeaponComp->ApplyHitDurabilityLoss();
 		}
 
 		OnHitLanded.Broadcast(Result);
@@ -170,7 +192,8 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 void UCombatComponent::StartBlock(EBlockDirection Direction)
 {
 	if (CurrentStance == ECombatStance::Staggered ||
-		CurrentStance == ECombatStance::Downed)
+		CurrentStance == ECombatStance::Downed ||
+		CurrentStance == ECombatStance::Grappled)
 	{
 		return;
 	}
@@ -192,7 +215,8 @@ bool UCombatComponent::PerformDodge(FVector DodgeDirection)
 {
 	if (bDodgeOnCooldown) return false;
 	if (CurrentStance == ECombatStance::Staggered ||
-		CurrentStance == ECombatStance::Downed)
+		CurrentStance == ECombatStance::Downed ||
+		CurrentStance == ECombatStance::Grappled)
 	{
 		return false;
 	}
@@ -241,6 +265,9 @@ FHitResult_Combat UCombatComponent::ReceiveAttack(float IncomingDamage, EAttackD
 
 	float FinalDamage = IncomingDamage;
 
+	// Apply damage resistance
+	FinalDamage = ApplyDamageResistance(FinalDamage, DamageType);
+
 	// Blocking
 	if (CurrentStance == ECombatStance::Blocking)
 	{
@@ -257,9 +284,12 @@ FHitResult_Combat UCombatComponent::ReceiveAttack(float IncomingDamage, EAttackD
 			UCombatComponent* AttackerCombat = Attacker->FindComponentByClass<UCombatComponent>();
 			if (AttackerCombat)
 			{
-				// Parry: stagger the attacker briefly
-				AttackerCombat->SetStance(ECombatStance::Staggered);
-				AttackerCombat->StaggerTimer = StaggerDuration * 0.5f;
+				// Parry: stagger the attacker briefly (respecting their stagger resistance)
+				if (FMath::FRand() > AttackerCombat->StaggerResistance)
+				{
+					AttackerCombat->SetStance(ECombatStance::Staggered);
+					AttackerCombat->StaggerTimer = StaggerDuration * 0.5f;
+				}
 			}
 		}
 	}
@@ -270,6 +300,12 @@ FHitResult_Combat UCombatComponent::ReceiveAttack(float IncomingDamage, EAttackD
 		FinalDamage *= 1.5f;
 	}
 
+	// Grappled targets take more damage
+	if (CurrentStance == ECombatStance::Grappled)
+	{
+		FinalDamage *= 2.f;
+	}
+
 	Result.DamageDealt = FinalDamage;
 	Result.bHit = true;
 
@@ -277,6 +313,204 @@ FHitResult_Combat UCombatComponent::ReceiveAttack(float IncomingDamage, EAttackD
 	OnHitReceived.Broadcast(Result);
 
 	return Result;
+}
+
+// ============================================================================
+// Ranged Actions
+// ============================================================================
+
+bool UCombatComponent::PerformRangedAttack(FVector AimDirection)
+{
+	if (CurrentStance == ECombatStance::Staggered ||
+		CurrentStance == ECombatStance::Downed ||
+		CurrentStance == ECombatStance::Grappled)
+	{
+		return false;
+	}
+
+	if (AttackCooldownTimer > 0.f) return false;
+
+	UWeaponComponent* WeaponComp = GetOwner()->FindComponentByClass<UWeaponComponent>();
+	if (!WeaponComp || !WeaponComp->HasWeaponEquipped()) return false;
+
+	const FWeaponStats& Weapon = WeaponComp->GetCurrentWeapon();
+	if (!Weapon.IsRanged()) return false;
+	if (!Weapon.HasAmmo()) return false;
+	if (Weapon.IsBroken()) return false;
+
+	float StaminaCost = Weapon.StaminaCostPerSwing;
+	if (!StaminaState.CanPerformAction(StaminaCost))
+	{
+		OnStaminaDepleted.Broadcast();
+		return false;
+	}
+
+	ConsumeStamina(StaminaCost);
+	TimeSinceLastCombatAction = 0.f;
+
+	// Set attack cooldown (ranged weapons are generally slow)
+	AttackCooldownTimer = BaseAttackCooldown / Weapon.AttackSpeed;
+
+	// Spawn projectile
+	UWorld* World = GetWorld();
+	if (World && ProjectileClass)
+	{
+		AActor* Owner = GetOwner();
+		FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100.f;
+		FRotator SpawnRotation = AimDirection.Rotation();
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = Owner;
+		SpawnParams.Instigator = Cast<APawn>(Owner);
+
+		AProjectileBase* Projectile = World->SpawnActor<AProjectileBase>(
+			ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+		if (Projectile)
+		{
+			float DamageMultiplier = bKronoleModeActive ? 1.5f : 1.f;
+			Projectile->InitProjectile(Weapon, Owner, DamageMultiplier);
+		}
+	}
+
+	// Consume ammo and apply durability
+	WeaponComp->ConsumeAmmo();
+	WeaponComp->ApplyHitDurabilityLoss();
+
+	SetStance(ECombatStance::Attacking);
+	SetStance(ECombatStance::Neutral);
+
+	return true;
+}
+
+bool UCombatComponent::ThrowWeapon(FVector ThrowDirection)
+{
+	if (CurrentStance == ECombatStance::Staggered ||
+		CurrentStance == ECombatStance::Downed ||
+		CurrentStance == ECombatStance::Grappled)
+	{
+		return false;
+	}
+
+	UWeaponComponent* WeaponComp = GetOwner()->FindComponentByClass<UWeaponComponent>();
+	if (!WeaponComp || !WeaponComp->HasWeaponEquipped()) return false;
+
+	const FWeaponStats& Weapon = WeaponComp->GetCurrentWeapon();
+
+	// Create a thrown version of the weapon
+	UWorld* World = GetWorld();
+	if (World && ProjectileClass)
+	{
+		AActor* Owner = GetOwner();
+		FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 80.f;
+		FRotator SpawnRotation = ThrowDirection.Rotation();
+
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = Owner;
+		SpawnParams.Instigator = Cast<APawn>(Owner);
+
+		AProjectileBase* Projectile = World->SpawnActor<AProjectileBase>(
+			ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+
+		if (Projectile)
+		{
+			// Thrown weapons do 1.5x damage but are consumed
+			FWeaponStats ThrownStats = Weapon;
+			ThrownStats.ProjectileSpeed = 3000.f;
+			Projectile->InitProjectile(ThrownStats, Owner, 1.5f);
+		}
+	}
+
+	// Unequip the thrown weapon (it's gone)
+	WeaponComp->UnequipWeapon();
+	TimeSinceLastCombatAction = 0.f;
+
+	return true;
+}
+
+// ============================================================================
+// Stealth Takedown Reception
+// ============================================================================
+
+FHitResult_Combat UCombatComponent::ReceiveStealthTakedown(AActor* Attacker, ETakedownType TakedownType, bool bLethal)
+{
+	FHitResult_Combat Result;
+	Result.DamageType = bLethal ? EDamageType::Bladed : EDamageType::StealthTakedown;
+	Result.bStealthTakedown = true;
+	Result.bHit = true;
+
+	if (!bCanBeTakenDown)
+	{
+		// Boss-type enemies resist takedowns — stagger them instead
+		if (FMath::FRand() > StaggerResistance)
+		{
+			SetStance(ECombatStance::Staggered);
+			StaggerTimer = StaggerDuration;
+		}
+		Result.DamageDealt = 0.f;
+		return Result;
+	}
+
+	if (bLethal)
+	{
+		// Lethal takedown: instant kill
+		Result.DamageDealt = CurrentHealth;
+		ApplyDamage(CurrentHealth, Attacker);
+	}
+	else
+	{
+		// Non-lethal: put target down
+		Result.DamageDealt = CurrentHealth;
+		Result.DamageType = EDamageType::NonLethal;
+		SetStance(ECombatStance::Downed);
+		CurrentHealth = 0.f;
+		// Non-lethal — enemy is unconscious, not dead
+		// The StealthComponent handles body state management
+	}
+
+	OnStealthTakedown.Broadcast(Attacker, TakedownType);
+	return Result;
+}
+
+bool UCombatComponent::BeginGrapple(AActor* InGrappler)
+{
+	if (CurrentStance == ECombatStance::Downed) return false;
+	if (!bCanBeTakenDown) return false;
+
+	// Can't grapple if target is aware and facing the grappler
+	// (The StealthComponent/AI handles approach validation)
+
+	Grappler = InGrappler;
+	GrappleTimer = 0.f;
+	GrappleEscapeProgress = 0;
+	SetStance(ECombatStance::Grappled);
+	OnGrappled.Broadcast();
+
+	return true;
+}
+
+bool UCombatComponent::AttemptGrappleEscape()
+{
+	if (CurrentStance != ECombatStance::Grappled) return false;
+
+	GrappleEscapeProgress++;
+
+	// Each escape attempt reduces remaining grapple time
+	float EscapeContribution = GrappleEscapeTime / 5.f; // ~5 mashes to escape
+	GrappleTimer += EscapeContribution;
+
+	if (GrappleTimer >= GrappleEscapeTime)
+	{
+		// Escaped!
+		Grappler = nullptr;
+		GrappleTimer = 0.f;
+		GrappleEscapeProgress = 0;
+		SetStance(ECombatStance::Neutral);
+		OnGrappleEscaped.Broadcast();
+		return true;
+	}
+
+	return false;
 }
 
 // ============================================================================
@@ -319,6 +553,32 @@ void UCombatComponent::DeactivateKronoleMode()
 
 	SetStance(ECombatStance::Neutral);
 	OnKronoleModeDeactivated.Broadcast();
+}
+
+// ============================================================================
+// Damage Resistance
+// ============================================================================
+
+void UCombatComponent::SetDamageResistance(EDamageType Type, float Resistance)
+{
+	DamageResistances.Add(Type, FMath::Clamp(Resistance, 0.f, 1.f));
+}
+
+void UCombatComponent::SetStaggerResistance(float Resistance)
+{
+	StaggerResistance = FMath::Clamp(Resistance, 0.f, 1.f);
+}
+
+void UCombatComponent::SetMaxHealth(float NewMaxHealth)
+{
+	float HealthRatio = MaxHealth > 0.f ? CurrentHealth / MaxHealth : 1.f;
+	MaxHealth = NewMaxHealth;
+	CurrentHealth = MaxHealth * HealthRatio;
+}
+
+void UCombatComponent::Heal(float Amount)
+{
+	CurrentHealth = FMath::Min(CurrentHealth + Amount, MaxHealth);
 }
 
 // ============================================================================
@@ -408,6 +668,29 @@ void UCombatComponent::UpdateKronoleMode(float DeltaTime)
 	}
 }
 
+void UCombatComponent::UpdateGrapple(float DeltaTime)
+{
+	if (CurrentStance != ECombatStance::Grappled) return;
+
+	// If grappler is dead or gone, escape automatically
+	if (!Grappler || !Grappler->IsValidLowLevel())
+	{
+		Grappler = nullptr;
+		SetStance(ECombatStance::Neutral);
+		OnGrappleEscaped.Broadcast();
+		return;
+	}
+
+	// NPC auto-escape after grapple time (AI doesn't mash buttons)
+	GrappleTimer += DeltaTime * 0.3f; // Slow auto-escape for NPCs
+	if (GrappleTimer >= GrappleEscapeTime)
+	{
+		Grappler = nullptr;
+		SetStance(ECombatStance::Neutral);
+		OnGrappleEscaped.Broadcast();
+	}
+}
+
 void UCombatComponent::ApplyDamage(float Damage, AActor* DamageSource)
 {
 	if (Damage <= 0.f) return;
@@ -454,6 +737,16 @@ bool UCombatComponent::DoesBlockMatchAttack(EAttackDirection AttackDir) const
 		default:
 			return CurrentBlockDirection == EBlockDirection::Mid;
 	}
+}
+
+float UCombatComponent::ApplyDamageResistance(float Damage, EDamageType Type) const
+{
+	const float* Resistance = DamageResistances.Find(Type);
+	if (Resistance)
+	{
+		return Damage * (1.f - FMath::Clamp(*Resistance, 0.f, 1.f));
+	}
+	return Damage;
 }
 
 AActor* UCombatComponent::PerformMeleeTrace(float TraceRange) const
