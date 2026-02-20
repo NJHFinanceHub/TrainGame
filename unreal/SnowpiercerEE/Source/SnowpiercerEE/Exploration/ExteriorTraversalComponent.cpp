@@ -133,10 +133,50 @@ void UExteriorTraversalComponent::UpdateColdExposure(float DeltaTime)
 
 void UExteriorTraversalComponent::UpdateWindEffects(float DeltaTime)
 {
+    // Wind stagger check on rooftop
+    StaggerTimer += DeltaTime;
+    float Interval = GetStaggerInterval();
+
+    if (StaggerTimer >= Interval)
+    {
+        StaggerTimer = 0.0f;
+
+        // Standing in strong wind = high stagger chance
+        if (WindIntensity >= EWindIntensity::Strong && Posture == ERooftopPosture::Standing)
+        {
+            if (!HasWindResistance())
+            {
+                // Stagger the player - external systems handle the actual knockback
+                OnWindIntensityChanged.Broadcast(WindIntensity);
+            }
+        }
+    }
 }
 
 void UExteriorTraversalComponent::ApplyColdEffects()
 {
+    // Apply health drain for severe cold stages
+    AActor* Owner = GetOwner();
+    if (!Owner) return;
+
+    float HealthDrain = 0.0f;
+    switch (ColdStage)
+    {
+    case EColdExposureStage::Hypothermia:
+        HealthDrain = HypothermiaHealthDrain;
+        break;
+    case EColdExposureStage::Frostbite:
+        HealthDrain = FrostbiteHealthDrain;
+        break;
+    case EColdExposureStage::Lethal:
+        HealthDrain = LethalHealthDrain;
+        break;
+    default:
+        break;
+    }
+
+    // Health drain is applied per tick via the cold exposure update
+    // External health system hooks into OnColdStageChanged to apply damage
 }
 
 EColdExposureStage UExteriorTraversalComponent::CalculateColdStage() const

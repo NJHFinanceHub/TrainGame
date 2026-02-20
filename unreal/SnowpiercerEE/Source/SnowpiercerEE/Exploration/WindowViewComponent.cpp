@@ -81,6 +81,20 @@ bool UWindowViewComponent::CanSeeExterior() const
 
 void UWindowViewComponent::CheckLandmarkVisibility()
 {
+    if (!CanSeeExterior()) return;
+
+    // Landmarks visible depend on route segment and thaw stage
+    ERouteSegment Segment = GetCurrentRouteSegment();
+    EThawStage Thaw = GetCurrentThawStage();
+
+    // Check each registered landmark against current conditions
+    // Landmark visibility is determined by car number, route, and thaw stage
+    // In a full implementation, this would query a landmark data table
+    // For now, landmarks in VisibleLandmarks are always visible when exterior is viewable
+    for (const FName& Landmark : VisibleLandmarks)
+    {
+        OnLandmarkVisible.Broadcast(Landmark);
+    }
 }
 
 void UWindowViewComponent::UpdateFrostState(float DeltaTime)

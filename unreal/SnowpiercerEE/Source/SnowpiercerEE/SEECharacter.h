@@ -4,6 +4,13 @@
 #include "GameFramework/Character.h"
 #include "SEECharacter.generated.h"
 
+class USEEHealthComponent;
+class USEEStatsComponent;
+class USEECombatComponent;
+class USEEInventoryComponent;
+class USEEHungerComponent;
+class USEEColdComponent;
+
 UCLASS()
 class SNOWPIERCEREE_API ASEECharacter : public ACharacter
 {
@@ -81,6 +88,51 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float StaminaRegenDelay = 1.5f;
 
+	// Combat input
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void LightAttack();
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void HeavyAttack();
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void StartBlock();
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void StopBlock();
+
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void DodgeInput();
+
+	// Quick slot input
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void UseQuickSlot1();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void UseQuickSlot2();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void UseQuickSlot3();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void UseQuickSlot4();
+
+	// Component accessors
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEEHealthComponent> HealthComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEEStatsComponent> StatsComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEECombatComponent> CombatComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEEInventoryComponent> InventoryComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEEHungerComponent> HungerComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEEColdComponent> ColdComponent;
+
 private:
 	UPROPERTY()
 	TObjectPtr<class UCameraComponent> FirstPersonCamera;
@@ -95,4 +147,5 @@ private:
 	float StaminaRegenTimer = 0.0f;
 	bool bIsRunning = false;
 	bool bFirstPersonActive = true;
+	bool bHeavyAttackCharging = false;
 };

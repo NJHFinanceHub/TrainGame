@@ -81,6 +81,86 @@ bool USecretCarManager::HasGhostOfTheTrain() const
 
 void USecretCarManager::InitializeRequirements()
 {
+    // Bunker Car - accessible from Tail, requires crawlspace
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone1_Tail;
+        Req.bRequiresCrawlspaceAccess = true;
+        Req.StatRequirements.Add(TEXT("Perception"), 4);
+        Requirements.Add(ESecretCar::BunkerCar, Req);
+    }
+
+    // Ghost Car - abandoned car between zones, requires hearing rumors
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone2_ThirdClass;
+        Req.NarrativeFlag = TEXT("heard_ghost_car_rumor");
+        Req.StatRequirements.Add(TEXT("Cunning"), 5);
+        Requirements.Add(ESecretCar::GhostCar, Req);
+    }
+
+    // Rebel Archive - hidden in working spine, faction-gated
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone4_WorkingSpine;
+        Req.FactionRequirements.Add(TEXT("TheThaw"), 25);
+        Requirements.Add(ESecretCar::RebelArchive, Req);
+    }
+
+    // Outside Lab - exterior access required, cold suit mandatory
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone3_SecondClass;
+        Req.bRequiresColdSuit = true;
+        Req.bRequiresRooftopAccess = true;
+        Req.StatRequirements.Add(TEXT("Agility"), 6);
+        Requirements.Add(ESecretCar::OutsideLab, Req);
+    }
+
+    // Stowaway Car - between third and second class
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone2_ThirdClass;
+        Req.bRequiresCrawlspaceAccess = true;
+        Req.StatRequirements.Add(TEXT("Perception"), 6);
+        Requirements.Add(ESecretCar::StowawayCar, Req);
+    }
+
+    // Mirror Car - first class, requires specific collectible
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone5_FirstClass;
+        Req.RequiredCollectibles.Add(TEXT("mirror_key_fragment"));
+        Req.StatRequirements.Add(TEXT("Cunning"), 7);
+        Requirements.Add(ESecretCar::MirrorCar, Req);
+    }
+
+    // Prototype Car - near engine, high stat requirements
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone6_Sanctum;
+        Req.StatRequirements.Add(TEXT("Strength"), 7);
+        Req.StatRequirements.Add(TEXT("Perception"), 7);
+        Requirements.Add(ESecretCar::PrototypeCar, Req);
+    }
+
+    // Nursery - hidden in Sanctum, companion required
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone6_Sanctum;
+        Req.RequiredCompanion = TEXT("Yona");
+        Req.RequiredLoyalty = 50;
+        Requirements.Add(ESecretCar::Nursery, Req);
+    }
+
+    // Dead Man's Switch - engine room, all-or-nothing
+    {
+        FSecretCarRequirement Req;
+        Req.MinimumZone = ETrainZone::Zone7_Engine;
+        Req.NarrativeFlag = TEXT("engine_access_granted");
+        Req.StatRequirements.Add(TEXT("Cunning"), 8);
+        Requirements.Add(ESecretCar::DeadMansSwitch, Req);
+    }
 }
 
 void USecretCarManager::CheckMilestones()

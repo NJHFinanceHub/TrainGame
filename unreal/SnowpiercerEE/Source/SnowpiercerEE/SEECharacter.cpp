@@ -4,6 +4,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Exploration/CollectibleComponent.h"
+#include "SEEHealthComponent.h"
+#include "SEEStatsComponent.h"
+#include "SEECombatComponent.h"
+#include "SEEInventoryComponent.h"
+#include "SEEHungerComponent.h"
+#include "SEEColdComponent.h"
 
 ASEECharacter::ASEECharacter()
 {
@@ -45,6 +51,14 @@ ASEECharacter::ASEECharacter()
 	bUseControllerRotationYaw = true;
 
 	CurrentStamina = MaxStamina;
+
+	// Core gameplay components
+	HealthComponent = CreateDefaultSubobject<USEEHealthComponent>(TEXT("HealthComponent"));
+	StatsComponent = CreateDefaultSubobject<USEEStatsComponent>(TEXT("StatsComponent"));
+	CombatComponent = CreateDefaultSubobject<USEECombatComponent>(TEXT("CombatComponent"));
+	InventoryComponent = CreateDefaultSubobject<USEEInventoryComponent>(TEXT("InventoryComponent"));
+	HungerComponent = CreateDefaultSubobject<USEEHungerComponent>(TEXT("HungerComponent"));
+	ColdComponent = CreateDefaultSubobject<USEEColdComponent>(TEXT("ColdComponent"));
 }
 
 void ASEECharacter::BeginPlay()
@@ -110,6 +124,19 @@ void ASEECharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("ToggleView", IE_Pressed, this, &ASEECharacter::ToggleViewMode);
 	PlayerInputComponent->BindAction("Run", IE_Pressed, this, &ASEECharacter::StartRun);
 	PlayerInputComponent->BindAction("Run", IE_Released, this, &ASEECharacter::StopRun);
+
+	// Combat
+	PlayerInputComponent->BindAction("LightAttack", IE_Pressed, this, &ASEECharacter::LightAttack);
+	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ASEECharacter::HeavyAttack);
+	PlayerInputComponent->BindAction("Block", IE_Pressed, this, &ASEECharacter::StartBlock);
+	PlayerInputComponent->BindAction("Block", IE_Released, this, &ASEECharacter::StopBlock);
+	PlayerInputComponent->BindAction("Dodge", IE_Pressed, this, &ASEECharacter::DodgeInput);
+
+	// Quick slots
+	PlayerInputComponent->BindAction("QuickSlot1", IE_Pressed, this, &ASEECharacter::UseQuickSlot1);
+	PlayerInputComponent->BindAction("QuickSlot2", IE_Pressed, this, &ASEECharacter::UseQuickSlot2);
+	PlayerInputComponent->BindAction("QuickSlot3", IE_Pressed, this, &ASEECharacter::UseQuickSlot3);
+	PlayerInputComponent->BindAction("QuickSlot4", IE_Pressed, this, &ASEECharacter::UseQuickSlot4);
 }
 
 void ASEECharacter::MoveForward(float Value)
@@ -226,3 +253,37 @@ void ASEECharacter::Interact()
 		}
 	}
 }
+
+void ASEECharacter::LightAttack()
+{
+	if (CombatComponent) CombatComponent->LightAttack();
+}
+
+void ASEECharacter::HeavyAttack()
+{
+	if (CombatComponent) CombatComponent->HeavyAttack();
+}
+
+void ASEECharacter::StartBlock()
+{
+	if (CombatComponent) CombatComponent->StartBlock();
+}
+
+void ASEECharacter::StopBlock()
+{
+	if (CombatComponent) CombatComponent->StopBlock();
+}
+
+void ASEECharacter::DodgeInput()
+{
+	if (CombatComponent)
+	{
+		FVector DodgeDir = GetLastMovementInputVector();
+		CombatComponent->Dodge(DodgeDir);
+	}
+}
+
+void ASEECharacter::UseQuickSlot1() { if (InventoryComponent) InventoryComponent->UseQuickSlot(0); }
+void ASEECharacter::UseQuickSlot2() { if (InventoryComponent) InventoryComponent->UseQuickSlot(1); }
+void ASEECharacter::UseQuickSlot3() { if (InventoryComponent) InventoryComponent->UseQuickSlot(2); }
+void ASEECharacter::UseQuickSlot4() { if (InventoryComponent) InventoryComponent->UseQuickSlot(3); }

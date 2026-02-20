@@ -60,12 +60,33 @@ TArray<FCollectibleState> UCollectibleJournalSubsystem::GetCollectedByZone(ETrai
 
 float UCollectibleJournalSubsystem::GetCompletionPercentage(ECollectibleType Type) const
 {
-    return 0.0f;
+    if (!CollectibleDataTable) return 0.0f;
+
+    int32 Total = 0;
+    int32 Collected = 0;
+    TArray<FName> RowNames = CollectibleDataTable->GetRowNames();
+    for (const FName& RowName : RowNames)
+    {
+        const FCollectibleData* Data = CollectibleDataTable->FindRow<FCollectibleData>(RowName, TEXT(""));
+        if (Data && Data->Type == Type)
+        {
+            Total++;
+            if (CollectibleStates.Contains(Data->CollectibleID))
+            {
+                Collected++;
+            }
+        }
+    }
+    return Total > 0 ? static_cast<float>(Collected) / static_cast<float>(Total) : 0.0f;
 }
 
 float UCollectibleJournalSubsystem::GetOverallCompletion() const
 {
-    return 0.0f;
+    if (!CollectibleDataTable) return 0.0f;
+
+    int32 Total = CollectibleDataTable->GetRowNames().Num();
+    int32 Collected = CollectibleStates.Num();
+    return Total > 0 ? static_cast<float>(Collected) / static_cast<float>(Total) : 0.0f;
 }
 
 int32 UCollectibleJournalSubsystem::GetUnviewedCount() const
@@ -108,7 +129,18 @@ bool UCollectibleJournalSubsystem::IsFactionDialogueUnlocked(FName FactionID) co
 
 int32 UCollectibleJournalSubsystem::GetManifestPagesCollected() const
 {
-    return 0;
+    int32 Count = 0;
+    if (!CollectibleDataTable) return 0;
+
+    for (const auto& Pair : CollectibleStates)
+    {
+        const FCollectibleData* Data = CollectibleDataTable->FindRow<FCollectibleData>(Pair.Key, TEXT(""));
+        if (Data && Data->Type == ECollectibleType::ManifestPage)
+        {
+            Count++;
+        }
+    }
+    return Count;
 }
 
 bool UCollectibleJournalSubsystem::IsManifestTruthUnlocked() const
@@ -118,17 +150,60 @@ bool UCollectibleJournalSubsystem::IsManifestTruthUnlocked() const
 
 TArray<FName> UCollectibleJournalSubsystem::GetManifestCrossReferences() const
 {
-    return TArray<FName>();
+    TArray<FName> CrossRefs;
+    if (!CollectibleDataTable) return CrossRefs;
+
+    for (const auto& Pair : CollectibleStates)
+    {
+        const FCollectibleData* Data = CollectibleDataTable->FindRow<FCollectibleData>(Pair.Key, TEXT(""));
+        if (Data && Data->Type == ECollectibleType::ManifestPage)
+        {
+            for (const FName& Linked : Data->LinkedCollectibles)
+            {
+                CrossRefs.AddUnique(Linked);
+            }
+        }
+    }
+    return CrossRefs;
 }
 
 TArray<FName> UCollectibleJournalSubsystem::GetCodexEntries() const
 {
-    return TArray<FName>();
+    TArray<FName> Entries;
+    if (!CollectibleDataTable) return Entries;
+
+    for (const auto& Pair : CollectibleStates)
+    {
+        const FCollectibleData* Data = CollectibleDataTable->FindRow<FCollectibleData>(Pair.Key, TEXT(""));
+        if (Data)
+        {
+            for (const FName& Entry : Data->CodexEntries)
+            {
+                Entries.AddUnique(Entry);
+            }
+        }
+    }
+    return Entries;
 }
 
 bool UCollectibleJournalSubsystem::IsCodexEntryComplete(FName EntryID) const
 {
-    return false;
+    if (!CollectibleDataTable) return false;
+
+    // A codex entry is complete when all collectibles referencing it are collected
+    TArray<FName> RowNames = CollectibleDataTable->GetRowNames();
+    for (const FName& RowName : RowNames)
+    {
+        const FCollectibleData* Data = CollectibleDataTable->FindRow<FCollectibleData>(RowName, TEXT(""));
+        if (Data && Data->CodexEntries.Contains(EntryID))
+        {
+            if (!CollectibleStates.Contains(Data->CollectibleID))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 bool UCollectibleJournalSubsystem::IsMilestoneReached(float Percentage) const
@@ -143,16 +218,56 @@ FText UCollectibleJournalSubsystem::GetCurrentExplorationTitle() const
 
 void UCollectibleJournalSubsystem::UpdateFactionProgress(const FCollectibleData& Data)
 {
+    if (Data.Type != ECollectibleType::FactionIntel || Data.FactionID.IsNone()) return;
+
+    FFactionIntelProgress& Progress = FactionProgress.FindOrAdd(Data.FactionID);
+    Progress.FactionID = Data.FactionID;
+    Progress.IntelCollected++;
+
+    if (Progress.IntelCollected >= 5)
+    {
+        Progress.bSpecialDialogueUnlocked = true;
+    }
+    if (Progress.IntelCollected >= 10)
+    {
+        Progress.bCriticalWeaknessRevealed = true;
+    }
 }
 
 void UCollectibleJournalSubsystem::UpdateCodex(const FCollectibleData& Data)
 {
+    for (const FName& EntryID : Data.CodexEntries)
+    {
+        bool bComplete = IsCodexEntryComplete(EntryID);
+        OnCodexEntryUpdated.Broadcast(EntryID, bComplete);
+    }
 }
 
 void UCollectibleJournalSubsystem::CheckMilestones(ECollectibleType Type)
 {
+    float Completion = GetCompletionPercentage(Type);
+
+    static const float MilestoneThresholds[] = { 0.25f, 0.5f, 0.75f, 1.0f };
+    for (float Threshold : MilestoneThresholds)
+    {
+        if (FMath::IsNearlyEqual(Completion, Threshold, 0.01f))
+        {
+            OnCompletionMilestone.Broadcast(Type, Completion);
+            break;
+        }
+    }
 }
 
 void UCollectibleJournalSubsystem::ProcessManifestPage(const FCollectibleData& Data)
 {
+    if (Data.Type != ECollectibleType::ManifestPage) return;
+
+    // Check for cross-references with other manifest pages
+    for (const FName& LinkedID : Data.LinkedCollectibles)
+    {
+        if (CollectibleStates.Contains(LinkedID))
+        {
+            OnManifestCrossReference.Broadcast(LinkedID);
+        }
+    }
 }
