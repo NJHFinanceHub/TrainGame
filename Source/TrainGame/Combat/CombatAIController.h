@@ -8,6 +8,7 @@
 #include "CombatAIController.generated.h"
 
 class UCombatComponent;
+class UWeaponComponent;
 
 // ============================================================================
 // ACombatAIController
@@ -48,10 +49,22 @@ public:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
 
+	/** Configure AI from enemy stats (called by EnemyCharacter) */
+	UFUNCTION(BlueprintCallable, Category = "CombatAI")
+	void SetProfile(const FEnemyStats& Stats);
+
 protected:
 	/** AI behavior profile */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
 	ECombatAIProfile Profile = ECombatAIProfile::Desperate;
+
+	/** Does this AI use ranged weapons? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	bool bUsesRangedWeapons = false;
+
+	/** Preferred range for ranged attacks */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
+	float PreferredRangedRange = 1000.f;
 
 	/** How close the AI tries to get before attacking */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
@@ -81,8 +94,10 @@ private:
 	void MakeDecision();
 	void MoveToTarget();
 	void PerformAttack();
+	void PerformRangedAttack();
 	void ConsiderBlock();
 	void ConsiderEnvironmentalKill();
+	void ConsiderRetreat();
 	void ApplyProfileModifiers();
 
 	/** Find the player or nearest enemy */

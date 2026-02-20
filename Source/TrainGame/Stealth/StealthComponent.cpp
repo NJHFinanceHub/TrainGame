@@ -1,6 +1,10 @@
 // Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
 
 #include "StealthComponent.h"
+#include "TrainGame/Combat/CombatComponent.h"
+#include "TrainGame/Combat/EnemyCharacter.h"
+#include "TrainGame/Core/CombatTypes.h"
+#include "GameFramework/Character.h"
 
 UStealthComponent::UStealthComponent()
 {
@@ -103,16 +107,60 @@ FTakedownResult UStealthComponent::AttemptTakedown(AActor* Target, bool bLethal)
 		return Result;
 	}
 
-	// TODO: Check if target is behind and within range
-	// TODO: Check target's detection state (must be UNAWARE or SUSPICIOUS)
-	// TODO: Play takedown animation based on context
-	// TODO: Apply damage via CombatComponent with StealthTakedown type
-	// TODO: Generate noise event
+	AActor* Owner = GetOwner();
+	if (!Owner) return Result;
+
+	// Check distance
+	float Dist = FVector::Dist(Owner->GetActorLocation(), Target->GetActorLocation());
+	if (Dist > TakedownRange)
+	{
+		return Result;
+	}
+
+	// Check if behind target (dot product of target's forward and direction to attacker)
+	FVector ToAttacker = (Owner->GetActorLocation() - Target->GetActorLocation()).GetSafeNormal();
+	float DotProduct = FVector::DotProduct(Target->GetActorForwardVector(), ToAttacker);
+	if (DotProduct > -0.3f) // Must be approaching from behind (negative dot = behind)
+	{
+		return Result;
+	}
+
+	// Check if target is an EnemyCharacter with special takedown requirements
+	AEnemyCharacter* EnemyTarget = Cast<AEnemyCharacter>(Target);
+	if (EnemyTarget)
+	{
+		if (!EnemyTarget->CanBeTakenDown())
+		{
+			return Result;
+		}
+
+		// Apply the takedown via the enemy's own system
+		EnemyTarget->ReceiveTakedown(bLethal, Owner);
+	}
+	else
+	{
+		// Generic target — apply damage via CombatComponent
+		UCombatComponent* TargetCombat = Target->FindComponentByClass<UCombatComponent>();
+		if (TargetCombat)
+		{
+			if (bLethal)
+			{
+				TargetCombat->ReceiveAttack(9999.f, EAttackDirection::Mid, EDamageType::StealthTakedown, Owner);
+			}
+			else
+			{
+				TargetCombat->ReceiveAttack(0.f, EAttackDirection::Mid, EDamageType::NonLethal, Owner);
+			}
+		}
+	}
 
 	Result.bSuccess = true;
 	Result.bLethal = bLethal;
-	Result.NoiseGenerated = TakedownNoiseRadius;
 	Result.Method = ENonLethalMethod::StealthTakedown;
+
+	// Lethal takedowns are slightly louder
+	float NoiseRadius = bLethal ? TakedownNoiseRadius * 1.5f : TakedownNoiseRadius;
+	Result.NoiseGenerated = NoiseRadius;
 
 	if (bLethal)
 	{
@@ -123,18 +171,40 @@ FTakedownResult UStealthComponent::AttemptTakedown(AActor* Target, bool bLethal)
 		NonLethalTakedownCount++;
 	}
 
-	GenerateNoise(TakedownNoiseRadius, ESoundIntensity::Low);
+	GenerateNoise(NoiseRadius, bLethal ? ESoundIntensity::Medium : ESoundIntensity::Low);
 	OnTakedownCompleted.Broadcast(Result);
 	return Result;
 }
 
 bool UStealthComponent::CanPerformTakedown(const AActor* Target) const
 {
-	// TODO: Check distance to target
-	// TODO: Check if behind target (not in vision cone)
-	// TODO: Check target's detection state
-	// TODO: Check if target is a Brute type (requires Strength >= 14)
-	return Target != nullptr && !bIsHiding && !bIsDraggingBody;
+	if (!Target || bIsHiding || bIsDraggingBody) return false;
+
+	const AActor* Owner = GetOwner();
+	if (!Owner) return false;
+
+	// Check distance
+	float Dist = FVector::Dist(Owner->GetActorLocation(), Target->GetActorLocation());
+	if (Dist > TakedownRange) return false;
+
+	// Check if behind target
+	FVector ToAttacker = (Owner->GetActorLocation() - Target->GetActorLocation()).GetSafeNormal();
+	float DotProduct = FVector::DotProduct(Target->GetActorForwardVector(), ToAttacker);
+	if (DotProduct > -0.3f) return false;
+
+	// Check EnemyCharacter-specific requirements
+	const AEnemyCharacter* EnemyTarget = Cast<const AEnemyCharacter>(Target);
+	if (EnemyTarget)
+	{
+		if (!EnemyTarget->CanBeTakenDown()) return false;
+		if (EnemyTarget->IsAlerted()) return false;
+	}
+
+	// Check target is alive
+	UCombatComponent* TargetCombat = Target->FindComponentByClass<UCombatComponent>();
+	if (TargetCombat && !TargetCombat->IsAlive()) return false;
+
+	return true;
 }
 
 bool UStealthComponent::StartDragBody(AActor* Body)
