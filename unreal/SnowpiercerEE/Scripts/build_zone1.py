@@ -174,6 +174,13 @@ def get_material(name, r, g, b, roughness=0.7, metallic=0.8):
         mat_lib.connect_material_property(metal_node, "", unreal.MaterialProperty.MP_METALLIC)
 
     mat_lib.recompile_material(mat)
+
+    # Persist the material as a .uasset so it survives editor restarts
+    try:
+        editor_util.save_asset(mat_path, only_if_is_dirty=False)
+    except Exception as e:
+        unreal.log_warning(f"  Could not save material {mat_path}: {e}")
+
     _mat_cache[name] = mat
     return mat
 
