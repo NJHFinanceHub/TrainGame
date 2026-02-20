@@ -84,13 +84,73 @@ enum class EEnvironmentalHazard : uint8
 UENUM(BlueprintType)
 enum class EDamageType : uint8
 {
-	Physical	UMETA(DisplayName = "Physical"),
-	Thermal		UMETA(DisplayName = "Thermal"),
-	Electrical	UMETA(DisplayName = "Electrical"),
+	Physical		UMETA(DisplayName = "Physical"),
+	Blunt			UMETA(DisplayName = "Blunt"),
+	Bladed			UMETA(DisplayName = "Bladed"),
+	Piercing		UMETA(DisplayName = "Piercing"),
+	Fire			UMETA(DisplayName = "Fire"),
+	Thermal			UMETA(DisplayName = "Thermal"),
+	Electrical		UMETA(DisplayName = "Electrical"),
 	Cold			UMETA(DisplayName = "Cold"),
 	Explosive		UMETA(DisplayName = "Explosive"),
 	StealthTakedown	UMETA(DisplayName = "Stealth Takedown"),
 	NonLethal		UMETA(DisplayName = "Non-Lethal")
+};
+
+/** Enemy archetype on the train */
+UENUM(BlueprintType)
+enum class EEnemyType : uint8
+{
+	JackbootGrunt		UMETA(DisplayName = "Jackboot Grunt"),
+	JackbootCaptain		UMETA(DisplayName = "Jackboot Captain"),
+	OrderZealot			UMETA(DisplayName = "Order Zealot"),
+	FirstClassGuard		UMETA(DisplayName = "First Class Guard"),
+	TailScrapper		UMETA(DisplayName = "Tail Scrapper")
+};
+
+/** Projectile type for ranged weapons */
+UENUM(BlueprintType)
+enum class EProjectileType : uint8
+{
+	CrossbowBolt	UMETA(DisplayName = "Crossbow Bolt"),
+	ThrownObject	UMETA(DisplayName = "Thrown Object"),
+	Bullet			UMETA(DisplayName = "Bullet"),
+	TranqDart		UMETA(DisplayName = "Tranq Dart")
+};
+
+/** Boss fight health phase */
+UENUM(BlueprintType)
+enum class EBossPhase : uint8
+{
+	Phase1		UMETA(DisplayName = "Phase 1"),
+	Phase2		UMETA(DisplayName = "Phase 2"),
+	Phase3		UMETA(DisplayName = "Phase 3"),
+	Enraged		UMETA(DisplayName = "Enraged"),
+	Defeated	UMETA(DisplayName = "Defeated")
+};
+
+/** Boss special attack type */
+UENUM(BlueprintType)
+enum class EBossAttackType : uint8
+{
+	AreaSlam		UMETA(DisplayName = "Area Slam"),
+	ChargeRush		UMETA(DisplayName = "Charge Rush"),
+	EnvironmentalTrigger	UMETA(DisplayName = "Environmental Trigger"),
+	SummonMinions	UMETA(DisplayName = "Summon Minions"),
+	RangedBarrage	UMETA(DisplayName = "Ranged Barrage"),
+	GrabAttack		UMETA(DisplayName = "Grab Attack"),
+	UnblockableStrike	UMETA(DisplayName = "Unblockable Strike")
+};
+
+/** Stealth takedown animation type */
+UENUM(BlueprintType)
+enum class ETakedownType : uint8
+{
+	GrabFromBehind		UMETA(DisplayName = "Grab From Behind"),
+	Chokehold			UMETA(DisplayName = "Chokehold"),
+	KnockoutPunch		UMETA(DisplayName = "Knockout Punch"),
+	LethalNeckSnap		UMETA(DisplayName = "Lethal Neck Snap"),
+	LethalKnifeKill		UMETA(DisplayName = "Lethal Knife Kill")
 };
 
 /** Result of a combat hit */
@@ -231,4 +291,130 @@ struct FWeaponStats
 	{
 		return Durability <= 0.f;
 	}
+
+	/** Get the damage type based on weapon category */
+	EDamageType GetDamageType() const
+	{
+		switch (Category)
+		{
+		case EWeaponCategory::Blunt:	return EDamageType::Blunt;
+		case EWeaponCategory::Bladed:	return EDamageType::Bladed;
+		case EWeaponCategory::Piercing:	return EDamageType::Piercing;
+		case EWeaponCategory::Ranged:	return EDamageType::Piercing;
+		case EWeaponCategory::Thrown:	return EDamageType::Blunt;
+		case EWeaponCategory::Explosive:return EDamageType::Explosive;
+		default:						return EDamageType::Physical;
+		}
+	}
+};
+
+/** Enemy stat block for archetype configuration */
+USTRUCT(BlueprintType)
+struct FEnemyStats
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EEnemyType EnemyType = EEnemyType::JackbootGrunt;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Health = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DamageMultiplier = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MovementSpeed = 600.f;
+
+	/** Resistance multiplier per damage type (0 = immune, 1 = normal, >1 = weakness) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<EDamageType, float> DamageResistances;
+
+	/** Can be stealth-takedown'd */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanBeTakenDown = true;
+
+	/** Strength required for non-lethal takedown (0 = anyone can) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 TakedownStrengthRequired = 0;
+
+	/** Does this enemy call for reinforcements when alerted? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCallsReinforcements = false;
+
+	/** Time before reinforcements arrive */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ReinforcementDelay = 10.f;
+};
+
+/** Boss special attack definition */
+USTRUCT(BlueprintType)
+struct FBossAttack
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName AttackName = NAME_None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBossAttackType AttackType = EBossAttackType::AreaSlam;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Damage = 30.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Range = 300.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Cooldown = 8.f;
+
+	/** Which phases this attack is available in */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EBossPhase> AvailableInPhases;
+
+	/** Wind-up time before the attack hits (telegraph window for player) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float WindUpTime = 1.5f;
+
+	/** Can this attack be blocked? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bBlockable = true;
+
+	/** Can this attack be dodged? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bDodgeable = true;
+
+	float CooldownTimer = 0.f;
+
+	bool IsReady() const { return CooldownTimer <= 0.f; }
+};
+
+/** Boss phase definition — health thresholds and behavior changes */
+USTRUCT(BlueprintType)
+struct FBossPhaseConfig
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EBossPhase Phase = EBossPhase::Phase1;
+
+	/** Health percentage at which this phase begins (1.0 = full, 0.0 = dead) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", ClampMax = "1"))
+	float HealthThreshold = 1.f;
+
+	/** Damage multiplier during this phase */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DamageMultiplier = 1.f;
+
+	/** Attack speed multiplier during this phase */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpeedMultiplier = 1.f;
+
+	/** Does the boss gain damage resistance in this phase? */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0", ClampMax = "1"))
+	float DamageResistance = 0.f;
+
+	/** Environmental hazards activated during this phase */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<EEnvironmentalHazard> ActivatedHazards;
 };

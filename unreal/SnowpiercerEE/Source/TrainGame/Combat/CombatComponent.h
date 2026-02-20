@@ -8,6 +8,7 @@
 #include "CombatComponent.generated.h"
 
 class UWeaponComponent;
+class AProjectileBase;
 
 // ============================================================================
 // UCombatComponent
@@ -57,6 +58,34 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	FHitResult_Combat ReceiveAttack(float IncomingDamage, EAttackDirection Direction, EDamageType DamageType, AActor* Attacker);
 
+	// --- Ranged Combat ---
+
+	/** Fire a ranged weapon — spawns a projectile actor */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Ranged")
+	bool PerformRangedAttack(FVector AimDirection);
+
+	/** Get current ammo count */
+	UFUNCTION(BlueprintPure, Category = "Combat|Ranged")
+	int32 GetCurrentAmmo() const { return CurrentAmmo; }
+
+	/** Reload the current ranged weapon */
+	UFUNCTION(BlueprintCallable, Category = "Combat|Ranged")
+	bool StartReload();
+
+	/** Check if currently reloading */
+	UFUNCTION(BlueprintPure, Category = "Combat|Ranged")
+	bool IsReloading() const { return bIsReloading; }
+
+	// --- Damage Resistance ---
+
+	/** Apply a damage resistance (0 = immune, 1 = normal, >1 = weakness) */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SetDamageResistance(EDamageType Type, float Multiplier);
+
+	/** Get resistance multiplier for a damage type */
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetDamageResistance(EDamageType Type) const;
+
 	// --- Kronole System ---
 
 	/** Activate Kronole mode (slow-motion perception, costs health) */
@@ -73,6 +102,12 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Combat")
 	float GetCurrentHealth() const { return CurrentHealth; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetMaxHealth() const { return MaxHealth; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetHealthPercent() const { return MaxHealth > 0.f ? CurrentHealth / MaxHealth : 0.f; }
 
 	UFUNCTION(BlueprintPure, Category = "Combat")
 	float GetCurrentStamina() const { return StaminaState.CurrentStamina; }
@@ -226,6 +261,28 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Attack")
 	float CriticalHitMultiplier = 2.f;
 
+	// --- Ranged Combat ---
+
+	/** Projectile class to spawn for ranged attacks */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Ranged")
+	TSubclassOf<AProjectileBase> ProjectileClass;
+
+	/** Max ammo capacity */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Ranged")
+	int32 MaxAmmo = 10;
+
+	/** Reload time in seconds */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Ranged")
+	float ReloadTime = 2.f;
+
+	/** Stamina cost per ranged shot */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Ranged")
+	float RangedStaminaCost = 5.f;
+
+	/** Per-damage-type resistance multipliers */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat|Resistance")
+	TMap<EDamageType, float> DamageResistances;
+
 private:
 	void SetStance(ECombatStance NewStance);
 	void ConsumeStamina(float Amount);
@@ -255,4 +312,10 @@ private:
 	float AttackCooldownTimer = 0.f;
 	float StaggerTimer = 0.f;
 	float TimeSinceLastCombatAction = 0.f;
+
+	// Ranged combat state
+	int32 CurrentAmmo = 0;
+	bool bIsReloading = false;
+	float ReloadTimer = 0.f;
+	void UpdateReload(float DeltaTime);
 };

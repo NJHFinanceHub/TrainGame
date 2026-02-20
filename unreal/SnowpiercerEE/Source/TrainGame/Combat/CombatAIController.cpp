@@ -2,6 +2,7 @@
 
 #include "CombatAIController.h"
 #include "CombatComponent.h"
+#include "TrainGame/Weapons/WeaponComponent.h"
 #include "TrainGame/Environment/EnvironmentalHazardComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
@@ -52,6 +53,20 @@ void ACombatAIController::MakeDecision()
 	bool bCanEngage = EngagingCount < MaxSimultaneousAttackers;
 
 	// Decision tree based on profile and situation
+
+	// Ranged AI: prefers to keep distance and shoot
+	if (bUsesRangedWeapons && CombatComp && DistToTarget <= PreferredRangedRange && bCanEngage)
+	{
+		if (DistToTarget < PreferredCombatRange)
+		{
+			// Too close for ranged — retreat to preferred range
+			ConsiderRetreat();
+			return;
+		}
+		PerformRangedAttack();
+		return;
+	}
+
 	if (DistToTarget <= PreferredCombatRange && bCanEngage)
 	{
 		// In range and can engage
@@ -135,6 +150,37 @@ void ACombatAIController::PerformAttack()
 	CombatComp->PerformAttack(Direction);
 }
 
+void ACombatAIController::PerformRangedAttack()
+{
+	if (!CombatComp || !CurrentTarget) return;
+
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn) return;
+
+	// Aim at target
+	FVector AimDirection = (CurrentTarget->GetActorLocation() - ControlledPawn->GetActorLocation()).GetSafeNormal();
+	CombatComp->PerformRangedAttack(AimDirection);
+
+	// Auto-reload when empty
+	if (CombatComp->GetCurrentAmmo() <= 0)
+	{
+		CombatComp->StartReload();
+	}
+}
+
+void ACombatAIController::ConsiderRetreat()
+{
+	if (!CurrentTarget) return;
+
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn) return;
+
+	// Move away from target to preferred ranged range
+	FVector AwayDir = (ControlledPawn->GetActorLocation() - CurrentTarget->GetActorLocation()).GetSafeNormal();
+	FVector RetreatPos = ControlledPawn->GetActorLocation() + AwayDir * 300.f;
+	MoveToLocation(RetreatPos);
+}
+
 void ACombatAIController::ConsiderBlock()
 {
 	if (!CombatComp) return;
@@ -196,6 +242,46 @@ void ACombatAIController::ApplyProfileModifiers()
 			DecisionInterval = 1.0f; // Slow but powerful
 			EnvironmentalUseChance = 0.02f;
 			break;
+	}
+}
+
+void ACombatAIController::SetProfile(const FEnemyStats& Stats)
+{
+	switch (Stats.EnemyType)
+	{
+	case EEnemyType::JackbootGrunt:
+		Profile = ECombatAIProfile::Disciplined;
+		break;
+	case EEnemyType::JackbootCaptain:
+		Profile = ECombatAIProfile::Disciplined;
+		break;
+	case EEnemyType::OrderZealot:
+		Profile = ECombatAIProfile::Cunning;
+		break;
+	case EEnemyType::FirstClassGuard:
+		Profile = ECombatAIProfile::Disciplined;
+		break;
+	case EEnemyType::TailScrapper:
+		Profile = ECombatAIProfile::Desperate;
+		break;
+	}
+
+	ApplyProfileModifiers();
+
+	// Check if the pawn has a ranged weapon equipped
+	APawn* ControlledPawn = GetPawn();
+	if (ControlledPawn)
+	{
+		UWeaponComponent* WeaponComp = ControlledPawn->FindComponentByClass<UWeaponComponent>();
+		if (WeaponComp && WeaponComp->HasWeaponEquipped())
+		{
+			const FWeaponStats& Weapon = WeaponComp->GetCurrentWeapon();
+			if (Weapon.Category == EWeaponCategory::Ranged)
+			{
+				bUsesRangedWeapons = true;
+				PreferredRangedRange = Weapon.Range * 0.8f;
+			}
+		}
 	}
 }
 

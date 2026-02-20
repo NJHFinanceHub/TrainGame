@@ -11,8 +11,8 @@
 
 > These items were identified from the current demo and must be resolved.
 
-- ⬜ **NO SOUND** — Demo is completely silent. Sound design is now P1 (see Phase 7)
-- ⬜ **CAR SCALE** — Cars are ~10x too small. Train should feel MASSIVE. Rework all car geometry
+- 🔨 **SOUND** — Zone audio system code merged (MetaSounds architecture, adaptive music, Tail POC). Still needs: audio assets, remaining zone profiles, SFX
+- 🔨 **CAR SCALE** — Scale rework scripts merged. Still needs: verify in-editor, adjust streaming distances
 - ⬜ **NO CHARACTERS** — No player model, no NPCs, no companions visible. Need at minimum:
   - ⬜ Player character model (protagonist) — visible in 3rd person
   - ⬜ Basic NPC models per zone (crowd, workers, guards, civilians)

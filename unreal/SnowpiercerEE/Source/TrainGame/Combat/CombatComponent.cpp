@@ -1,6 +1,8 @@
 // Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
 
 #include "CombatComponent.h"
+#include "ProjectileBase.h"
+#include "TrainGame/Weapons/WeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -16,6 +18,7 @@ void UCombatComponent::BeginPlay()
 	Super::BeginPlay();
 	CurrentHealth = MaxHealth;
 	StaminaState.CurrentStamina = StaminaState.MaxStamina;
+	CurrentAmmo = MaxAmmo;
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -68,6 +71,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	RegenerateStamina(DeltaTime);
 	UpdateFatigue(DeltaTime);
 	UpdateKronoleMode(DeltaTime);
+	UpdateReload(DeltaTime);
 }
 
 // ============================================================================
@@ -97,10 +101,15 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 	float Speed = 1.f;
 	float DurabilityLoss = 0.f;
 
-	if (WeaponComp)
+	EDamageType WeaponDamageType = EDamageType::Physical;
+	if (WeaponComp && WeaponComp->HasWeaponEquipped() && !WeaponComp->IsWeaponBroken())
 	{
-		// WeaponComponent provides stats - for now use unarmed as fallback
-		// This will be connected when WeaponComponent is attached
+		const FWeaponStats& Weapon = WeaponComp->GetCurrentWeapon();
+		Damage = Weapon.GetEffectiveDamage();
+		StaminaCost = Weapon.StaminaCostPerSwing;
+		Range = Weapon.Range;
+		Speed = Weapon.AttackSpeed;
+		WeaponDamageType = Weapon.GetDamageType();
 	}
 
 	// Check stamina
@@ -128,7 +137,7 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 	{
 		Result.bHit = true;
 		Result.AttackDirection = Direction;
-		Result.DamageType = EDamageType::Physical;
+		Result.DamageType = WeaponDamageType;
 
 		// Check for critical hit
 		Result.bCritical = FMath::FRand() < CriticalHitChance;
@@ -148,7 +157,7 @@ FHitResult_Combat UCombatComponent::PerformAttack(EAttackDirection Direction)
 		UCombatComponent* TargetCombat = HitTarget->FindComponentByClass<UCombatComponent>();
 		if (TargetCombat)
 		{
-			FHitResult_Combat TargetResult = TargetCombat->ReceiveAttack(FinalDamage, Direction, EDamageType::Physical, GetOwner());
+			FHitResult_Combat TargetResult = TargetCombat->ReceiveAttack(FinalDamage, Direction, WeaponDamageType, GetOwner());
 			Result.bBlocked = TargetResult.bBlocked;
 			Result.bDodged = TargetResult.bDodged;
 			Result.DamageDealt = TargetResult.DamageDealt;
@@ -240,6 +249,10 @@ FHitResult_Combat UCombatComponent::ReceiveAttack(float IncomingDamage, EAttackD
 	}
 
 	float FinalDamage = IncomingDamage;
+
+	// Apply damage resistance
+	float ResistMult = GetDamageResistance(DamageType);
+	FinalDamage *= ResistMult;
 
 	// Blocking
 	if (CurrentStance == ECombatStance::Blocking)
@@ -455,6 +468,99 @@ bool UCombatComponent::DoesBlockMatchAttack(EAttackDirection AttackDir) const
 			return CurrentBlockDirection == EBlockDirection::Mid;
 	}
 }
+
+// ============================================================================
+// Ranged Combat
+// ============================================================================
+
+bool UCombatComponent::PerformRangedAttack(FVector AimDirection)
+{
+	if (!ProjectileClass) return false;
+	if (bIsReloading) return false;
+	if (CurrentAmmo <= 0) return false;
+	if (CurrentStance == ECombatStance::Staggered || CurrentStance == ECombatStance::Downed) return false;
+	if (AttackCooldownTimer > 0.f) return false;
+	if (!StaminaState.CanPerformAction(RangedStaminaCost)) return false;
+
+	ConsumeStamina(RangedStaminaCost);
+	TimeSinceLastCombatAction = 0.f;
+	CurrentAmmo--;
+
+	// Get weapon attack speed for cooldown
+	float Speed = 1.f;
+	UWeaponComponent* WeaponComp = GetOwner()->FindComponentByClass<UWeaponComponent>();
+	if (WeaponComp && WeaponComp->HasWeaponEquipped())
+	{
+		Speed = WeaponComp->GetCurrentWeapon().AttackSpeed;
+		WeaponComp->ApplyHitDurabilityLoss();
+	}
+	AttackCooldownTimer = BaseAttackCooldown / Speed;
+
+	// Spawn projectile
+	UWorld* World = GetWorld();
+	if (!World) return false;
+
+	AActor* Owner = GetOwner();
+	FVector SpawnLocation = Owner->GetActorLocation() + Owner->GetActorForwardVector() * 100.f;
+	FRotator SpawnRotation = AimDirection.Rotation();
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Owner;
+	SpawnParams.Instigator = Cast<APawn>(Owner);
+
+	AProjectileBase* Projectile = World->SpawnActor<AProjectileBase>(ProjectileClass, SpawnLocation, SpawnRotation, SpawnParams);
+	if (Projectile)
+	{
+		Projectile->FireInDirection(AimDirection, Owner);
+	}
+
+	SetStance(ECombatStance::Attacking);
+	SetStance(ECombatStance::Neutral);
+
+	return true;
+}
+
+bool UCombatComponent::StartReload()
+{
+	if (bIsReloading) return false;
+	if (CurrentAmmo >= MaxAmmo) return false;
+	if (CurrentStance == ECombatStance::Staggered || CurrentStance == ECombatStance::Downed) return false;
+
+	bIsReloading = true;
+	ReloadTimer = ReloadTime;
+	return true;
+}
+
+void UCombatComponent::UpdateReload(float DeltaTime)
+{
+	if (!bIsReloading) return;
+
+	ReloadTimer -= DeltaTime;
+	if (ReloadTimer <= 0.f)
+	{
+		bIsReloading = false;
+		CurrentAmmo = MaxAmmo;
+	}
+}
+
+// ============================================================================
+// Damage Resistance
+// ============================================================================
+
+void UCombatComponent::SetDamageResistance(EDamageType Type, float Multiplier)
+{
+	DamageResistances.Add(Type, Multiplier);
+}
+
+float UCombatComponent::GetDamageResistance(EDamageType Type) const
+{
+	const float* Found = DamageResistances.Find(Type);
+	return Found ? *Found : 1.f;
+}
+
+// ============================================================================
+// Melee Trace
+// ============================================================================
 
 AActor* UCombatComponent::PerformMeleeTrace(float TraceRange) const
 {
