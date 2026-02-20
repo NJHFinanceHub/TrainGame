@@ -66,12 +66,12 @@ float UWindowViewComponent::GetExteriorTemperature() const
 
 bool UWindowViewComponent::CanSeeExterior() const
 {
-    if (WindowType == EWindowType::Sealed)
+    if (WindowType == ESEEWindowType::Sealed)
     {
         return false;
     }
 
-    if (WindowType == EWindowType::Passenger && !bFrostWiped)
+    if (WindowType == ESEEWindowType::Passenger && !bFrostWiped)
     {
         return false;
     }

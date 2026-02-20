@@ -59,7 +59,7 @@ public:
 
 	/** Activate a gated collectible (e.g., after solving puzzle, breaking wall) */
 	UFUNCTION(BlueprintCallable, Category = "Collectible")
-	void Activate();
+	void ActivateCollectible();
 
 	/** Get detection radius for a given PER score */
 	UFUNCTION(BlueprintPure, Category = "Collectible")
