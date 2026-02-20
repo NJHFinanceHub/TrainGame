@@ -8,7 +8,7 @@
 ---
 
 ## PHASE 1: DESIGN (COMPLETE)
-All design documents completed by polecats. See `/design/` and `/narrative/` directories.
+All design documents completed. See `/docs/`, `/design/`, `/narrative/` directories.
 - ✅ Protagonist definition, backstory, stats
 - ✅ Character progression system (6 attributes, 5 skill trees, perks)
 - ✅ Companion roster (12 companions across all zones)
@@ -34,92 +34,111 @@ All design documents completed by polecats. See `/design/` and `/narrative/` dir
 - ✅ Exploration components (Collectible, Journal, Crawlspace, Exterior, Window, SecretCar)
 - ✅ Train movement component (sway, sound)
 - ✅ Asset import pipeline (200 art assets, PBR materials)
-- ✅ Demo level scripts (100-car train, themed sections)
+- ✅ Demo level scripts (single car + 100-car train)
+- ✅ Repo cleanup — all assets organized under Assets/
 
 ---
 
-## PHASE 3: CORE SYSTEMS — P0 🔨
+## PHASE 3: CORE SYSTEMS (COMPLETE)
 
-### 3.1 Player Character — P0
+### 3.1 Player Character — ✅
 - ✅ ASEECharacter: movement, sprint, run, crouch, jump
 - ✅ First/third person camera toggle (V key)
 - ✅ Stamina system (drain on run/sprint, regen with delay)
 - ✅ Interaction system (line trace, collectible activation)
-- ⬜ **Health system** — HP, damage, death, respawn at checkpoint
-- ⬜ **Hunger system** — gradual drain, affects stamina regen
-- ⬜ **Cold exposure system** — temperature zones, frostbite debuffs
-- ⬜ **Injury system** — broken arm (reduced melee), leg injury (slower), persists until healed
-- ⬜ **Attribute system** — Strength, Endurance, Cunning, Charisma, Perception, Survival
-- ⬜ **XP & leveling** — hybrid milestone + XP, skill point allocation
-- ⬜ **Skill trees** — Combat, Stealth, Survival, Leadership, Engineer (5 trees, 8+ nodes each)
+- ✅ USEEHealthComponent — HP, 7 damage types, 5 injury types, downed/revive, armor
+- ✅ USEEHungerComponent — gradual drain, stamina penalties, starvation damage
+- ✅ USEEColdComponent — temperature model, 4 frostbite stages, cold suit bonus
+- ✅ USEEStatsComponent — 6 attributes (STR/AGI/END/CUN/PER/CHA), XP/leveling, skill checks
+- ✅ All components wired to character, input bindings set
+- ⬜ **Skill trees** — 5 trees, 8+ nodes each (code architecture exists, no tree data)
 - ⬜ **Perk system** — passive bonuses at level thresholds
 - ⬜ **Climbing/mantling** — contextual, ladders, pipes, stacked bunks
-- ⬜ **Vent crawling** — enter/exit vents, stealth bypass
 - ⬜ **Swimming** — for aquarium/flood sections
 
-### 3.2 NPC System — P0
+### 3.2 NPC System — Partial ✅
 - ✅ ASEENPCCharacter: base class with states, patrol, detection, combat
 - ✅ Sight + hearing detection model
 - ✅ Patrol system (waypoint-based, ping-pong)
-- ✅ Ambient dialogue lines
 - ⬜ **AI Controller** — full behavior tree (UBehaviorTree + UBlackboardData)
-- ⬜ **NPC schedules** — time-of-day routines (sleep, work, patrol, eat)
+- ⬜ **NPC schedules** — time-of-day routines
 - ⬜ **NPC spawner** — data-driven NPC placement per car
-- ⬜ **Crowd NPCs** — lightweight ambient NPCs (no combat, walk/idle/talk)
+- ⬜ **Crowd NPCs** — lightweight ambient NPCs
 - ⬜ **Jackboot AI** — alert propagation, backup calling, formation combat
-- ⬜ **Civilian AI** — flee on combat, report crime, gossip
-- ⬜ **Companion AI** — follow player, combat support, hold position mode
-- ⬜ **Body discovery** — NPCs find unconscious/dead bodies, raise alert
-- ⬜ **NPC memory** — remember player actions, dialogue flags
+- ⬜ **Companion AI** — follow player, combat support, hold position
 
-### 3.3 Combat System — P0
-- ⬜ **Melee combat** — light attack, heavy attack, block, parry, dodge
-- ⬜ **Hit detection** — weapon traces, damage calculation with armor
-- ⬜ **Weapon system** — equippable weapons, stats, durability, degradation
+### 3.3 Combat System — ✅
+- ✅ USEECombatComponent — light/heavy attacks, 3-hit combo, block (70% reduction), parry (0.2s window), dodge with i-frames
+- ✅ ASEEWeaponBase — 5 weapon tiers, damage/speed/range/weight/durability stats
+- ✅ Weapon trace via SweepMultiByChannel
+- ✅ Strength modifier from StatsComponent, injury modifier from HealthComponent
 - ⬜ **Ranged combat** — crossbow, thrown objects, improvised firearms
 - ⬜ **Environmental kills** — steam vents, electrical panels, window breaches
 - ⬜ **Stealth takedowns** — grab from behind, chokehold, knockout
-- ⬜ **Kronole combat mode** — slow-motion perception, temporary buffs
-- ⬜ **Enemy variety** — Jackboot grunt, Jackboot captain, Order zealot, First Class guard
+- ⬜ **Kronole combat mode** — slow-motion perception
+- ⬜ **Enemy variety** — 4+ enemy types with unique behaviors
 - ⬜ **Boss fights** — 7 zone bosses with unique mechanics
-- ⬜ **Damage types** — blunt, bladed, piercing, fire, cold, electric
-- ⬜ **Fatigue system** — extended combat drains stamina
 
-### 3.4 Inventory & Crafting — P0
-- ⬜ **Inventory UI** — grid/list, weight system, sorting, filtering
-- ⬜ **Item base class** — UObject-based with stats, icon, description, stack size
-- ⬜ **Pickup actors** — world items, lootable containers, body looting
-- ⬜ **Crafting stations** — 6 types per design (Improvised, Machine Shop, Chemistry, etc.)
-- ⬜ **Recipe system** — data table driven, skill requirements, failure chance
-- ⬜ **Weapon modification** — attachments, upgrades, damage type changes
+### 3.4 Inventory & Crafting — Partial ✅
+- ✅ USEEInventoryComponent — 30 slots, weight limit (50+STR×5), stacking, quick slots 0-3
+- ✅ FSEEItemData (FTableRowBase) — categories (Weapon/Armor/Consumable/Crafting/Quest/Junk)
+- ✅ Consumable use (heals HP)
+- ⬜ **Item DataTable** — P0, BLOCKS GAMEPLAY: no items defined yet
+- ⬜ **Pickup actors** — world items, lootable containers
+- ⬜ **Crafting stations** — 6 types per design
+- ⬜ **Recipe DataTable** — data table driven crafting
 - ⬜ **Equipment slots** — weapon, head, torso, legs, hands, accessory
-- ⬜ **Resource degradation** — food spoils, chemicals decay
 
-### 3.5 Dialogue System — P0
-- ⬜ **Dialogue tree engine** — branching node graph, condition checks
-- ⬜ **Dialogue UI** — speaker portrait, text, 4 response options
-- ⬜ **Skill checks in dialogue** — Charisma, Cunning, Perception, Strength, Engineer
-- ⬜ **NPC memory** — track what player said, adjust future options
-- ⬜ **Timed responses** — silence counts as a choice
-- ⬜ **Bark system** — ambient NPC lines, context-sensitive
-- ⬜ **PA system** — recurring train announcements per zone
-- ⬜ **Consequence flags** — dialogue choices set flags for quest/ending tracking
+### 3.5 Dialogue System — ✅ (code only)
+- ✅ USEEDialogueManager (GameInstanceSubsystem) — FSEEDialogueNode, 6 node types, conversation flags
+- ✅ USEEQuestManager (GameInstanceSubsystem) — objectives, prerequisites, auto-completion
+- ✅ USEEFactionManager (GameInstanceSubsystem) — 8 factions, rep tracking, mutual exclusivity
+- ⬜ **Dialogue DataTable** — P0: no dialogue trees authored
+- ⬜ **Quest DataTable** — P0: no quests defined
+- ⬜ **Dialogue UI** — speaker portrait, text, response options
+- ⬜ **Bark system** — ambient NPC lines
+- ⬜ **PA system** — train announcements per zone
+
+### 3.6 HUD — ✅
+- ✅ ASEEHUD — canvas-drawn health/stamina bars, hunger/cold indicators, crosshair, damage direction, weapon durability, injury text
 
 ---
 
-## PHASE 4: WORLD BUILDING — P1
+## PHASE 4: PLAYABLE DEMO — P0 🔨
 
-### 4.1 Car Construction — P1
-- ⬜ **Modular car kit** — wall panels, floor tiles, door frames, furniture blocks
-- ⬜ **Car template system** — reusable layouts (barracks, workshop, lounge, etc.)
-- ⬜ **100 unique car levels** — each as a sublevel for streaming
-- ⬜ **Environmental storytelling** — graffiti, notes, damage, lived-in details
-- ⬜ **Car transitions** — door opening animation as loading mask
-- ⬜ **Connector corridors** — between-car walkways with sway
-- ⬜ **Window system** — exterior views per zone, breakable for combat
-- ⬜ **Lighting per zone** — Tail (dark), Third (industrial), Second (warm), First (gold), Engine (blue-white)
+> **Goal:** Make Zone 1 (Cars 0-14) fully playable as a standalone demo.
+> This is what separates "code framework" from "game."
 
-### 4.2 Zone: Tail (Cars 0-14) — P1
+### 4.0 CRITICAL BLOCKERS — Must fix before anything else
+- ⬜ **Create Item DataTable** (DT_Items) — 20+ items: food (bread, rations, rat meat), medicine (bandage, painkillers, antiseptic), weapons (pipe, shiv, wrench, machete), crafting materials (scrap metal, cloth, chemicals), quest items
+- ⬜ **Create Weapon DataTable** — stats for 8-10 weapons across 5 tiers
+- ⬜ **Create Quest DataTable** — Zone 1 main quest + 5 side quests
+- ⬜ **Create Dialogue DataTable** — 5-10 NPC conversation trees for Zone 1
+- ⬜ **Create Collectible DataTable** — 20+ collectibles for Zone 1
+- ⬜ **Create Faction seed data** — starting rep values for 8 factions
+- ⬜ **Pickup actor Blueprint** — world-placeable item that calls AddItem on interact
+- ⬜ **NPC Blueprint** — placeable NPC with dialogue trigger
+
+### 4.1 One-Click Demo — ✅
+- ✅ launch_demo.py — single script imports assets, builds level, sets startup map
+- ✅ import_assets.py — batch asset import with PBR classification
+- ✅ setup_demo_level.py — builds DevTestCar with geometry, lights, actors
+- ✅ rebuild_demo_level.py — procedural 100-car train generation
+
+### 4.2 Character & Animation — P0
+- ⬜ **Player mesh** — skeletal mesh (Mannequin placeholder or custom)
+- ⬜ **Animation Blueprint** — idle, walk, run, sprint, crouch, jump, attack, block, dodge, death
+- ⬜ **Weapon socket** — "weapon_r" socket on skeleton, weapon attach
+- ⬜ **Hit reactions** — stagger, knockback, death ragdoll
+- ⬜ **NPC mesh** — at least 2 variants (Jackboot, Civilian)
+- ⬜ **NPC animation** — patrol walk, idle, combat stance, death
+
+### 4.3 Materials & Lighting — P1
+- ⬜ **Persist materials as .uasset** — currently only exist after running Python script
+- ⬜ **Zone-specific lighting profiles** — Tail (dark, flickering), other zones later
+- ⬜ **Post-process volume** — grime, film grain for Tail atmosphere
+
+### 4.4 Zone 1: Tail (Cars 0-14) — P1
 - ⬜ Car 0: Caboose — sealed rear, memorials, tutorial movement
 - ⬜ Car 1-2: Tail Quarters — cramped bunks, NPC introductions
 - ⬜ Car 3: The Pit — combat tutorial arena
@@ -130,84 +149,42 @@ All design documents completed by polecats. See `/design/` and `/narrative/` dir
 - ⬜ Car 8: Listening Post — lore/intel gathering
 - ⬜ Car 9: Blockade — first real combat encounter (8-10 Jackboots)
 - ⬜ Car 10: Dark Car — horror/stealth section
-- ⬜ Car 11: Freezer Breach — cold damage timer, environmental hazard
+- ⬜ Car 11: Freezer Breach — cold damage timer
 - ⬜ Car 12: Kronole Den — drug system introduction
 - ⬜ Car 13: Smuggler's Cache — trading system unlock
-- ⬜ Car 14: Martyr's Gate — past revolution evidence + BOSS: Jackboot Commander
+- ⬜ Car 14: Martyr's Gate — BOSS: Jackboot Commander
 
-### 4.3 Zone: Third Class (Cars 15-29) — P1
-- ⬜ 15 cars: Processing, Laundry, Barracks, Mess Hall, Chapel, Machine Shop, Brig, Medical, School, Hydroponics, Union Hall, Checkpoint
-- ⬜ Faction introductions: Third Class Union, Kronole Network
-- ⬜ Companion recruitment: Engineer, Laborer
-- ⬜ Major quest: Worker strike
-
-### 4.4 Zone: Second Class (Cars 30-49) — P1
-- ⬜ 20 cars: Night Car, Drawers, Carnival, Quarters, Clinic, Market, School, Voting, Archive, Lounge
-- ⬜ Disguise system introduction
-- ⬜ Political manipulation mechanics
-- ⬜ Companion recruitment: Bureaucrat, Teacher
-
-### 4.5 Zone: Working Spine (Cars 50-62) — P1
-- ⬜ 13 cars: Generators, Water Treatment, HVAC, Comms, Armory, Maintenance Tunnels, Cold Lab, Drawbridge
-- ⬜ Infrastructure control (blackouts, water, temperature)
-- ⬜ BOSS: Chief Engineer
-
-### 4.6 Zone: First Class (Cars 63-82) — P1
-- ⬜ 20 cars: Aquarium, Sushi Bar, Sauna, Tailor, Ballroom, Art Gallery, Casino, Opera, Penthouses, Boardroom
-- ⬜ Infiltration gameplay (disguises critical)
-- ⬜ Companion recruitment: Defector, Entertainer
-- ⬜ BOSS: Head of Hospitality
-
-### 4.7 Zone: Sanctum (Cars 83-95) — P1
-- ⬜ 13 cars: Cathedral, Confession Booth, Eugenics Lab, Cryo Bay, Propaganda Studio, War Room, Experimental Car, Garden of Eden, Vault, Gauntlet
-- ⬜ Major plot twist (The Betrayal Car)
-- ⬜ Companion recruitment: Ex-Priest, Jackboot Deserter
-- ⬜ BOSS: High Priest of the Engine
-
-### 4.8 Zone: Engine (Cars 96-99) — P1
-- ⬜ 4 cars: Antechamber, Child Labor, Observation Deck, Engine Room
-- ⬜ Final confrontation with Wilford
-- ⬜ 6 endings implementation
-- ⬜ BOSS: Wilford (dialogue + optional combat)
-
-### 4.9 Secret Cars (7-10 total) — P2
-- ⬜ Bunker Car, Ghost Car, Rebel Archive, Outside Lab, Stowaway Car, Mirror Car, Prototype
-- ⬜ Access requirements (faction, items, skill checks)
-- ⬜ Unique rewards per secret car
-- ⬜ 2 secret cars affect ending availability
+### 4.5 Orphaned Code Decision — P1
+- ⬜ **Consolidate Source/SnowyEngine + Source/TrainGame into SnowpiercerEE** — ~6000 lines of code (stealth, companions, crafting, economy, Kronole, Slate UI widgets) exist but are NOT registered in .uproject and never compile. Decide: migrate useful code into SnowpiercerEE module OR register these as additional modules.
 
 ---
 
 ## PHASE 5: FACTION & QUEST SYSTEM — P1
 
 ### 5.1 Faction System
-- ⬜ **8 factions** — Tailies, Third Class Union, Jackboots, Bureaucracy, First Class Elite, Order of the Engine, Kronole Network, The Thaw
-- ⬜ **Reputation tracking** — per-faction meter, visible in UI
-- ⬜ **Reputation consequences** — access, prices, dialogue, aggression
-- ⬜ **Faction conflicts** — mutual exclusivity on some choices
+- ✅ USEEFactionManager — 8 factions, -100/+100 rep, standings, mutual exclusivity
+- ⬜ **Faction UI** — reputation bars, standing labels
+- ⬜ **Faction consequences** — access, prices, dialogue, aggression
 - ⬜ **Faction quests** — 5-8 quests per faction
 
 ### 5.2 Quest System
-- ⬜ **Quest manager** — active, completed, failed tracking
-- ⬜ **Main quest** — 7 zone-spanning narrative arc
-- ⬜ **Side quests** — 50+ across all zones
-- ⬜ **Companion quests** — 3-5 per companion (12 companions × 4 avg = ~48)
-- ⬜ **Quest objectives** — go-to, interact, kill, collect, escort, dialogue
+- ✅ USEEQuestManager — active/completed/failed, objectives, prerequisites
+- ⬜ **Quest data** — main quest + 50+ side quests
 - ⬜ **Quest UI** — log, tracking, map markers
+- ⬜ **Companion quests** — 3-5 per companion (~48 total)
 
 ### 5.3 Moral Choice System
-- ⬜ **20+ major choices** — each affects faction rep + companion loyalty + ending path
+- ⬜ **24+ major choices** — each affects faction rep + companion loyalty + ending path
 - ⬜ **Choice consequence tracking** — flags in save system
 - ⬜ **Compound consequences** — late choices reference early ones
-- ⬜ **No "right" answers** — genuine trade-offs
 
 ---
 
 ## PHASE 6: UI/HUD — P1
 
-- ⬜ **HUD** — Health, stamina, cold, hunger, detection, ammo/durability, compass
+- ✅ ASEEHUD — canvas-drawn bars, indicators, crosshair, damage direction
 - ⬜ **Train map** — 100-car linear diagram, scrollable, zone colors, fog of war
-- ⬜ **Inventory screen** — grid + weight, sorting, comparison
+- ⬜ **Inventory screen** — grid + weight, sorting, comparison (UMG widget)
 - ⬜ **Character screen** — stats, skills, perks, equipment
 - ⬜ **Quest log** — active/completed/failed, tracking toggle
 - ⬜ **Faction screen** — reputation bars
@@ -218,113 +195,84 @@ All design documents completed by polecats. See `/design/` and `/narrative/` dir
 - ⬜ **Main menu** — new game, continue, settings, credits
 - ⬜ **Pause menu** — resume, save, load, settings, quit
 - ⬜ **Death screen** — reload checkpoint / quit
-- ⬜ **Minimal HUD mode** — show only when relevant
 
 ---
 
 ## PHASE 7: AUDIO & VFX — P2
 
 ### 7.1 Audio
-- ⬜ **Train ambiance** — constant wheel rhythm, creaking, wind, engine hum
-- ⬜ **Zone ambient layers** — Tail (dripping, coughing), First (orchestra, laughter), etc.
+- ✅ train_interior.mp3 and train_whistle.mp3 imported
+- ⬜ **Zone ambient layers** — Tail (dripping, coughing), Third (machinery), etc.
 - ⬜ **Adaptive music** — exploration → suspicion → combat → wind-down
-- ⬜ **7 boss fight themes**
 - ⬜ **Combat SFX** — weapon impacts per type, armor clanks, grunts
 - ⬜ **Environmental SFX** — doors, pressure seals, hull breach, machinery
 - ⬜ **UI SFX** — pickup, quest update, level up, menu navigation
-- ⬜ **PA system** — zone-specific announcements (looping)
 
 ### 7.2 VFX
 - ⬜ **Steam/smoke** — pipes, vents, kitchen areas
 - ⬜ **Sparks** — electrical systems, combat impacts on metal
 - ⬜ **Cold breath** — visible in freezer sections
-- ⬜ **Blood/damage** — hit feedback, floor splatter
-- ⬜ **Kronole effects** — visual distortion, slow-mo, addiction visual cues
-- ⬜ **Weather through windows** — blizzard, aurora, clear sky
-- ⬜ **Lighting flickers** — Tail fluorescent, damaged sections
+- ⬜ **Blood/damage** — hit feedback
+- ⬜ **Kronole effects** — visual distortion, slow-mo
 
 ---
 
 ## PHASE 8: POLISH & SYSTEMS — P2
 
 ### 8.1 Save System
+- ✅ USEESaveGameSubsystem — save/load infrastructure exists
 - ⬜ **Per-car state persistence** — NPCs, loot, doors, faction control
 - ⬜ **3 manual save slots + 1 autosave**
 - ⬜ **Autosave triggers** — car entry, quest completion, major choice
-- ⬜ **Save file versioning** for patch compatibility
-- ⬜ **Steam Cloud save**
 
 ### 8.2 Difficulty
 - ⬜ **4 tiers** — Passenger, Survivor, Eternal Engine, Mr. Wilford
 - ⬜ **Per-difficulty modifiers** — AI aggression, resource scarcity, permadeath
-- ⬜ **Adaptive difficulty** — optional, based on death count
 
 ### 8.3 Accessibility
 - ⬜ Full subtitles with speaker ID
 - ⬜ Colorblind modes (3 types)
 - ⬜ Control remapping
-- ⬜ Toggle vs hold for sprint/crouch/aim
-- ⬜ Dyslexia-friendly font
-- ⬜ HUD size/opacity options
 
 ### 8.4 Performance
 - ⬜ Car streaming optimization — max 3 loaded
 - ⬜ LOD system for distant cars
 - ⬜ NPC pooling (max 20 per car)
-- ⬜ Texture streaming per zone
-- ⬜ 60fps target on mid-range hardware
 
 ---
 
 ## PHASE 9: ENDINGS & NARRATIVE — P1
-
-- ⬜ **Ending 1: The New Wilford** — Take the Engine, become the tyrant
-- ⬜ **Ending 2: The Revolution** — Destroy class system, democracy on rails
-- ⬜ **Ending 3: The Derailment** — Destroy the Engine, everyone faces the cold
-- ⬜ **Ending 4: The Exodus** — Open the front door, lead survivors out
-- ⬜ **Ending 5: The Eternal Loop** — Discover truth, choose silence or revelation
-- ⬜ **Ending 6 (Secret): The Bridge** — Contact another train
-- ⬜ **Ending calculator** — aggregate choice flags, companion survival, faction alignment
-- ⬜ **Ending cinematics** — unique cutscene per ending
-- ⬜ **Credits variation** — music changes per ending
+- ⬜ 6 endings implementation
+- ⬜ Ending calculator — aggregate choice flags
+- ⬜ Ending cinematics
 
 ---
 
 ## PHASE 10: STEAM & PUBLISHING — P2
-
 - ⬜ Steam integration (achievements, cloud saves, rich presence)
-- ⬜ 60+ Steam achievements
-- ⬜ Store page (description, screenshots, trailer plan)
-- ⬜ Content rating (ESRB M / PEGI 18)
-- ⬜ Controller support (full gamepad bindings)
-- ⬜ Localization prep (English primary, structure for i18n)
-- ⬜ Demo build (Cars 0-14, Tail only)
-- ⬜ Early Access roadmap (Zones 1-3 for EA, full for 1.0)
+- ⬜ Store page, trailer, demo build (Cars 0-14)
 
 ---
 
 ## PHASE 11: POST-LAUNCH — P3
-
-- ⬜ New Game+ (carry skills/recipes, harder enemies, new dialogue)
-- ⬜ Roguelike mode (permadeath, randomized car subset)
-- ⬜ Photo mode
-- ⬜ Mod support (Steam Workshop, custom cars/items)
-- ⬜ Daily challenge mode (10-car gauntlet with leaderboard)
+- ⬜ New Game+, roguelike mode, photo mode, mod support
 
 ---
 
-## CURRENT SPRINT: Phase 3 Core Systems
+## WHAT'S BLOCKING THE DEMO RIGHT NOW
 
-**Active Polecats:**
-| Polecat | Bead | Assignment | Status |
-|---------|------|------------|--------|
-| rust | hq-bsztm | Player Character Systems | Shell died — needs recycle |
-| chrome | hq-qnc2b | Combat System | Failed to start — needs recycle |
-| guzzle | hq-b36xd | UI/HUD | Active |
-| nitro | hq-t3h4m | Stealth & NPC AI | Failed to start — needs recycle |
+**In priority order — fix these and you have a playable game:**
 
-**Next beads to create:**
-- Dialogue & Quest System
-- Inventory & Crafting
-- Faction System
-- Car Construction Kit (modular level building)
+1. **No DataTables** — Inventory, quests, dialogue, collectibles all have C++ systems but zero data. The game literally has nothing to pick up, no quests to track, no NPCs to talk to.
+
+2. **No character mesh/animations** — Player is invisible. Need at minimum UE5 Mannequin placeholder with basic anim blueprint.
+
+3. **No pickup/NPC Blueprints** — C++ components exist but there are no placeable actors in the editor to put items or NPCs into the world.
+
+4. **No persisted materials** — Materials only exist while the Python script session is active. They need to be saved as .uasset files.
+
+5. **~6000 lines of orphaned code** — Source/SnowyEngine and Source/TrainGame have stealth, companions, crafting, economy, Kronole, and full Slate UI widgets that aren't compiled because they're not in the .uproject.
+
+6. **Only 1 map** — DevTestCar is a box with pipes. Zone 1 needs 15 unique car layouts.
+
+7. **2 audio files** — Need ambient, combat SFX, footsteps, UI sounds at minimum.
