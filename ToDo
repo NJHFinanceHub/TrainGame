@@ -1,710 +1,330 @@
-# SNOWPIERCER: ETERNAL ENGINE — Comprehensive TODO
+# SNOWPIERCER: ETERNAL ENGINE — Master TODO
 
 > **Repo:** NJHFinanceHub/TrainGame
-> **Purpose:** Master task list for GasTown Mayor to decompose and assign to agents.
-> **Priority Levels:** P0 (blocks everything), P1 (core gameplay), P2 (important), P3 (polish/nice-to-have)
+> **Engine:** Unreal Engine 5.7.3, C++
+> **Priority:** P0 (blocks everything), P1 (core gameplay), P2 (important), P3 (polish)
+> **Status:** ✅ = Done, 🔨 = In Progress, ⬜ = Not Started
 
 ---
 
-## 1. PLAYER CHARACTER
-
-### 1.1 Protagonist Definition — P0
-- [x] Define protagonist identity: named character vs. custom character creator *(nitro, tr-q4d)*
-- [x] If custom: define character creation options (gender, appearance, body type, voice) *(nitro, tr-q4d)*
-- [x] If named: write character backstory, motivation, personality traits *(nitro, tr-q4d)*
-- [x] Define protagonist's role in the Tail before the game starts (how long on the train, what they lost) *(nitro, tr-q4d)*
-- [x] Decide: voice acted or silent protagonist *(nitro, tr-q4d)*
-  - If voice acted: define voice direction, emotional range, number of lines estimate
-  - If silent: define how player personality is expressed (dialogue choices, actions)
-- [x] Define starting stats/attributes for the protagonist *(nitro, tr-q4d)*
-- [x] Define protagonist's unique ability or trait that justifies why THEY lead the push forward *(nitro, tr-q4d)*
-
-### 1.2 Character Progression System — P0
-- [x] Design stat system: define core attributes (e.g., Strength, Endurance, Cunning, Charisma, Perception, Survival) *(nitro, tr-q4d)*
-- [x] Define how stats affect gameplay: *(nitro, tr-q4d)*
-  - Strength → melee damage, carry weight, forced entry
-  - Endurance → cold resistance, stamina pool, hunger rate
-  - Cunning → stealth effectiveness, lockpicking, crafting quality
-  - Charisma → dialogue options, faction rep gains, companion morale
-  - Perception → hidden item detection, enemy awareness range, environmental cues
-  - Survival → resource efficiency, medicine effectiveness, Kronole resistance
-- [x] Design leveling system: XP-based, milestone-based (per car/zone), or hybrid *(nitro, tr-q4d)*
-- [x] Define XP sources: combat, exploration, quest completion, moral choices, stealth *(nitro, tr-q4d)*
-- [x] Design skill tree structure: *(nitro, tr-q4d)*
-  - Combat branch (melee specialization, weapon mastery, counter-attacks, crowd control)
-  - Stealth branch (silent movement, pickpocketing, disguise effectiveness, silent takedowns)
-  - Survival branch (crafting efficiency, cold resistance, resource scavenging, medicine brewing)
-  - Leadership branch (companion buffs, faction diplomacy, crowd manipulation, intimidation)
-  - Engineer branch (hacking, trap-setting, environmental manipulation, lock bypassing)
-- [x] Define skill point acquisition rate — 1 per level? Per zone? Per major quest? *(nitro, tr-q4d)*
-- [x] Define max level / soft cap *(nitro, tr-q4d)*
-- [x] Design perk system: passive bonuses unlocked at level thresholds or via specific achievements *(nitro, tr-q4d)*
-  - Example perks: "Tail Survivor" (reduced hunger rate), "Kronole Tolerance" (reduced addiction buildup), "Silver Tongue" (extra dialogue options with First Class)
-- [x] Define respec mechanic — can the player reallocate skill points? At what cost? *(nitro, tr-q4d)*
-- [x] Balance progression curve: player should feel weak in Zone 1, competent by Zone 3, powerful by Zone 5, and challenged again in Zones 6-7 *(nitro, tr-q4d)*
-
-### 1.3 Movement & Traversal — P1
-- [x] Define base movement: walk speed, sprint speed, crouch speed, prone/crawl *(nitro, tr-q4d)*
-- [x] Climbing system: ladders, pipes, shelving, stacked bunks — define what surfaces are climbable *(nitro, tr-q4d)*
-- [x] Vent crawling: define vent network system per car, size constraints, can enemies follow? *(nitro, tr-q4d)*
-- [x] Rooftop access: can the player go on top of the train? Define when/how *(nitro, tr-q4d)*
-  - Wind resistance mechanic at speed
-  - Cold exposure timer while outside
-  - Car-to-car rooftop traversal as alternate route
-- [x] Under-car traversal: maintenance catwalks beneath the train floor *(nitro, tr-q4d)*
-- [x] Jumping: limited or none? (Tight corridors make jumping weird — consider contextual mantling instead) *(nitro, tr-q4d)*
-- [x] Swimming: any water cars (aquarium breach, flooded sections)? *(nitro, tr-q4d)*
-- [x] Sliding/dodging: combat dodge roll or sidestep given narrow corridors? *(nitro, tr-q4d)*
-- [x] Ladder/climbing speed affected by carry weight and injuries *(nitro, tr-q4d)*
-
-### 1.4 Death & Respawn — P0
-- [x] Define death mechanic: permadeath? Checkpoint-based? Save-anywhere? *(nitro, tr-q4d)*
-- [x] Checkpoint placement: per car entry? Mid-car for long cars? Before boss fights? *(nitro, tr-q4d)*
-- [x] Define what is lost on death: nothing (reload), some resources, progress in current car? *(nitro, tr-q4d)*
-- [x] Companion permadeath: separate from player death? *(nitro, tr-q4d)*
-- [x] Define "downed" state before full death (can companions revive?) *(nitro, tr-q4d)*
-- [x] Injury system: non-lethal damage that persists (broken arm = reduced melee, leg injury = slower movement) until healed *(nitro, tr-q4d)*
-- [x] Cold death: separate mechanic — freezing is a gradual process with escalating debuffs before death *(nitro, tr-q4d)*
+## PHASE 1: DESIGN (COMPLETE)
+All design documents completed by polecats. See `/design/` and `/narrative/` directories.
+- ✅ Protagonist definition, backstory, stats
+- ✅ Character progression system (6 attributes, 5 skill trees, perks)
+- ✅ Companion roster (12 companions across all zones)
+- ✅ Dialogue system architecture (branching + skill checks)
+- ✅ Economy & crafting (13 resource types, 50+ recipes, 5 tiers)
+- ✅ Stealth & disguise system design
+- ✅ Exploration & secrets (200+ collectibles, 9 secret cars)
+- ✅ World lore (timeline, freeze history, demographics)
+- ✅ Narrative: antagonists, 30+ named NPCs, 20+ moral choices, 6 endings
+- ✅ Audio direction, UI/HUD design, difficulty settings
+- ✅ Technical specs (streaming, save system, performance budgets)
+- ✅ Steam/publishing plan, accessibility, mod support
 
 ---
 
-## 2. COMPANION SYSTEM
-
-### 2.1 Core Companion Mechanics — P1
-- [x] Define max party size (recommendation: 2 companions + player = 3 total, keeps corridors manageable) *(chrome, tr-1ky)*
-- [x] Define total recruitable companion count (recommendation: 12-15 across all zones, 8-10 survivable) *(chrome, tr-1ky)*
-- [x] Can companions permanently die? Define permadeath triggers: *(chrome, tr-1ky)*
-  - Death in combat
-  - Consequences of moral choices
-  - Faction betrayal
-  - Scripted narrative deaths
-- [x] Companion AI behavior modes: aggressive, defensive, passive, hold position *(chrome, tr-1ky)*
-- [x] Companion pathfinding in tight train corridors — they must not block the player *(chrome, tr-1ky)*
-- [x] Companion inventory: separate or shared with player? *(chrome, tr-1ky)*
-- [x] Companion equipment: can they be equipped with weapons/armor? *(chrome, tr-1ky)*
-
-### 2.2 Companion Roster — P1
-- [x] Design at minimum 12 unique companions across all zones: *(chrome, tr-1ky)*
-
-| # | Name | Zone Found | Class/Role | Combat Style | Unique Ability |
-|---|------|-----------|------------|-------------|----------------|
-| 1 | TBD | Tail | Brawler | Unarmed/blunt | Rally nearby Tailies in combat |
-| 2 | TBD | Tail | Medic | Support/knife | Field medicine, drug crafting |
-| 3 | TBD | Tail | Scout | Stealth/shiv | Vent navigation, lockpicking |
-| 4 | TBD | Third Class | Engineer | Traps/tools | Hack systems, disable security |
-| 5 | TBD | Third Class | Laborer | Heavy melee | Break through barricades, carry extra weight |
-| 6 | TBD | Second Class | Bureaucrat | Non-combat | Forge documents, political access |
-| 7 | TBD | Second Class | Teacher | Ranged/support | Child NPC interactions, intel gathering |
-| 8 | TBD | Working Spine | Mechanic | Improvised weapons | Repair/sabotage train systems |
-| 9 | TBD | First Class | Defector | Swordsmanship | First Class disguise access |
-| 10 | TBD | First Class | Entertainer | Distraction | Create diversions, social manipulation |
-| 11 | TBD | Sanctum | Ex-Priest | Kronole abilities | Order of the Engine intel |
-| 12 | TBD | Sanctum | Jackboot Deserter | Military combat | Armory access, tactical leadership |
-
-- [x] Write full backstory for each companion (minimum 500 words each) *(chrome, tr-1ky)*
-- [x] Define each companion's personal quest line (3-5 quests each) *(chrome, tr-1ky)*
-- [x] Define companion relationship arcs — what builds trust, what breaks it *(chrome, tr-1ky)*
-
-### 2.3 Loyalty & Relationship System — P2
-- [x] Design loyalty meter: hidden or visible to player? *(chrome, tr-1ky)*
-- [x] Define loyalty thresholds: acquaintance → ally → trusted → devoted (or equivalent) *(chrome, tr-1ky)*
-- [x] Define loyalty-affecting events: moral choices, dialogue, gifts, quest outcomes, faction alignment *(chrome, tr-1ky)*
-- [x] Companion conflicts: what happens when two companions disagree? Can you lose one by siding with the other? *(chrome, tr-1ky)*
-- [x] Romance system: yes/no decision *(chrome, tr-1ky)*
-  - If yes: how many romanceable companions? Any restrictions?
-  - Romance should not gate gameplay-critical content
-- [x] Companion departure conditions: low loyalty, faction betrayal, moral dealbreakers *(chrome, tr-1ky)*
-- [x] Companion-specific dialogue per car (at minimum for story-critical cars) *(chrome, tr-1ky)*
+## PHASE 2: FOUNDATION (COMPLETE)
+- ✅ UE5 project structure (SnowpiercerEE module)
+- ✅ Compile on UE 5.7.3 — all headers, macros, API fixes
+- ✅ Config files (DefaultEngine, DefaultGame, DefaultInput)
+- ✅ GameMode + PlayerController + SEECharacter
+- ✅ Car streaming subsystem (USEECarStreamingSubsystem)
+- ✅ Save/load subsystem (USEESaveGameSubsystem)
+- ✅ Exploration components (Collectible, Journal, Crawlspace, Exterior, Window, SecretCar)
+- ✅ Train movement component (sway, sound)
+- ✅ Asset import pipeline (200 art assets, PBR materials)
+- ✅ Demo level scripts (100-car train, themed sections)
 
 ---
 
-## 3. DIALOGUE SYSTEM
+## PHASE 3: CORE SYSTEMS — P0 🔨
 
-### 3.1 Dialogue Architecture — P0
-- [x] Define dialogue system type: branching tree, hub-and-spoke, or dynamic/procedural *(guzzle, tr-8mg)*
-- [x] Define max dialogue options per node (recommendation: 4 — direct, diplomatic, aggressive, investigate) *(guzzle, tr-8mg)*
-- [x] Design skill checks in dialogue: *(guzzle, tr-8mg)*
-  - Charisma checks for persuasion
-  - Cunning checks for deception/manipulation
-  - Perception checks for detecting lies
-  - Strength checks for intimidation
-  - Engineer checks for technical arguments
-- [x] Define skill check visibility: show required stat and pass/fail chance? Or hidden? *(guzzle, tr-8mg)*
-- [x] Timed dialogue decisions: any conversations where silence = a choice? Define timeout behavior. *(guzzle, tr-8mg)*
-- [x] Define dialogue consequence system: immediate, delayed, or both? *(guzzle, tr-8mg)*
-- [x] NPC memory: do NPCs remember what you said to them? How far back? *(guzzle, tr-8mg)*
-- [x] Interrupted dialogue: can combat or events interrupt conversations? How to resume? *(guzzle, tr-8mg)*
+### 3.1 Player Character — P0
+- ✅ ASEECharacter: movement, sprint, run, crouch, jump
+- ✅ First/third person camera toggle (V key)
+- ✅ Stamina system (drain on run/sprint, regen with delay)
+- ✅ Interaction system (line trace, collectible activation)
+- ⬜ **Health system** — HP, damage, death, respawn at checkpoint
+- ⬜ **Hunger system** — gradual drain, affects stamina regen
+- ⬜ **Cold exposure system** — temperature zones, frostbite debuffs
+- ⬜ **Injury system** — broken arm (reduced melee), leg injury (slower), persists until healed
+- ⬜ **Attribute system** — Strength, Endurance, Cunning, Charisma, Perception, Survival
+- ⬜ **XP & leveling** — hybrid milestone + XP, skill point allocation
+- ⬜ **Skill trees** — Combat, Stealth, Survival, Leadership, Engineer (5 trees, 8+ nodes each)
+- ⬜ **Perk system** — passive bonuses at level thresholds
+- ⬜ **Climbing/mantling** — contextual, ladders, pipes, stacked bunks
+- ⬜ **Vent crawling** — enter/exit vents, stealth bypass
+- ⬜ **Swimming** — for aquarium/flood sections
 
-### 3.2 Dialogue Content Scope — P1
-- [x] Estimate total word count for all dialogue (target range for scope) *(guzzle, tr-8mg)*
-- [x] Define dialogue density per zone: *(guzzle, tr-8mg)*
-  - Tail: sparse, desperate, short exchanges
-  - Third Class: functional, transactional
-  - Second Class: verbose, political, layered
-  - First Class: performative, manipulative
-  - Sanctum: ritualistic, cryptic
-  - Engine: revelatory, philosophical
-- [x] Write key NPC dialogue trees (priority: quest givers, faction leaders, companions, bosses, Wilford) *(guzzle, tr-8mg)*
-- [x] Define bark/ambient dialogue system for non-interactive NPCs *(guzzle, tr-8mg)*
-- [x] Propaganda PA system: define recurring train announcements per zone *(guzzle, tr-8mg)*
+### 3.2 NPC System — P0
+- ✅ ASEENPCCharacter: base class with states, patrol, detection, combat
+- ✅ Sight + hearing detection model
+- ✅ Patrol system (waypoint-based, ping-pong)
+- ✅ Ambient dialogue lines
+- ⬜ **AI Controller** — full behavior tree (UBehaviorTree + UBlackboardData)
+- ⬜ **NPC schedules** — time-of-day routines (sleep, work, patrol, eat)
+- ⬜ **NPC spawner** — data-driven NPC placement per car
+- ⬜ **Crowd NPCs** — lightweight ambient NPCs (no combat, walk/idle/talk)
+- ⬜ **Jackboot AI** — alert propagation, backup calling, formation combat
+- ⬜ **Civilian AI** — flee on combat, report crime, gossip
+- ⬜ **Companion AI** — follow player, combat support, hold position mode
+- ⬜ **Body discovery** — NPCs find unconscious/dead bodies, raise alert
+- ⬜ **NPC memory** — remember player actions, dialogue flags
 
-### 3.3 Persuasion/Intimidation/Deception Mechanics — P1
-- [x] Design social combat system: can the player "win" encounters purely through dialogue? *(guzzle, tr-8mg)*
-- [x] Define which encounters can be fully bypassed via dialogue *(guzzle, tr-8mg)*
-- [x] Bribery mechanics: what can be offered, how does it interact with inventory? *(guzzle, tr-8mg)*
-- [x] Blackmail system: collect intel → use in dialogue → force compliance *(guzzle, tr-8mg)*
-- [x] Interrogation mechanics for captured enemies or NPCs *(guzzle, tr-8mg)*
-- [x] Lying system: can the player lie? Can they be caught? Consequences of being caught? *(guzzle, tr-8mg)*
+### 3.3 Combat System — P0
+- ⬜ **Melee combat** — light attack, heavy attack, block, parry, dodge
+- ⬜ **Hit detection** — weapon traces, damage calculation with armor
+- ⬜ **Weapon system** — equippable weapons, stats, durability, degradation
+- ⬜ **Ranged combat** — crossbow, thrown objects, improvised firearms
+- ⬜ **Environmental kills** — steam vents, electrical panels, window breaches
+- ⬜ **Stealth takedowns** — grab from behind, chokehold, knockout
+- ⬜ **Kronole combat mode** — slow-motion perception, temporary buffs
+- ⬜ **Enemy variety** — Jackboot grunt, Jackboot captain, Order zealot, First Class guard
+- ⬜ **Boss fights** — 7 zone bosses with unique mechanics
+- ⬜ **Damage types** — blunt, bladed, piercing, fire, cold, electric
+- ⬜ **Fatigue system** — extended combat drains stamina
 
----
+### 3.4 Inventory & Crafting — P0
+- ⬜ **Inventory UI** — grid/list, weight system, sorting, filtering
+- ⬜ **Item base class** — UObject-based with stats, icon, description, stack size
+- ⬜ **Pickup actors** — world items, lootable containers, body looting
+- ⬜ **Crafting stations** — 6 types per design (Improvised, Machine Shop, Chemistry, etc.)
+- ⬜ **Recipe system** — data table driven, skill requirements, failure chance
+- ⬜ **Weapon modification** — attachments, upgrades, damage type changes
+- ⬜ **Equipment slots** — weapon, head, torso, legs, hands, accessory
+- ⬜ **Resource degradation** — food spoils, chemicals decay
 
-## 4. ECONOMY & CRAFTING
-
-### 4.1 Resource Taxonomy — P0
-- [x] Define all resource types and where they're found: *(rust, tr-gbf)*
-
-| Resource | Found In | Used For | Rarity |
-|----------|----------|----------|--------|
-| Metal Scrap | Tail, Third, Spine | Weapon crafting, repairs | Common |
-| Cloth/Fabric | All zones | Bandages, cold protection, disguises | Common |
-| Protein Blocks | Tail | Food (low quality) | Common in Tail |
-| Fresh Food | Second+ | Food (high quality), trading | Rare |
-| Medicine (Basic) | Third+ | Heal minor injuries, cure disease | Uncommon |
-| Medicine (Advanced) | First+ | Surgery, major healing | Rare |
-| Kronole (Raw) | All zones | Crafting, combat buffs, trading | Uncommon |
-| Kronole (Refined) | Kronole Network | Stronger buffs, explosive crafting | Rare |
-| Electronics | Spine, Second+ | Hacking tools, surveillance devices | Uncommon |
-| Chemicals | Spine labs | Poison, medicine, Kronole refinement | Rare |
-| Luxury Items | First Class | Trading, bribery, faction rep | Rare |
-| Ammunition | Armory, Jackboots | Ranged weapons | Very Rare |
-| Blueprints | Hidden/quest | Unlock new crafting recipes | Very Rare |
-| Engine Parts | Spine, Sanctum | Endgame crafting, critical quest items | Legendary |
-
-- [x] Define carry weight / inventory slot system *(rust, tr-gbf)*
-- [x] Define resource stacking limits *(rust, tr-gbf)*
-- [x] Define resource degradation (does food spoil? Do chemicals decay?) *(rust, tr-gbf)*
-
-### 4.2 Crafting System — P1
-- [x] Define crafting station types and locations: *(rust, tr-gbf)*
-  - Improvised Workbench (Tail) — basic weapons, bandages
-  - Machine Shop (Third Class) — intermediate weapons, tools
-  - Chemistry Station (Spine) — medicine, poisons, Kronole refinement
-  - Electronics Bench (Spine/Second) — hacking tools, surveillance
-  - Armorer's Station (Armory) — advanced weapons, armor reinforcement
-  - Tailor's Station (First Class) — disguises, cold gear
-- [x] Define full crafting recipe list (minimum 50 recipes across all stations): *(rust, tr-gbf)*
-  - Weapons: pipe club, shiv, reinforced axe, crossbow, nail bat, shock baton, Kronole grenade
-  - Armor: padded vest, metal plate guard, insulated coat, riot shield
-  - Tools: lockpick set, hacking device, grappling hook, torch, signal flare
-  - Consumables: bandage, medkit, antidote, Kronole dose, molotov, smoke bomb, poison vial
-  - Disguises: Third Class uniform, Jackboot armor, Second Class suit, First Class formal wear, Order robes
-  - Special: cold suit (exterior traversal), EMP device, explosive charge, radio transmitter
-- [x] Define crafting skill requirements — does player need minimum stats to craft certain items? *(rust, tr-gbf)*
-- [x] Define crafting time — instant or requires waiting? *(rust, tr-gbf)*
-- [x] Define crafting failure chance — based on skill level? *(rust, tr-gbf)*
-- [x] Companion crafting: can companions craft? Auto-craft? *(rust, tr-gbf)*
-- [x] Weapon modification system: add attachments, improve stats, change damage type *(rust, tr-gbf)*
-
-### 4.3 Weapon & Armor Tiers — P1
-- [x] Define weapon tier system: *(rust, tr-gbf)*
-  - Tier 1 (Improvised): Found/crafted in Tail. Low damage, breaks fast.
-  - Tier 2 (Functional): Third Class workshops. Moderate stats.
-  - Tier 3 (Military): Jackboot armory. High damage, durable.
-  - Tier 4 (Specialized): Unique weapons from quests/bosses. Special effects.
-  - Tier 5 (Legendary): One-of-a-kind. Endgame.
-- [x] Define weapon categories: blunt, bladed, piercing, ranged, thrown, explosive *(rust, tr-gbf)*
-- [x] Define armor system: head, torso, legs, hands — or simplified slots? *(rust, tr-gbf)*
-- [x] Define armor stats: damage reduction, cold resistance, noise level, movement penalty *(rust, tr-gbf)*
-- [x] Define weapon degradation curve per tier *(rust, tr-gbf)*
-- [x] Define repair costs and requirements per tier *(rust, tr-gbf)*
-- [x] Weapon visual progression: should look more refined as tiers increase *(rust, tr-gbf)*
-
-### 4.4 Trading & Barter Economy — P1
-- [x] Define barter system rules — no universal currency, zone-specific value *(rust, tr-gbf)*
-  - Tail: protein blocks, favors, information
-  - Third Class: rations, scrap, work vouchers
-  - Second Class: luxury items, medicine, influence
-  - First Class: secrets, blackmail, rare goods, Kronole
-- [x] Define price fluctuation: does supply/demand change based on player actions? *(rust, tr-gbf)*
-- [x] Define merchant/trader NPCs per zone (minimum 2 per zone) *(rust, tr-gbf)*
-- [x] Define haggling mechanic: Charisma-based? Mini-game? Flat rates? *(rust, tr-gbf)*
-- [x] Black market system: Kronole Network operates across all zones, premium prices, exclusive items *(rust, tr-gbf)*
-- [x] Stolen goods: can player sell stolen items? Consequences if caught? *(rust, tr-gbf)*
-- [x] Faction discounts: aligned factions offer better rates *(rust, tr-gbf)*
+### 3.5 Dialogue System — P0
+- ⬜ **Dialogue tree engine** — branching node graph, condition checks
+- ⬜ **Dialogue UI** — speaker portrait, text, 4 response options
+- ⬜ **Skill checks in dialogue** — Charisma, Cunning, Perception, Strength, Engineer
+- ⬜ **NPC memory** — track what player said, adjust future options
+- ⬜ **Timed responses** — silence counts as a choice
+- ⬜ **Bark system** — ambient NPC lines, context-sensitive
+- ⬜ **PA system** — recurring train announcements per zone
+- ⬜ **Consequence flags** — dialogue choices set flags for quest/ending tracking
 
 ---
 
-## 5. STEALTH SYSTEM
+## PHASE 4: WORLD BUILDING — P1
 
-### 5.1 Core Stealth Mechanics — P1
-- [x] Detection model: line of sight + sound-based *(rust, tr-qgf)*
-- [x] Define sight detection: *(rust, tr-qgf)*
-  - Cone of vision per enemy type
-  - Distance-based detection (near = instant, far = gradual)
-  - Lighting affects detection (dark = harder to spot)
-  - Movement speed affects visibility (crouching < walking < sprinting)
-- [x] Define sound detection: *(rust, tr-qgf)*
-  - Footstep noise by surface type and movement speed
-  - Combat noise radius
-  - Environmental noise masking (machinery, PA announcements)
-  - Player-created distractions (thrown objects, companion diversions)
-- [x] Detection meter: visible indicator showing enemy awareness (unaware → suspicious → alerted → combat) *(rust, tr-qgf)*
-- [x] Alert propagation: how does one enemy alerting affect nearby enemies? *(rust, tr-qgf)*
-- [x] Alert states per car: can a car go to lockdown? How does it reset? *(rust, tr-qgf)*
-- [x] Hiding spots: under bunks, inside lockers, behind machinery, in vents *(rust, tr-qgf)*
-- [x] Body discovery: unconscious/dead bodies found → raises alert *(rust, tr-qgf)*
+### 4.1 Car Construction — P1
+- ⬜ **Modular car kit** — wall panels, floor tiles, door frames, furniture blocks
+- ⬜ **Car template system** — reusable layouts (barracks, workshop, lounge, etc.)
+- ⬜ **100 unique car levels** — each as a sublevel for streaming
+- ⬜ **Environmental storytelling** — graffiti, notes, damage, lived-in details
+- ⬜ **Car transitions** — door opening animation as loading mask
+- ⬜ **Connector corridors** — between-car walkways with sway
+- ⬜ **Window system** — exterior views per zone, breakable for combat
+- ⬜ **Lighting per zone** — Tail (dark), Third (industrial), Second (warm), First (gold), Engine (blue-white)
 
-### 5.2 Disguise System — P2
-- [x] Define disguise crafting/acquisition per zone *(rust, tr-qgf)*
-- [x] Disguise effectiveness by zone: *(rust, tr-qgf)*
-  - Third Class uniform: free movement in Third Class, suspicious in Second+
-  - Jackboot armor: free movement in security areas, NPCs may test you
-  - Second Class suit: access to Second Class
-  - First Class formal: access to First Class (but behavior must match)
-  - Order robes: access to Sanctum
-- [x] Disguise failure conditions: wrong behavior, staying too long, recognized by specific NPCs, carrying wrong items *(rust, tr-qgf)*
-- [x] Disguise durability: do they degrade? Can they be blown by combat? *(rust, tr-qgf)*
-- [x] NPC challenge system: NPCs may question disguised player, requiring dialogue skill checks *(rust, tr-qgf)*
-- [x] Zone-specific behaviors while disguised (must act differently in First Class vs Third Class) *(rust, tr-qgf)*
+### 4.2 Zone: Tail (Cars 0-14) — P1
+- ⬜ Car 0: Caboose — sealed rear, memorials, tutorial movement
+- ⬜ Car 1-2: Tail Quarters — cramped bunks, NPC introductions
+- ⬜ Car 3: The Pit — combat tutorial arena
+- ⬜ Car 4: Nursery — first moral choice (children's rations)
+- ⬜ Car 5: Elders' Car — quest hub, first companion recruitment
+- ⬜ Car 6: Sickbay — medicine resource introduction
+- ⬜ Car 7: Workshop — crafting tutorial
+- ⬜ Car 8: Listening Post — lore/intel gathering
+- ⬜ Car 9: Blockade — first real combat encounter (8-10 Jackboots)
+- ⬜ Car 10: Dark Car — horror/stealth section
+- ⬜ Car 11: Freezer Breach — cold damage timer, environmental hazard
+- ⬜ Car 12: Kronole Den — drug system introduction
+- ⬜ Car 13: Smuggler's Cache — trading system unlock
+- ⬜ Car 14: Martyr's Gate — past revolution evidence + BOSS: Jackboot Commander
 
-### 5.3 Non-Lethal Options — P1
-- [x] Stealth takedowns: grab from behind, choke hold, knockout — define animation/timing *(rust, tr-qgf)*
-- [x] Non-lethal weapons: stun baton, tranquilizer crossbow bolt, sleep gas *(rust, tr-qgf)*
-- [x] Pacifist route viability: can the ENTIRE game be completed non-lethally? *(rust, tr-qgf)*
-  - If not entirely, define which encounters REQUIRE lethal force
-- [x] Unconscious NPC behavior: how long are they out? Can they be restrained? Do they wake and sound alarm? *(rust, tr-qgf)*
-- [x] Consequences of lethal vs non-lethal: faction rep impact, companion reactions, narrative branches *(rust, tr-qgf)*
+### 4.3 Zone: Third Class (Cars 15-29) — P1
+- ⬜ 15 cars: Processing, Laundry, Barracks, Mess Hall, Chapel, Machine Shop, Brig, Medical, School, Hydroponics, Union Hall, Checkpoint
+- ⬜ Faction introductions: Third Class Union, Kronole Network
+- ⬜ Companion recruitment: Engineer, Laborer
+- ⬜ Major quest: Worker strike
 
----
+### 4.4 Zone: Second Class (Cars 30-49) — P1
+- ⬜ 20 cars: Night Car, Drawers, Carnival, Quarters, Clinic, Market, School, Voting, Archive, Lounge
+- ⬜ Disguise system introduction
+- ⬜ Political manipulation mechanics
+- ⬜ Companion recruitment: Bureaucrat, Teacher
 
-## 6. EXPLORATION & SECRETS
+### 4.5 Zone: Working Spine (Cars 50-62) — P1
+- ⬜ 13 cars: Generators, Water Treatment, HVAC, Comms, Armory, Maintenance Tunnels, Cold Lab, Drawbridge
+- ⬜ Infrastructure control (blackouts, water, temperature)
+- ⬜ BOSS: Chief Engineer
 
-### 6.1 Collectibles System — P2
-- [x] Define collectible types: *(guzzle, tr-fih)*
-  - **Train Logs:** Written records from passengers/crew. Lore and worldbuilding.
-  - **Audio Recordings:** Pre-freeze memories, crew communications, Wilford's private recordings.
-  - **Artifacts:** Physical objects from the old world (photos, books, technology).
-  - **Blueprints:** Unlock crafting recipes (see Section 4).
-  - **Faction Intel:** Documents that reveal faction secrets, usable in dialogue/quests.
-  - **Passenger Manifest Pages:** Piece together who's on the train, reveal hidden connections.
-- [x] Define total collectible count per type (recommendation: 200-300 total across all types) *(guzzle, tr-fih)*
-- [x] Define collectible placement rules: some obvious, some hidden, some gated behind skills/factions *(guzzle, tr-fih)*
-- [x] Collectible journal/codex UI — how does the player review collected items? *(guzzle, tr-fih)*
-- [x] Collectible completion rewards: per zone, per type, total completion *(guzzle, tr-fih)*
+### 4.6 Zone: First Class (Cars 63-82) — P1
+- ⬜ 20 cars: Aquarium, Sushi Bar, Sauna, Tailor, Ballroom, Art Gallery, Casino, Opera, Penthouses, Boardroom
+- ⬜ Infiltration gameplay (disguises critical)
+- ⬜ Companion recruitment: Defector, Entertainer
+- ⬜ BOSS: Head of Hospitality
 
-### 6.2 Hidden & Secret Cars — P2
-- [x] Design 7-10 secret cars not accessible on the main path: *(guzzle, tr-fih)*
-  - **The Bunker Car:** Survivalist who sealed themselves off. Unique weapons/supplies.
-  - **The Ghost Car:** Seemingly empty, haunted by memories (audio/visual flashbacks).
-  - **The Rebel Archive:** Hidden history of every failed revolution.
-  - **The Outside Lab:** Scientists who've been secretly sending probes outside.
-  - **The Stowaway Car:** People living between the walls of other cars.
-  - **The Mirror Car:** Wilford's private blackmail vault — leverage on everyone.
-  - **The Prototype:** An experimental car with pre-freeze military technology.
-- [x] Define access requirements for each secret car (faction rep, items, skill checks, quest chains) *(guzzle, tr-fih)*
-- [x] Secret cars should contain unique rewards not available elsewhere *(guzzle, tr-fih)*
-- [x] At least 2 secret cars should significantly affect ending availability *(guzzle, tr-fih)*
+### 4.7 Zone: Sanctum (Cars 83-95) — P1
+- ⬜ 13 cars: Cathedral, Confession Booth, Eugenics Lab, Cryo Bay, Propaganda Studio, War Room, Experimental Car, Garden of Eden, Vault, Gauntlet
+- ⬜ Major plot twist (The Betrayal Car)
+- ⬜ Companion recruitment: Ex-Priest, Jackboot Deserter
+- ⬜ BOSS: High Priest of the Engine
 
-### 6.3 Exterior Traversal — P1
-- [x] Design rooftop traversal system: *(guzzle, tr-fih)*
-  - Accessible via roof hatches (specific cars only)
-  - Wind resistance: player moves slower, can be knocked off at curves
-  - Cold exposure: timer before frostbite debuffs begin
-  - Visibility: can scout ahead, spot enemies through skylights
-  - Combat on rooftop: extremely dangerous, environmental kills (wind, tunnels, ice)
-- [x] Define cold suit mechanic for extended exterior time *(guzzle, tr-fih)*
-- [x] Design "Breachman" encounters: NPCs who work on the exterior, potential allies/enemies *(guzzle, tr-fih)*
-- [x] Exterior story moments: at least 3 scripted exterior sequences *(guzzle, tr-fih)*
-  - Emergency repair during a crisis
-  - Bypassing a heavily guarded car from outside
-  - Final sequence: seeing the thawing world
-- [x] Car-to-car exterior traversal: skip cars by going over them (risk/reward) *(guzzle, tr-fih)*
+### 4.8 Zone: Engine (Cars 96-99) — P1
+- ⬜ 4 cars: Antechamber, Child Labor, Observation Deck, Engine Room
+- ⬜ Final confrontation with Wilford
+- ⬜ 6 endings implementation
+- ⬜ BOSS: Wilford (dialogue + optional combat)
 
-### 6.4 Maintenance Tunnels & Sub-Floor — P2
-- [x] Design under-car crawlspace system connecting adjacent cars *(guzzle, tr-fih)*
-- [x] Define what's found below: pipes, wiring, smuggler caches, rats, trapped passengers *(guzzle, tr-fih)*
-- [x] Sub-floor as stealth bypass: slower but undetected *(guzzle, tr-fih)*
-- [x] Sub-floor hazards: steam leaks, electrical shorts, structural collapses *(guzzle, tr-fih)*
-- [x] Not all cars have accessible sub-floors — define which do *(guzzle, tr-fih)*
-
-### 6.5 Window & Exterior Viewing System — P2
-- [x] Windows exist in all zones except Tail *(guzzle, tr-fih)*
-- [x] Define what's visible outside per zone/story progression: *(guzzle, tr-fih)*
-  - Early game: nothing but white, frozen wasteland
-  - Mid game: frozen cities, landmarks
-  - Late game: signs of thaw — green patches, running water, animals
-- [x] Interactive windows: can be broken (hull breach hazard), looked through for story moments *(guzzle, tr-fih)*
-- [x] Window as combat mechanic: break window → enemies near it get sucked toward cold / take cold damage *(guzzle, tr-fih)*
+### 4.9 Secret Cars (7-10 total) — P2
+- ⬜ Bunker Car, Ghost Car, Rebel Archive, Outside Lab, Stowaway Car, Mirror Car, Prototype
+- ⬜ Access requirements (faction, items, skill checks)
+- ⬜ Unique rewards per secret car
+- ⬜ 2 secret cars affect ending availability
 
 ---
 
-## 7. OUTSIDE THE TRAIN / WORLD STATE
+## PHASE 5: FACTION & QUEST SYSTEM — P1
 
-### 7.1 World Lore Document — P0
-- [x] Define the year the game takes place *(shiny, tr-31z)*
-- [x] Define what caused the freeze (CW-7 climate agent from film? Or original cause?) *(shiny, tr-31z)*
-- [x] Define how long the train has been running (recommendation: 7-10 years for societal decay) *(shiny, tr-31z)*
-- [x] Define current world state: completely frozen, or beginning to thaw? *(shiny, tr-31z)*
-- [x] Define train route: circular? Point-to-point? How long is one loop? *(shiny, tr-31z)*
-- [x] Define train population: total passengers, breakdown by class *(shiny, tr-31z)*
-- [x] Define other trains: does Big Alice exist? Other trains? Or is Snowpiercer alone? *(shiny, tr-31z)*
-- [x] Define pre-freeze world context: nations, technology level, what was lost *(shiny, tr-31z)*
-- [x] Write a 2-3 page "History of the Freeze" document for agent reference *(shiny, tr-31z)*
-- [x] Define Wilford's backstory: who built the train, why, how did ticket allocation work? *(shiny, tr-31z)*
+### 5.1 Faction System
+- ⬜ **8 factions** — Tailies, Third Class Union, Jackboots, Bureaucracy, First Class Elite, Order of the Engine, Kronole Network, The Thaw
+- ⬜ **Reputation tracking** — per-faction meter, visible in UI
+- ⬜ **Reputation consequences** — access, prices, dialogue, aggression
+- ⬜ **Faction conflicts** — mutual exclusivity on some choices
+- ⬜ **Faction quests** — 5-8 quests per faction
 
-### 7.2 Exterior Environment System — P2
-- [x] Dynamic exterior visuals per train section / story progression *(guzzle, tr-rmn)*
-- [x] Weather system visible through windows: blizzards, clear skies, aurora borealis *(guzzle, tr-rmn)*
-- [x] Temperature display: external temp shown on UI as worldbuilding element *(guzzle, tr-rmn)*
-- [x] Frozen landmarks: recognizable cities/structures visible at specific points in the loop *(guzzle, tr-rmn)*
-- [x] Thaw progression: subtle environmental changes as story progresses (if thaw is part of narrative) *(guzzle, tr-rmn)*
+### 5.2 Quest System
+- ⬜ **Quest manager** — active, completed, failed tracking
+- ⬜ **Main quest** — 7 zone-spanning narrative arc
+- ⬜ **Side quests** — 50+ across all zones
+- ⬜ **Companion quests** — 3-5 per companion (12 companions × 4 avg = ~48)
+- ⬜ **Quest objectives** — go-to, interact, kill, collect, escort, dialogue
+- ⬜ **Quest UI** — log, tracking, map markers
 
-### 7.3 EVA / Cold Suit Mechanics — P2
-- [x] Define cold suit stats: time limit outside, movement restrictions, combat limitations *(guzzle, tr-rmn)*
-- [x] Cold suit acquisition: where found, can it be upgraded? *(guzzle, tr-rmn)*
-- [x] Define exterior objectives that require cold suit: *(guzzle, tr-rmn)*
-  - Repair hull breaches
-  - Access cars from outside when interior is blocked
-  - Retrieve items from frozen exterior structures (stopped alongside ruins?)
-  - Endgame: exit the train entirely
-- [x] Frostbite system: exposed extremities → progressive debuffs → death *(guzzle, tr-rmn)*
+### 5.3 Moral Choice System
+- ⬜ **20+ major choices** — each affects faction rep + companion loyalty + ending path
+- ⬜ **Choice consequence tracking** — flags in save system
+- ⬜ **Compound consequences** — late choices reference early ones
+- ⬜ **No "right" answers** — genuine trade-offs
 
 ---
 
-## 8. DIFFICULTY & ACCESSIBILITY
+## PHASE 6: UI/HUD — P1
 
-### 8.1 Difficulty Settings — P2
-- [x] Define difficulty tiers: *(rust, tr-57w)*
-  - **Passenger:** Story focus. Reduced combat difficulty, generous resources, no companion permadeath.
-  - **Survivor:** Balanced. Standard resource scarcity, moderate combat, companion permadeath on.
-  - **Eternal Engine:** Hard. Scarce resources, aggressive AI, all permadeath active, no highlighted items.
-  - **Mr. Wilford:** Nightmare. One save slot, extreme scarcity, enemies deal massive damage, no HUD.
-- [x] Define per-difficulty modifiers: enemy health, damage, detection range, resource spawn rates, crafting costs *(rust, tr-57w)*
-- [x] Adaptive difficulty option: subtle adjustment based on death count per zone (optional toggle) *(rust, tr-57w)*
-- [x] Can difficulty be changed mid-game? *(rust, tr-57w)*
-
-### 8.2 Accessibility Options — P1
-- [x] Full subtitle system with speaker identification and sound descriptions *(rust, tr-57w)*
-- [x] Subtitle size options (small, medium, large, extra large) *(rust, tr-57w)*
-- [x] Colorblind modes: protanopia, deuteranopia, tritanopia *(rust, tr-57w)*
-- [x] High contrast mode for UI elements *(rust, tr-57w)*
-- [x] Screen reader support for menus (future consideration) *(rust, tr-57w)*
-- [x] Full control remapping: keyboard, mouse, controller *(rust, tr-57w)*
-- [x] One-handed controller layout option *(rust, tr-57w)*
-- [x] Toggle vs hold options for: sprint, crouch, aim *(rust, tr-57w)*
-- [x] Camera shake intensity slider *(rust, tr-57w)*
-- [x] Motion blur toggle *(rust, tr-57w)*
-- [x] Screen flash intensity reduction *(rust, tr-57w)*
-- [x] Auto-aim assist toggle and strength slider *(rust, tr-57w)*
-- [x] Text-to-speech for dialogue (if not voice acted) *(rust, tr-57w)*
-- [x] Dyslexia-friendly font option *(rust, tr-57w)*
+- ⬜ **HUD** — Health, stamina, cold, hunger, detection, ammo/durability, compass
+- ⬜ **Train map** — 100-car linear diagram, scrollable, zone colors, fog of war
+- ⬜ **Inventory screen** — grid + weight, sorting, comparison
+- ⬜ **Character screen** — stats, skills, perks, equipment
+- ⬜ **Quest log** — active/completed/failed, tracking toggle
+- ⬜ **Faction screen** — reputation bars
+- ⬜ **Companion screen** — loyalty, equipment, personal quest
+- ⬜ **Crafting screen** — recipes, materials, station requirements
+- ⬜ **Codex/journal** — lore, collectibles tracker
+- ⬜ **Dialogue UI** — speaker portrait, text, response options
+- ⬜ **Main menu** — new game, continue, settings, credits
+- ⬜ **Pause menu** — resume, save, load, settings, quit
+- ⬜ **Death screen** — reload checkpoint / quit
+- ⬜ **Minimal HUD mode** — show only when relevant
 
 ---
 
-## 9. TUTORIAL & ONBOARDING
+## PHASE 7: AUDIO & VFX — P2
 
-### 9.1 Tutorial Design — P1
-- [x] Tutorial must feel organic — NO tutorial pop-ups breaking immersion *(rust, tr-rlx)*
-- [x] Cars 1-5 serve as progressive tutorial: *(rust, tr-rlx)*
-  - Car 1: Movement, camera, interaction (pick up items, open containers, read notes)
-  - Car 2: Crafting introduction (make first improvised tool)
-  - Car 3: Combat basics (unarmed → first weapon, blocking, dodging)
-  - Car 4: Moral choice tutorial (small-stakes choice to teach the system)
-  - Car 5: Quest/objective system, companion recruitment, faction introduction
-- [x] Environmental teaching: use level design to teach mechanics (narrow path forces crouch, dark room forces torch use) *(rust, tr-rlx)*
-- [x] Companion dialogue as tutorial: companions explain systems in-character *(rust, tr-rlx)*
-- [x] New mechanics in later zones introduced via: *(rust, tr-rlx)*
-  - NPC demonstrations
-  - Environmental necessity (MUST use the system to progress)
-  - Companion suggestions
-- [x] Optional "advanced tips" loading screen hints for later mechanics *(rust, tr-rlx)*
-- [x] Practice rooms: can the player return to The Pit (Car 3) to practice combat? *(rust, tr-rlx)*
+### 7.1 Audio
+- ⬜ **Train ambiance** — constant wheel rhythm, creaking, wind, engine hum
+- ⬜ **Zone ambient layers** — Tail (dripping, coughing), First (orchestra, laughter), etc.
+- ⬜ **Adaptive music** — exploration → suspicion → combat → wind-down
+- ⬜ **7 boss fight themes**
+- ⬜ **Combat SFX** — weapon impacts per type, armor clanks, grunts
+- ⬜ **Environmental SFX** — doors, pressure seals, hull breach, machinery
+- ⬜ **UI SFX** — pickup, quest update, level up, menu navigation
+- ⬜ **PA system** — zone-specific announcements (looping)
 
-### 9.2 Tooltip & Hint System — P2
-- [x] Context-sensitive tooltips: appear only when relevant, fade after first use *(rust, tr-rlx)*
-- [x] Hint system: if player is stuck >3 minutes, subtle environmental cue *(rust, tr-rlx)*
-- [x] Hint frequency tied to difficulty level (more hints on Passenger, none on Mr. Wilford) *(rust, tr-rlx)*
-- [x] Disable all hints toggle *(rust, tr-rlx)*
+### 7.2 VFX
+- ⬜ **Steam/smoke** — pipes, vents, kitchen areas
+- ⬜ **Sparks** — electrical systems, combat impacts on metal
+- ⬜ **Cold breath** — visible in freezer sections
+- ⬜ **Blood/damage** — hit feedback, floor splatter
+- ⬜ **Kronole effects** — visual distortion, slow-mo, addiction visual cues
+- ⬜ **Weather through windows** — blizzard, aurora, clear sky
+- ⬜ **Lighting flickers** — Tail fluorescent, damaged sections
 
 ---
 
-## 10. AUDIO & MUSIC
+## PHASE 8: POLISH & SYSTEMS — P2
 
-### 10.1 Music Direction — P2
-- [x] Define overall musical identity: *(guzzle, tr-0ef)*
-  - Industrial/mechanical base: rhythmic clanking, metallic resonance
-  - Zone-specific overlays:
-    - Tail: Sparse. Droning. Percussive with found-object sounds.
-    - Third Class: Working rhythm. Repetitive mechanical beats.
-    - Second Class: Subdued strings. Faded elegance.
-    - First Class: Orchestral. Lavish but unsettling undertones.
-    - Sanctum: Choral. Hymnal. Organ drones.
-    - Engine: Pure mechanical symphony. The Engine IS the music.
-- [x] Adaptive music system: *(guzzle, tr-0ef)*
-  - Exploration → low intensity ambient
-  - Detection/suspicion → tension layer added
-  - Combat → full intensity, percussion-driven
-  - Post-combat → gradual wind-down
-  - Moral choice → music drops to near-silence, isolated tones
-- [x] Boss fight themes: unique musical motifs for each zone boss (7 total) *(guzzle, tr-0ef)*
-- [x] Title screen music: the sound of the train itself, building into a theme *(guzzle, tr-0ef)*
-- [x] Credits music: varies based on ending achieved *(guzzle, tr-0ef)*
+### 8.1 Save System
+- ⬜ **Per-car state persistence** — NPCs, loot, doors, faction control
+- ⬜ **3 manual save slots + 1 autosave**
+- ⬜ **Autosave triggers** — car entry, quest completion, major choice
+- ⬜ **Save file versioning** for patch compatibility
+- ⬜ **Steam Cloud save**
 
-### 10.2 Sound Design — P1
-- [x] Constant train ambiance layer (never silent): *(guzzle, tr-0ef)*
-  - Wheel-on-rail rhythm (varies with speed and curves)
-  - Metal creaking and groaning
-  - Distant mechanical hum from the Engine
-  - Wind against the exterior hull
-- [x] Per-zone ambient design: *(guzzle, tr-0ef)*
-  - Tail: dripping water, coughing, whispered conversations, rats
-  - Third Class: machinery, PA announcements, boots on metal, steam
-  - Second Class: muffled conversations, clinking glasses, distant music
-  - First Class: orchestral music, laughter, champagne, fountain water
-  - Sanctum: chanting, echoing footsteps, incense crackling
-  - Engine: overwhelming mechanical symphony, rhythmic pistons
-- [x] Combat audio: impact sounds per weapon type, armor clanks, grunts, bone crunching *(guzzle, tr-0ef)*
-- [x] Environmental sounds: door mechanisms, pressure seals, hull breach wind howl *(guzzle, tr-0ef)*
-- [x] UI sounds: menu navigation, item pickup, quest update, level up *(guzzle, tr-0ef)*
+### 8.2 Difficulty
+- ⬜ **4 tiers** — Passenger, Survivor, Eternal Engine, Mr. Wilford
+- ⬜ **Per-difficulty modifiers** — AI aggression, resource scarcity, permadeath
+- ⬜ **Adaptive difficulty** — optional, based on death count
 
-### 10.3 Voice Acting Scope — P1
-- [x] Decision: fully voice acted, partially voice acted, or text-only? *(guzzle, tr-0ef)*
-- [x] If voice acted: estimate total VO lines per character category: *(guzzle, tr-0ef)*
-  - Protagonist: ~2000 lines (if voiced)
-  - Major NPCs (companions, faction leaders, bosses): ~500 lines each
-  - Minor NPCs: ~50 lines each
-  - Ambient/bark NPCs: ~10 lines each
-  - PA system announcements: ~50 unique messages
-- [x] Casting direction notes per major character *(guzzle, tr-0ef)*
-- [x] Language: English primary, plan for localization (see Section 16) *(guzzle, tr-0ef)*
+### 8.3 Accessibility
+- ⬜ Full subtitles with speaker ID
+- ⬜ Colorblind modes (3 types)
+- ⬜ Control remapping
+- ⬜ Toggle vs hold for sprint/crouch/aim
+- ⬜ Dyslexia-friendly font
+- ⬜ HUD size/opacity options
+
+### 8.4 Performance
+- ⬜ Car streaming optimization — max 3 loaded
+- ⬜ LOD system for distant cars
+- ⬜ NPC pooling (max 20 per car)
+- ⬜ Texture streaming per zone
+- ⬜ 60fps target on mid-range hardware
 
 ---
 
-## 11. UI/HUD DESIGN
+## PHASE 9: ENDINGS & NARRATIVE — P1
 
-### 11.1 HUD Elements — P1
-- [x] Health bar: segmented (body part damage?) or single bar? *(guzzle, tr-b9f)*
-- [x] Stamina bar: drain during sprint, combat, climbing *(guzzle, tr-b9f)*
-- [x] Cold exposure indicator: temperature gauge when in cold zones *(guzzle, tr-b9f)*
-- [x] Hunger meter: gradual drain, affects stamina regen *(guzzle, tr-b9f)*
-- [x] Morale indicator: party morale status (if companion system active) *(guzzle, tr-b9f)*
-- [x] Kronole addiction meter: visible only if player has used Kronole *(guzzle, tr-b9f)*
-- [x] Ammo/weapon durability indicator *(guzzle, tr-b9f)*
-- [x] Detection indicator: stealth awareness meter when enemies are near *(guzzle, tr-b9f)*
-- [x] Compass/direction indicator: subtle, always pointing toward the Engine (forward) *(guzzle, tr-b9f)*
-- [x] Interaction prompts: context-sensitive (pick up, talk, open, examine, hack) *(guzzle, tr-b9f)*
-- [x] Damage direction indicator: show where hits are coming from *(guzzle, tr-b9f)*
-- [x] HUD customization: toggle individual elements, opacity slider, size options *(guzzle, tr-b9f)*
-- [x] Minimal HUD mode: only show indicators when relevant (e.g., health only when damaged) *(guzzle, tr-b9f)*
-
-### 11.2 Train Map / Progress Visualization — P1
-- [x] SIGNATURE FEATURE: Full train diagram showing all 100+ cars as a linear map *(guzzle, tr-b9f)*
-  - Current position highlighted
-  - Visited cars marked with status (cleared, allied, hostile, locked)
-  - Zone colors matching art direction
-  - Scrollable/zoomable
-  - Toggle: show/hide car names, faction control, resources found
-- [x] Mini-map: top-down view of current car showing rooms, doors, enemies (if scouted) *(guzzle, tr-b9f)*
-- [x] Map fog of war: unvisited areas hidden until explored or intel gathered *(guzzle, tr-b9f)*
-- [x] Map markers: quest objectives, points of interest, companion locations, merchants *(guzzle, tr-b9f)*
-- [x] Car detail view: click on a car in the train map to see description, status, resources, NPCs *(guzzle, tr-b9f)*
-
-### 11.3 Menus & Screens — P1
-- [x] Inventory screen: grid or list? Weight display, sorting, filtering, comparison *(guzzle, tr-b9f)*
-- [x] Character screen: stats, skills, perks, equipped items, status effects *(guzzle, tr-b9f)*
-- [x] Quest log: active/completed/failed quests, main quest vs side quests, tracking toggle *(guzzle, tr-b9f)*
-- [x] Faction screen: reputation bars for all factions, relationship summary *(guzzle, tr-b9f)*
-- [x] Companion screen: loyalty, equipment, skills, personal quest progress *(guzzle, tr-b9f)*
-- [x] Crafting screen: available recipes, required materials, station requirements *(guzzle, tr-b9f)*
-- [x] Codex/journal: lore entries, collectibles tracker, passenger manifest progress *(guzzle, tr-b9f)*
-- [x] Settings: video, audio, controls, accessibility, gameplay, HUD customization *(guzzle, tr-b9f)*
-- [x] Photo mode (future consideration) *(guzzle, tr-b9f)*
+- ⬜ **Ending 1: The New Wilford** — Take the Engine, become the tyrant
+- ⬜ **Ending 2: The Revolution** — Destroy class system, democracy on rails
+- ⬜ **Ending 3: The Derailment** — Destroy the Engine, everyone faces the cold
+- ⬜ **Ending 4: The Exodus** — Open the front door, lead survivors out
+- ⬜ **Ending 5: The Eternal Loop** — Discover truth, choose silence or revelation
+- ⬜ **Ending 6 (Secret): The Bridge** — Contact another train
+- ⬜ **Ending calculator** — aggregate choice flags, companion survival, faction alignment
+- ⬜ **Ending cinematics** — unique cutscene per ending
+- ⬜ **Credits variation** — music changes per ending
 
 ---
 
-## 12. NARRATIVE GAPS
+## PHASE 10: STEAM & PUBLISHING — P2
 
-### 12.1 Antagonist Design — P0
-- [x] **Wilford (or equivalent):** Full character brief — personality, backstory, motivation, relationship to the Engine *(fury, tr-oep)*
-  - Is Wilford alive? A legend? A figurehead for someone else?
-  - Define Wilford's argument: why the class system is "necessary"
-  - Wilford must be compelling, not cartoonishly evil
-- [x] **Mid-game antagonist:** The player needs someone to oppose before reaching Wilford *(fury, tr-oep)*
-  - Recommendation: Head of Jackboots or a Sanctum leader who operates independently
-  - This character should appear in Zone 2-3 and persist until Zone 5-6
-  - Personal connection to the player if possible
-- [x] **Zone bosses:** Full character briefs for all 7 zone bosses *(fury, tr-oep)*
-  - Name, backstory, fighting style, motivation, potential for non-combat resolution
-- [x] **The Mole:** Is there a traitor in the player's party? Define who and why. *(fury, tr-oep)*
-
-### 12.2 Named NPCs — P1
-- [x] Create at minimum 30 named NPCs beyond companions and antagonists: *(chrome, tr-aqi)*
-  - 5 per zone × 6 non-Engine zones = 30 minimum
-  - Each needs: name, role, personality, 1-2 quests, faction alignment
-- [x] Key named NPCs (require full character sheets): *(chrome, tr-aqi)*
-  - The Elder (Tail leader who sends you forward)
-  - The Black Marketeer (appears in multiple zones)
-  - The Kronole King/Queen (drug network leader)
-  - The Breachman Captain (exterior workers leader)
-  - The Archivist (keeper of train history)
-  - The Surgeon (performs "treatments" in Second Class)
-  - The Entertainer (First Class performer who knows secrets)
-  - The High Priest (Order of the Engine leader)
-  - The Child (taken from the Tail, now in the Engine — the emotional core)
-
-### 12.3 Previous Revolution Backstory — P0
-- [x] Write full account of the last failed revolution (the one Curtis led, or equivalent) *(shiny, tr-31z)*
-- [x] Define how many revolutions have been attempted (recommendation: 3-4) *(shiny, tr-31z)*
-- [x] Each past revolution should have: *(shiny, tr-31z)*
-  - Leader's name and fate
-  - How far they got
-  - Why they failed
-  - What changed on the train as a result
-  - Physical evidence the player finds in specific cars
-- [x] The player's revolution should be informed by (and learn from) past failures *(shiny, tr-31z)*
-- [x] At least one survivor of a past revolution should be a recruitable companion or key NPC *(shiny, tr-31z)*
-
-### 12.4 Timeline & World State — P0
-- [x] Define complete timeline: *(shiny, tr-31z)*
-  - Year of the freeze
-  - Year the train launched
-  - Year of each past revolution
-  - Year of the game's events
-  - Key events between (disasters, births, deaths, policy changes)
-- [x] Define train demographics: *(shiny, tr-31z)*
-  - Total population at launch vs now
-  - Birth rate, death rate
-  - Population per class
-  - How many Jackboots, Order members, etc.
-- [x] Define the original ticket system and class assignment *(shiny, tr-31z)*
-- [x] Define what happens to the dead (ceremony? Recycling? Ejected?) *(shiny, tr-31z)*
-
-### 12.5 Moral Choice Catalog — P1
-- [x] Design and document ALL major moral choices (minimum 20 across the game): *(chrome, tr-aqi)*
-
-| # | Car(s) | Choice | Option A | Option B | Consequences |
-|---|--------|--------|----------|----------|--------------|
-| 1 | 4 | Children's rations | Steal food | Protect children | Hunger vs. morality, Tailie rep |
-| 2 | 9 | First blockade | Fight through | Find alternate path | Combat vs. stealth, casualties |
-| 3 | 25 | The Brig | Free prisoners | Leave them | Gain allies vs. maintain cover |
-| 4 | 28 | Hydroponics | Sabotage food | Protect production | Weaken First Class vs. feed everyone |
-| ... | ... | ... | ... | ... | ... |
-
-- [x] Each choice must affect at least 2 of: faction rep, companion loyalty, accessible cars, ending path *(chrome, tr-aqi)*
-- [x] No "obviously correct" answers — both options should have real trade-offs *(chrome, tr-aqi)*
-- [x] Choices compound: late-game options should reference/be affected by early choices *(chrome, tr-aqi)*
-- [x] Track choice flags in save system for ending calculation *(chrome, tr-aqi)*
+- ⬜ Steam integration (achievements, cloud saves, rich presence)
+- ⬜ 60+ Steam achievements
+- ⬜ Store page (description, screenshots, trailer plan)
+- ⬜ Content rating (ESRB M / PEGI 18)
+- ⬜ Controller support (full gamepad bindings)
+- ⬜ Localization prep (English primary, structure for i18n)
+- ⬜ Demo build (Cars 0-14, Tail only)
+- ⬜ Early Access roadmap (Zones 1-3 for EA, full for 1.0)
 
 ---
 
-## 13. REPLAYABILITY
+## PHASE 11: POST-LAUNCH — P3
 
-### 13.1 New Game+ — P2
-- [x] Define what carries over: skills, recipes, collectible progress? *(chrome, tr-o3s)*
-- [x] Define what changes: harder enemies, new dialogue options, hidden content unlocked? *(chrome, tr-o3s)*
-- [x] New NG+ exclusive content: at minimum 1 secret car and 1 alternative quest path *(chrome, tr-o3s)*
-- [x] NG+ difficulty scaling: enemies scale to player level *(chrome, tr-o3s)*
-
-### 13.2 Branching Path Tracking — P2
-- [x] Post-game statistics screen: choices made, companions survived, factions aligned, ending achieved *(chrome, tr-o3s)*
-- [x] "Road not taken" indicators: show player what they missed without spoiling specifics *(chrome, tr-o3s)*
-- [x] Chapter/zone select after first completion: replay individual zones with current character *(chrome, tr-o3s)*
-- [x] Completion percentage: per zone and total, visible in save file *(chrome, tr-o3s)*
-
-### 13.3 Procedural Elements — P3
-- [x] Minor loot randomization per playthrough *(chrome, tr-o3s)*
-- [x] NPC placement variation for non-critical NPCs *(chrome, tr-o3s)*
-- [x] Optional daily/weekly challenge mode: randomly selected 10-car gauntlet with leaderboard *(chrome, tr-o3s)*
-- [x] Roguelike mode: permadeath, randomized car order (subset of full game), run-based unlocks *(chrome, tr-o3s)*
+- ⬜ New Game+ (carry skills/recipes, harder enemies, new dialogue)
+- ⬜ Roguelike mode (permadeath, randomized car subset)
+- ⬜ Photo mode
+- ⬜ Mod support (Steam Workshop, custom cars/items)
+- ⬜ Daily challenge mode (10-car gauntlet with leaderboard)
 
 ---
 
-## 14. STEAM & PUBLISHING
+## CURRENT SPRINT: Phase 3 Core Systems
 
-### 14.1 Steam Integration — P1
-- [x] Steam Achievements list (recommendation: 50-80 achievements): *(nitro, tr-611)*
-  - Story progression: 1 per zone completed (7)
-  - Endings: 1 per ending (5-6)
-  - Combat: kill milestones, boss-specific challenges, pacifist run
-  - Exploration: all collectibles per type, all secret cars, all cars visited
-  - Social: max loyalty with each companion, max rep with each faction
-  - Challenges: speedrun, no-death, minimal combat, Kronole-free, full addiction
-- [x] Steam Cloud saves *(nitro, tr-611)*
-- [x] Steam trading cards (if applicable) *(nitro, tr-611)*
-- [x] Steam Workshop support (for mods — see 14.3) *(nitro, tr-611)*
-- [x] Rich Presence: show current zone, playtime, completion % in Steam profile *(nitro, tr-611)*
+**Active Polecats:**
+| Polecat | Bead | Assignment | Status |
+|---------|------|------------|--------|
+| rust | hq-bsztm | Player Character Systems | Shell died — needs recycle |
+| chrome | hq-qnc2b | Combat System | Failed to start — needs recycle |
+| guzzle | hq-b36xd | UI/HUD | Active |
+| nitro | hq-t3h4m | Stealth & NPC AI | Failed to start — needs recycle |
 
-### 14.2 Store Page & Marketing — P2
-- [x] Write Steam store description (short and long) *(nitro, tr-611)*
-- [x] Define minimum system requirements and recommended specs *(nitro, tr-611)*
-- [x] Plan screenshot set: 1 per zone minimum (7), plus combat, crafting, dialogue, exterior *(nitro, tr-611)*
-- [x] Trailer plan: teaser trailer (30-60s), gameplay trailer (2-3min), launch trailer *(nitro, tr-611)*
-- [x] Define Early Access strategy: *(nitro, tr-611)*
-  - EA launch with Zones 1-3 (Cars 1-48)?
-  - Full launch with all content?
-  - EA roadmap if applicable
-- [x] Demo plan: free demo with Cars 1-10 (Tail only)? *(nitro, tr-611)*
-
-### 14.3 Content Rating — P1
-- [x] Identify ESRB/PEGI-relevant content: *(nitro, tr-611)*
-  - Violence: melee combat, blood, environmental kills
-  - Drug use: Kronole as a core game mechanic
-  - Language: profanity level in dialogue
-  - Child endangerment: children in the Engine, children's rations theft
-  - Cannibalism: referenced in lore (from the film)
-  - Mature themes: class warfare, eugenics, human experimentation
-- [x] Target rating: M (Mature) / PEGI 18 — confirm this is acceptable *(nitro, tr-611)*
-- [x] Content warnings on store page *(nitro, tr-611)*
-- [x] Sensitive content toggles in settings (reduce gore, skip disturbing scenes)? *(nitro, tr-611)*
-
-### 14.4 Mod Support — P3
-- [x] Define mod scope: custom cars, custom items, total conversions? *(nitro, tr-611)*
-- [x] Modding tools: custom car editor, item definition files, dialogue scripting *(nitro, tr-611)*
-- [x] Steam Workshop integration for mod distribution *(nitro, tr-611)*
-- [x] Mod load order management *(nitro, tr-611)*
-
----
-
-## 15. TECHNICAL SPECIFICATIONS
-
-### 15.1 Engine Decision — P0
-- [x] **CRITICAL DECISION:** Confirm engine choice and development workflow *(nitro, tr-ipc)*
-  - Option A: UE5 + Editor (requires visual editing, Megascans/Quixel for free assets)
-  - Option B: UE5 + procedural generation (all geometry from code, stylized aesthetic)
-  - Option C: Godot + procedural (better terminal-only workflow, GDScript/C#)
-  - Option D: Custom engine (maximum control, maximum effort)
-- [x] Define art pipeline based on engine choice: *(nitro, tr-ipc)*
-  - If procedural: define modular geometry kit (wall panels, floor tiles, door frames, furniture blocks)
-  - If UE5: define Megascans material palette per zone
-  - If Godot: define shader/material approach
-
-### 15.2 Save System — P0
-- [x] Save file format: JSON? Binary? SQLite? *(nitro, tr-ipc)*
-- [x] Save data per car: NPC states, loot collected, doors opened, faction control, environmental changes *(nitro, tr-ipc)*
-- [x] Global save data: player stats, inventory, quest progress, faction rep, choice flags, companion states *(nitro, tr-ipc)*
-- [x] Save slot count: 3 manual saves + 1 autosave? More? *(nitro, tr-ipc)*
-- [x] Autosave triggers: car entry, quest completion, major choice, timed interval *(nitro, tr-ipc)*
-- [x] Save file size budget per slot *(nitro, tr-ipc)*
-- [x] Save file versioning for patches/updates *(nitro, tr-ipc)*
-- [x] Cloud save format compatible with Steam Cloud *(nitro, tr-ipc)*
-
-### 15.3 Car Streaming Architecture — P0
-- [x] Define car loading strategy: max 3 cars in memory (current + 1 forward + 1 back) *(nitro, tr-ipc)*
-- [x] Door opening animation = loading mask (define minimum animation time for loading budget) *(nitro, tr-ipc)*
-- [x] Preloading: begin loading next car when player enters 2nd half of current car *(nitro, tr-ipc)*
-- [x] Backtracking: keep previous car loaded until 2nd car back is requested *(nitro, tr-ipc)*
-- [x] Memory budget per car: define max based on target hardware *(nitro, tr-ipc)*
-- [x] LOD strategy for visible-but-not-entered cars (through windows, over rooftops) *(nitro, tr-ipc)*
-
-### 15.4 Performance Budgets — P1
-- [x] Target framerate: 60fps on defined minimum spec *(nitro, tr-ipc)*
-- [x] Define minimum spec hardware *(nitro, tr-ipc)*
-- [x] Define recommended spec hardware *(nitro, tr-ipc)*
-- [x] Per-car polygon budget *(nitro, tr-ipc)*
-- [x] Per-car texture memory budget *(nitro, tr-ipc)*
-- [x] Maximum concurrent NPCs per car *(nitro, tr-ipc)*
-- [x] Maximum concurrent particle effects per car *(nitro, tr-ipc)*
-- [x] Draw call budget *(nitro, tr-ipc)*
-- [x] Physics object limit per car *(nitro, tr-ipc)*
-
-### 15.5 Networking & Steam — P1  `
+**Next beads to create:**
+- Dialogue & Quest System
+- Inventory & Crafting
+- Faction System
+- Car Construction Kit (modular level building)
