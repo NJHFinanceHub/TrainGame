@@ -10,7 +10,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 1: The Dead End
 
-**Layout:** 12m x 3m. The rearmost car of Snowpiercer. A sealed bulkhead wall at the back is covered in scratched names, faded photographs, and makeshift shrines to the dead. Bunks are stacked four high along both walls with barely enough room to stand between them. A single flickering fluorescent tube provides light. The floor is worn metal grating over cable runs.
+**Layout:** 120m x 30m. The rearmost car of Snowpiercer. A sealed bulkhead wall at the back is covered in scratched names, faded photographs, and makeshift shrines to the dead. Bunks are stacked four high along both walls with barely enough room to stand between them. A single flickering fluorescent tube provides light. The floor is worn metal grating over cable runs.
 
 **Atmosphere:** Claustrophobic. The constant vibration of the track is loudest here — the rear bogies grind directly below. Condensation drips from the ceiling. It smells of too many bodies in too small a space.
 
@@ -40,7 +40,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 2: The Protein Kitchen
 
-**Layout:** 14m x 4m (wider than standard — this car was originally a cargo container). Dominated by a massive grinding apparatus in the center that processes insect larvae into the gelatinous protein blocks. Feeding troughs line the walls where cockroach colonies are maintained. Work tables along one wall serve as the Tail's only crafting surface. A drainage channel runs down the center of the floor.
+**Layout:** 140m x 40m (wider than standard — this car was originally a cargo container). Dominated by a massive grinding apparatus in the center that processes insect larvae into the gelatinous protein blocks. Feeding troughs line the walls where cockroach colonies are maintained. Work tables along one wall serve as the Tail's only crafting surface. A drainage channel runs down the center of the floor.
 
 **Atmosphere:** The smell is indescribable — sweet rot, chitinous musk, and the chemical tang of the binding agent. The grinder runs 18 hours a day, filling the car with a wet crunching sound. Despite this, the Kitchen workers take pride in their work. This is the Tail's lifeline.
 
@@ -74,14 +74,14 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 3: The Pit
 
-**Layout:** 16m x 5m (double-wide car, walls between two original cars were removed). The center is a sunken fighting ring — the floor plates were removed and the depression lined with scrap rubber. Spectator platforms ring the pit at waist height. The ceiling is higher here, with exposed ductwork that fighters sometimes grab. Makeshift lighting rigs (rewired from the car's original systems) illuminate the ring.
+**Layout:** 160m x 50m (double-wide car, walls between two original cars were removed). The center is a sunken fighting ring — the floor plates were removed and the depression lined with scrap rubber. Spectator platforms ring the pit at waist height. The ceiling is higher here, with exposed ductwork that fighters sometimes grab. Makeshift lighting rigs (rewired from the car's original systems) illuminate the ring.
 
 **Atmosphere:** The energy shifts here — this is where the Tail's rage has an outlet. The air is thick with the smell of sweat and old blood. Even when empty, the Pit hums with tension. Chalk marks on the walls track wins and losses. This is the Tail's arena, its court, and sometimes its execution ground.
 
 **Population:** 20-30 spectators during fights. Grey, the Pit Master, runs the operation. He's missing three fingers and one eye but moves like a man half his age.
 
 **Key Features:**
-- **The Ring** — Sunken fighting pit, approximately 4m x 4m. Environmental features: rubber walls (bouncing attacks), exposed pipes overhead (grab for aerial attacks), drainage grates (tripping hazard).
+- **The Ring** — Sunken fighting pit, approximately 40m x 40m. Environmental features: rubber walls (bouncing attacks), exposed pipes overhead (grab for aerial attacks), drainage grates (tripping hazard).
 - **Grey's Perch** — Elevated platform where the Pit Master watches. He serves as combat instructor and arbiter. Functional combat tutorial NPC.
 - **The Board** — Fighter rankings chalked on a steel plate. Player's name gets added after their first fight.
 - **The Cache** — Hidden compartment under the spectator platform. Grey keeps confiscated weapons here. Accessible later with high Grey trust.
@@ -114,7 +114,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 4: The Nursery
 
-**Layout:** 12m x 3m. Divided into two sections by a hanging curtain wall made of stitched-together clothing. The front half is the children's sleeping area — small bunks, hand-drawn pictures on the walls, a few battered toys. The back half is the "classroom" where the older Tailies try to educate the children about the world that was. A small wood-burning stove (fueled by scrap paper and fabric) keeps this car slightly warmer than the rest.
+**Layout:** 120m x 30m. Divided into two sections by a hanging curtain wall made of stitched-together clothing. The front half is the children's sleeping area — small bunks, hand-drawn pictures on the walls, a few battered toys. The back half is the "classroom" where the older Tailies try to educate the children about the world that was. A small wood-burning stove (fueled by scrap paper and fabric) keeps this car slightly warmer than the rest.
 
 **Atmosphere:** Heartbreaking. This is the softest space in the Tail — someone has painted stars on the ceiling with luminescent compound scraped from emergency markers. The children's laughter is the only genuinely innocent sound on the train. But the undercurrent of dread is palpable: children go missing. Taken forward for "apprenticeships" that no one returns from.
 
@@ -152,7 +152,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 5: The Elders' Car
 
-**Layout:** 14m x 3.5m. The political heart of the Tail. A long table dominates the center, made from a repurposed cargo shelf. Benches line both sides. The walls are covered in hand-drawn maps of the train (increasingly inaccurate toward the front), tally marks counting days, and strategic diagrams for revolts that never happened — or ones that failed. A curtained alcove at the back is Gilliam's private space.
+**Layout:** 140m x 35m. The political heart of the Tail. A long table dominates the center, made from a repurposed cargo shelf. Benches line both sides. The walls are covered in hand-drawn maps of the train (increasingly inaccurate toward the front), tally marks counting days, and strategic diagrams for revolts that never happened — or ones that failed. A curtained alcove at the back is Gilliam's private space.
 
 **Atmosphere:** This is where decisions are made. The air feels heavier with responsibility. When the Council is in session, voices echo off the metal walls. When it's empty, the maps and diagrams feel like ghosts of hope. Gilliam's presence dominates even when he's absent — his chair at the head of the table is slightly elevated.
 
@@ -199,7 +199,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 6: The Sickbay
 
-**Layout:** 14m x 3.5m. Repurposed from what was originally a storage car. The walls are lined with makeshift cots — fifteen of them, and all are occupied. A partition separates the "pharmacy" (a locked cabinet with pitifully few supplies) from the patient area. The floor is stained. Buckets serve as bedpans. A hand-crank ventilation system barely circulates the air.
+**Layout:** 140m x 35m. Repurposed from what was originally a storage car. The walls are lined with makeshift cots — fifteen of them, and all are occupied. A partition separates the "pharmacy" (a locked cabinet with pitifully few supplies) from the patient area. The floor is stained. Buckets serve as bedpans. A hand-crank ventilation system barely circulates the air.
 
 **Atmosphere:** The smell of sickness — infection, stale bandages, and desperation. Asha runs this car with two assistants, performing surgery with sharpened scrap and stitching wounds with repurposed wire. The moaning of the sick is constant background audio. Despite the horror, there's a gentleness here — this is where the Tail takes care of its weakest.
 
@@ -235,7 +235,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 7: The Workshop
 
-**Layout:** 14m x 4m. This car is the Tail's most closely guarded secret. Externally, it looks like a collapsed storage car — the entryway is deliberately disguised with debris. Inside, it's been transformed into a forge and weapons workshop. A repurposed heating element serves as a forge. Grinding wheels spin on salvaged bearings. The walls are lined with racks of improvised weapons in various stages of completion.
+**Layout:** 140m x 40m. This car is the Tail's most closely guarded secret. Externally, it looks like a collapsed storage car — the entryway is deliberately disguised with debris. Inside, it's been transformed into a forge and weapons workshop. A repurposed heating element serves as a forge. Grinding wheels spin on salvaged bearings. The walls are lined with racks of improvised weapons in various stages of completion.
 
 **Atmosphere:** Hot. The forge raises the temperature 10 degrees above the rest of the Tail. Sparks fly. The rhythmic clang of hammering is the Tail's secret heartbeat. There's a pride here that doesn't exist elsewhere — the workers in this car are craftsmen, and they know that the revolution literally depends on what they produce.
 
@@ -274,7 +274,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 8: The Listening Post
 
-**Layout:** 10m x 3m. A narrow car that feels even smaller because every surface is covered in scrawled notes, diagrams, and tacked-up scraps of paper. The walls are thin here — thinner than any other car in the Tail. A series of crude stethoscope-like devices are pressed against the walls, connected to listening horns. String runs across the ceiling with paper notes clipped to it like a physical version of a message board.
+**Layout:** 100m x 30m. A narrow car that feels even smaller because every surface is covered in scrawled notes, diagrams, and tacked-up scraps of paper. The walls are thin here — thinner than any other car in the Tail. A series of crude stethoscope-like devices are pressed against the walls, connected to listening horns. String runs across the ceiling with paper notes clipped to it like a physical version of a message board.
 
 **Atmosphere:** Quiet. This is the only car in the Tail where people whisper. The Listeners spend their days with ears pressed to metal, interpreting the sounds of the train. They can tell you what's happening two cars forward by the vibrations. They mapped the Jackboot patrol schedules by footstep patterns. This is the Tail's intelligence service.
 
@@ -312,7 +312,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 9: The Blockade
 
-**Layout:** 16m x 4m. A reinforced checkpoint. The Jackboots have transformed this car into a kill zone. Steel barricades divide the car into three defensive sections. The rear section (Tail-side) is an open killing field — no cover. The middle section has barricades with weapon slits. The forward section is the command post with the reinforced door to Car 10. Floodlights point backward, blinding anyone approaching from the Tail.
+**Layout:** 160m x 40m. A reinforced checkpoint. The Jackboots have transformed this car into a kill zone. Steel barricades divide the car into three defensive sections. The rear section (Tail-side) is an open killing field — no cover. The middle section has barricades with weapon slits. The forward section is the command post with the reinforced door to Car 10. Floodlights point backward, blinding anyone approaching from the Tail.
 
 **Atmosphere:** Military. This is the boot on the Tail's neck. Every surface is functional — no decoration, no comfort. The Jackboots here are not the casual patrol types from Car 1. These are the line holders, trained to kill Tailies. Their armor (repurposed riot gear) and weapons (batons, tasers, one actual firearm held by the commander) make them the most dangerous enemies the player has faced.
 
@@ -361,7 +361,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 10: The Dark Car
 
-**Layout:** 18m x 3m. Completely black. The car's power system is dead — no lights, no heat, no ventilation. The layout is unknowable at first; the player must navigate by touch, sound, and the feeble light sources they carry. The car was originally a sleeper car, but the bunks have been torn apart and reconfigured into... something. Fabric and metal form nest-like structures. The walls are scratched with symbols.
+**Layout:** 180m x 30m. Completely black. The car's power system is dead — no lights, no heat, no ventilation. The layout is unknowable at first; the player must navigate by touch, sound, and the feeble light sources they carry. The car was originally a sleeper car, but the bunks have been torn apart and reconfigured into... something. Fabric and metal form nest-like structures. The walls are scratched with symbols.
 
 **Atmosphere:** Terror. The transition from the Blockade's harsh fluorescents to absolute darkness is disorienting. The ambient sound shifts to dripping water, the creak of metal, and something else — breathing that isn't the player's. The temperature drops but not from cold — from adrenaline. This car is the Tail's haunted house, and the haunting is real.
 
@@ -396,21 +396,21 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 11: The Freezer Breach
 
-**Layout:** 14m x 3.5m. A car in crisis. A section of the outer hull has cracked — not enough to breach the car entirely, but enough for the sub-zero outside air to pour in. Ice has formed on every surface. The walls are coated in frost crystals. The floor is treacherous. A previous attempt to patch the breach with scrap metal and frozen clothing is partially intact but failing. Wind howls through the gap.
+**Layout:** 140m x 35m. A car in crisis. A section of the outer hull has cracked — not enough to breach the car entirely, but enough for the sub-zero outside air to pour in. Ice has formed on every surface. The walls are coated in frost crystals. The floor is treacherous. A previous attempt to patch the breach with scrap metal and frozen clothing is partially intact but failing. Wind howls through the gap.
 
 **Atmosphere:** Cold as death. The temperature is -30°C in the breach zone. The player's breath is visible — a first in the game and a shock after the enclosed warmth of the Tail. Through the crack in the hull, the player gets their first glimpse of the outside world: an endless white void, wind-blasted and lifeless. The emotional impact is massive — this is why they're on the train.
 
 **Population:** None permanent. No one can survive here long-term. Occasional repair crews pass through quickly. Bodies of those who didn't make it fast enough are frozen to the walls.
 
 **Key Features:**
-- **The Breach** — A 2m crack in the hull wall. Wind and snow blast through. Standing near it causes rapid Cold damage. The player can see outside for the first time: a frozen wasteland, the train's tracks stretching behind them into white nothing.
+- **The Breach** — A 20m crack in the hull wall. Wind and snow blast through. Standing near it causes rapid Cold damage. The player can see outside for the first time: a frozen wasteland, the train's tracks stretching behind them into white nothing.
 - **The Frozen Bodies** — Three Tailies frozen to the walls mid-stride. They died trying to cross. Their equipment is intact but frozen solid — requires a heat source to free.
 - **The Ice Floor** — The entire car floor is frozen. Movement is reduced, dodging is nearly impossible. If the player has the Luminescent Compound, it provides a faint heat signature — not enough to warm but enough to mark safe paths.
 - **The Patch** — The failed repair attempt. With the right materials (Scrap Metal + Binding Wire from earlier), the player can reinforce it, reducing cold damage for anyone who follows. This is optional but affects Tailie casualty rates later.
 
 **Encounters:**
 - **The Crossing (Timed Challenge):**
-  This is a survival run, not a combat encounter. The player has a Cold Timer — approximately 90 seconds before hypothermia sets in. The car is 14m long but the path is not straight: ice blockages, collapsed shelving, and the frozen bodies create obstacles.
+  This is a survival run, not a combat encounter. The player has a Cold Timer — approximately 90 seconds before hypothermia sets in. The car is 140m long but the path is not straight: ice blockages, collapsed shelving, and the frozen bodies create obstacles.
 
   **Navigation Challenges:**
   - Ice patches force slow movement or risk falling (stamina damage)
@@ -441,7 +441,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 12: The Kronole Den
 
-**Layout:** 12m x 4m. A haze-filled space that feels out of place in the Tail. Someone has draped fabric over the walls and ceiling, creating a tent-like interior. Low platforms replace bunks — people recline on them, glassy-eyed. A chemical smell underlies everything: sweet, industrial, wrong. Blue-tinged smoke drifts in layers. Makeshift pipes and burners are scattered around. This is the Tail's escape hatch from reality.
+**Layout:** 120m x 40m. A haze-filled space that feels out of place in the Tail. Someone has draped fabric over the walls and ceiling, creating a tent-like interior. Low platforms replace bunks — people recline on them, glassy-eyed. A chemical smell underlies everything: sweet, industrial, wrong. Blue-tinged smoke drifts in layers. Makeshift pipes and burners are scattered around. This is the Tail's escape hatch from reality.
 
 **Atmosphere:** Dreamlike and sinister. After the terror of the Dark Car and the brutality of the Freezer Breach, the Den feels almost welcoming — warm, soft, quiet. That's the trap. The Kronole users are peaceful, but they're also wasting away. The drug provides temporary euphoria and pain relief but progressively destroys motor function, memory, and will. The Den Master, a woman named Zhora, runs this place as equal parts hospice and temple.
 
@@ -479,7 +479,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 13: The Smuggler's Cache
 
-**Layout:** 10m x 3m, but deceptive — the car has a false wall creating a hidden 3m x 3m room accessible only through a concealed hatch. The visible section looks like abandoned storage: empty crates, broken equipment, dust. The hidden room is a treasure trove: organized shelving with goods from every section of the train, a small desk with a ledger, and a communication device that shouldn't exist in the Tail.
+**Layout:** 100m x 30m, but deceptive — the car has a false wall creating a hidden 30m x 30m room accessible only through a concealed hatch. The visible section looks like abandoned storage: empty crates, broken equipment, dust. The hidden room is a treasure trove: organized shelving with goods from every section of the train, a small desk with a ledger, and a communication device that shouldn't exist in the Tail.
 
 **Atmosphere:** The visible section feels dead — deliberately so. The hidden room feels alive with possibility. Every shelf holds something the Tail shouldn't have: real food, medicine, weapons parts, First Class luxuries. The Smuggler has been running a black market operation for years, moving goods up and down the train through a network of contacts. They are the proof that the train's class system is porous.
 
@@ -517,7 +517,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 14: The Martyr's Gate
 
-**Layout:** 16m x 4m. A memorial and a crime scene. This car is where the first revolution ended — in blood. The walls are scarred with weapon strikes and what might be old bullet holes. Brown stains that will never come out mark the floor in patterns that suggest where bodies fell. Someone — the Jackboots? the survivors? — left it as is. A warning. At the center, a makeshift monument: weapons of the fallen embedded in a block of frozen resin, like a grotesque art installation. The forward end has a sealed observation window looking into Car 15.
+**Layout:** 160m x 40m. A memorial and a crime scene. This car is where the first revolution ended — in blood. The walls are scarred with weapon strikes and what might be old bullet holes. Brown stains that will never come out mark the floor in patterns that suggest where bodies fell. Someone — the Jackboots? the survivors? — left it as is. A warning. At the center, a makeshift monument: weapons of the fallen embedded in a block of frozen resin, like a grotesque art installation. The forward end has a sealed observation window looking into Car 15.
 
 **Atmosphere:** Sacred and terrible. Every Tailie knows this place exists but most never come here. The revolution before the current one ended in this car — 74 Tailies died in what the front calls "The Culling" and the Tail calls "The Martyrdom." The silence here is different from the Listening Post — this is the silence of the dead. Even the train's vibration seems muted.
 
@@ -562,7 +562,7 @@ The Tail is a pressure cooker of desperation, solidarity, and simmering revolt. 
 
 ## Car 15: The Threshold
 
-**Layout:** 20m x 5m (the largest car in the Tail). This is the border between the Tail and Third Class, and it was built to be impassable. A massive reinforced door — 3m thick, blast-rated — dominates the forward wall. The car itself is a fortified Jackboot garrison: weapon racks, armor lockers, bunks for 20 soldiers, a command center with monitors showing camera feeds from the Tail (most are broken, but some still work), and a raised platform where Commander Volkov oversees the border.
+**Layout:** 200m x 50m (the largest car in the Tail). This is the border between the Tail and Third Class, and it was built to be impassable. A massive reinforced door — 30m thick, blast-rated — dominates the forward wall. The car itself is a fortified Jackboot garrison: weapon racks, armor lockers, bunks for 20 soldiers, a command center with monitors showing camera feeds from the Tail (most are broken, but some still work), and a raised platform where Commander Volkov oversees the border.
 
 **Atmosphere:** Oppression made physical. Everything about this car says "you do not pass." The lighting is harsh industrial. The Jackboots here are the best-equipped on the train's rear half — real body armor, steel batons, shields, and Volkov's personal weapon: a pre-freeze military-grade shock lance that can incapacitate with a touch. The air smells of gun oil and discipline.
 

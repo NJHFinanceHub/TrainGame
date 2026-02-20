@@ -22,7 +22,7 @@ Car Roster:
   13 Smuggler's Cache       -- hidden compartment, trade goods, merchant NPC spawn
   14 Martyr's Gate          -- grand entrance, historical markers, boss arena, dramatic light
 
-Each car: 1200cm x 400cm x 300cm (12m x 4m x 3m)
+Each car: 12000cm x 4000cm x 3000cm (120m x 40m x 30m)  [10x scale]
 """
 
 import unreal
@@ -37,16 +37,16 @@ asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
 mat_lib = unreal.MaterialEditingLibrary
 
 # ---------------------------------------------------------------------------
-# Dimensions (cm)
+# Dimensions (cm) — 10x scale for massive building-interior feel
 # ---------------------------------------------------------------------------
 
-CAR_LENGTH  = 1200.0
-CAR_WIDTH   = 400.0
-CAR_HEIGHT  = 300.0
-WALL_THICK  = 15.0
-DOOR_WIDTH  = 150.0
-DOOR_HEIGHT = 230.0
-CAR_GAP     = 100.0      # connector gangway between cars
+CAR_LENGTH  = 12000.0
+CAR_WIDTH   = 4000.0
+CAR_HEIGHT  = 3000.0
+WALL_THICK  = 150.0
+DOOR_WIDTH  = 1500.0
+DOOR_HEIGHT = 2300.0
+CAR_GAP     = 1000.0      # connector gangway between cars
 
 NUM_CARS    = 15
 
@@ -201,7 +201,7 @@ def place_box(label, location, size, material=None):
     return actor
 
 
-def place_light(label, location, color_rgb, intensity, radius=800.0):
+def place_light(label, location, color_rgb, intensity, radius=8000.0):
     """Spawn a point light with given color and intensity."""
     pl = level_lib.spawn_actor_from_class(
         unreal.PointLight,
@@ -255,7 +255,7 @@ def try_place_pipe(label, mesh_name, location, rotation=None):
             return actor
     # Fallback: thin box as pipe stand-in
     mat_metal = _mat_cache.get("Tail_Wall")
-    return place_box(label, location, (200.0, 8.0, 8.0), mat_metal)
+    return place_box(label, location, (2000.0, 80.0, 80.0), mat_metal)
 
 
 # ---------------------------------------------------------------------------
@@ -392,13 +392,13 @@ def build_car_lights(car_idx, car_x):
     half_l = CAR_LENGTH / 2.0
 
     # At least 2 lights per car, spaced along length
-    num_lights = max(2, int(CAR_LENGTH / 500.0))
+    num_lights = max(2, int(CAR_LENGTH / 5000.0))
     for li in range(num_lights):
         lx = car_x - half_l + (li + 0.5) * (CAR_LENGTH / num_lights)
-        ly = 80.0 if (li % 2 == 0) else -80.0
+        ly = 800.0 if (li % 2 == 0) else -800.0
         place_light(f"{prefix}_{li}",
-                    unreal.Vector(lx, ly, CAR_HEIGHT - 40.0),
-                    light_c, light_i, radius=700.0)
+                    unreal.Vector(lx, ly, CAR_HEIGHT - 400.0),
+                    light_c, light_i, radius=7000.0)
         _inc()
 
 
@@ -418,8 +418,8 @@ def build_car_pipes(car_idx, car_x):
     # Two pipe runs along left ceiling, two along right ceiling
     positions = [
         # (y_offset, z_offset)
-        (half_w - 30.0,  CAR_HEIGHT - 20.0),
-        (-(half_w - 30.0), CAR_HEIGHT - 20.0),
+        (half_w - 300.0,  CAR_HEIGHT - 200.0),
+        (-(half_w - 300.0), CAR_HEIGHT - 200.0),
     ]
 
     pipe_idx = 0
@@ -445,10 +445,10 @@ def build_car_sign(car_idx, car_x):
     half_w = CAR_WIDTH / 2.0
     # Small box as sign placeholder near front-left wall
     mat = _mat_cache.get("Tail_Door")
-    sign_x = car_x + half_l - 60.0
+    sign_x = car_x + half_l - 600.0
     place_box(f"Sign_Z1_Car{car_idx:02d}_{name}",
-              unreal.Vector(sign_x, half_w - 5.0, 200.0),
-              (40.0, 2.0, 20.0), mat)
+              unreal.Vector(sign_x, half_w - 50.0, 2000.0),
+              (400.0, 20.0, 200.0), mat)
     _inc()
 
 
@@ -458,14 +458,14 @@ def build_car_sign(car_idx, car_x):
 
 def _bunk_stack(prefix, cx, cy, cz, mat, count=3):
     """Place a vertical stack of bunk boxes."""
-    bunk_h = 50.0
-    bunk_gap = 10.0
+    bunk_h = 500.0
+    bunk_gap = 100.0
     actors = []
     for i in range(count):
         bz = cz + i * (bunk_h + bunk_gap)
         a = place_box(f"{prefix}_bunk{i}",
                       unreal.Vector(cx, cy, bz),
-                      (180.0, 80.0, bunk_h), mat)
+                      (1800.0, 800.0, bunk_h), mat)
         actors.append(a)
         _inc()
     return actors
@@ -479,41 +479,41 @@ def build_car00_caboose(car_x, mats):
     memorial_mat = mats.get("Memorial_Dark")
 
     # Memorial items on rear wall -- small boxes representing photos/flowers
-    rear_x = car_x - half_l + 30.0
+    rear_x = car_x - half_l + 300.0
     for i in range(5):
         place_box(f"{p}_Memorial_{i}",
-                  unreal.Vector(rear_x, -120.0 + i * 60.0, 150.0 + (i % 3) * 30.0),
-                  (5.0, 30.0, 30.0), memorial_mat)
+                  unreal.Vector(rear_x, -1200.0 + i * 600.0, 1500.0 + (i % 3) * 300.0),
+                  (50.0, 300.0, 300.0), memorial_mat)
         _inc()
 
     # Narrow partitions dividing the space
     place_box(f"{p}_Partition_A",
-              unreal.Vector(car_x - 200.0, 0.0, CAR_HEIGHT / 2.0),
-              (5.0, CAR_WIDTH * 0.6, CAR_HEIGHT * 0.7), mats.get("Tail_Wall"))
+              unreal.Vector(car_x - 2000.0, 0.0, CAR_HEIGHT / 2.0),
+              (50.0, CAR_WIDTH * 0.6, CAR_HEIGHT * 0.7), mats.get("Tail_Wall"))
     place_box(f"{p}_Partition_B",
-              unreal.Vector(car_x + 200.0, 0.0, CAR_HEIGHT / 2.0),
-              (5.0, CAR_WIDTH * 0.6, CAR_HEIGHT * 0.7), mats.get("Tail_Wall"))
+              unreal.Vector(car_x + 2000.0, 0.0, CAR_HEIGHT / 2.0),
+              (50.0, CAR_WIDTH * 0.6, CAR_HEIGHT * 0.7), mats.get("Tail_Wall"))
     _inc(2)
 
     # Bunks along walls
-    _bunk_stack(f"{p}_BunkL1", car_x - 350.0, 150.0, 30.0, bunk_mat)
-    _bunk_stack(f"{p}_BunkR1", car_x - 350.0, -150.0, 30.0, bunk_mat)
-    _bunk_stack(f"{p}_BunkL2", car_x + 100.0, 150.0, 30.0, bunk_mat)
-    _bunk_stack(f"{p}_BunkR2", car_x + 100.0, -150.0, 30.0, bunk_mat)
+    _bunk_stack(f"{p}_BunkL1", car_x - 3500.0, 1500.0, 300.0, bunk_mat)
+    _bunk_stack(f"{p}_BunkR1", car_x - 3500.0, -1500.0, 300.0, bunk_mat)
+    _bunk_stack(f"{p}_BunkL2", car_x + 1000.0, 1500.0, 300.0, bunk_mat)
+    _bunk_stack(f"{p}_BunkR2", car_x + 1000.0, -1500.0, 300.0, bunk_mat)
 
     # Brazier (central gathering fire -- small bright warm light)
     place_box(f"{p}_Brazier",
-              unreal.Vector(car_x, 0.0, 30.0),
-              (40.0, 40.0, 50.0), memorial_mat)
+              unreal.Vector(car_x, 0.0, 300.0),
+              (400.0, 400.0, 500.0), memorial_mat)
     place_light(f"{p}_BrazierLight",
-                unreal.Vector(car_x, 0.0, 80.0),
-                (255, 140, 40), 800.0, radius=300.0)
+                unreal.Vector(car_x, 0.0, 800.0),
+                (255, 140, 40), 800.0, radius=3000.0)
     _inc(2)
 
     # PlayerStart in the caboose
     ps = level_lib.spawn_actor_from_class(
         unreal.PlayerStart,
-        unreal.Vector(car_x, 0.0, 50.0),
+        unreal.Vector(car_x, 0.0, 500.0),
         unreal.Rotator(0.0, 0.0, 0.0)
     )
     if ps:
@@ -530,22 +530,22 @@ def build_car01_quarters_a(car_x, mats):
 
     # 6 bunk stacks along the length (3 left, 3 right)
     for i in range(3):
-        bx = car_x - half_l + 150.0 + i * 350.0
-        _bunk_stack(f"{p}_BunkL{i}", bx, 140.0, 30.0, bunk_mat)
-        _bunk_stack(f"{p}_BunkR{i}", bx, -140.0, 30.0, bunk_mat)
+        bx = car_x - half_l + 1500.0 + i * 3500.0
+        _bunk_stack(f"{p}_BunkL{i}", bx, 1400.0, 300.0, bunk_mat)
+        _bunk_stack(f"{p}_BunkR{i}", bx, -1400.0, 300.0, bunk_mat)
 
     # Narrow corridor partition
     place_box(f"{p}_Corridor",
-              unreal.Vector(car_x, 0.0, 10.0),
-              (CAR_LENGTH * 0.8, 5.0, 20.0), mats.get("Tail_Floor"))
+              unreal.Vector(car_x, 0.0, 100.0),
+              (CAR_LENGTH * 0.8, 50.0, 200.0), mats.get("Tail_Floor"))
     _inc()
 
     # 5 NPC spawn points
     for i in range(5):
-        sx = car_x - half_l + 120.0 + i * 220.0
-        sy = 50.0 if (i % 2 == 0) else -50.0
+        sx = car_x - half_l + 1200.0 + i * 2200.0
+        sy = 500.0 if (i % 2 == 0) else -500.0
         place_target_point(f"Spawn_{p}_NPC_{i}",
-                           unreal.Vector(sx, sy, 50.0))
+                           unreal.Vector(sx, sy, 500.0))
         _inc()
     unreal.log(f"  Car 01 Tail Quarters A: 6 bunk stacks, 5 NPC spawns")
 
@@ -558,29 +558,29 @@ def build_car02_quarters_b(car_x, mats):
 
     # Bunks on ends, open communal area in center
     for i in range(2):
-        bx = car_x - half_l + 150.0 + i * 800.0
-        _bunk_stack(f"{p}_BunkL{i}", bx, 140.0, 30.0, bunk_mat)
-        _bunk_stack(f"{p}_BunkR{i}", bx, -140.0, 30.0, bunk_mat)
+        bx = car_x - half_l + 1500.0 + i * 8000.0
+        _bunk_stack(f"{p}_BunkL{i}", bx, 1400.0, 300.0, bunk_mat)
+        _bunk_stack(f"{p}_BunkR{i}", bx, -1400.0, 300.0, bunk_mat)
 
     # Communal table in center
     place_box(f"{p}_Table",
-              unreal.Vector(car_x, 0.0, 40.0),
-              (200.0, 100.0, 10.0), bunk_mat)
+              unreal.Vector(car_x, 0.0, 400.0),
+              (2000.0, 1000.0, 100.0), bunk_mat)
     _inc()
 
     # Crate seats around table
-    for i, (dx, dy) in enumerate([(-80, 60), (80, 60), (-80, -60), (80, -60)]):
+    for i, (dx, dy) in enumerate([(-800, 600), (800, 600), (-800, -600), (800, -600)]):
         place_box(f"{p}_Seat_{i}",
-                  unreal.Vector(car_x + dx, dy, 20.0),
-                  (30.0, 30.0, 30.0), mats.get("Cache_Crate"))
+                  unreal.Vector(car_x + dx, dy, 200.0),
+                  (300.0, 300.0, 300.0), mats.get("Cache_Crate"))
         _inc()
 
     # Candle-like warm point lights (small, low intensity, warm orange)
     for i in range(3):
-        cx = car_x - 300.0 + i * 300.0
+        cx = car_x - 3000.0 + i * 3000.0
         place_light(f"{p}_Candle_{i}",
-                    unreal.Vector(cx, 0.0, 60.0),
-                    (255, 180, 80), 600.0, radius=250.0)
+                    unreal.Vector(cx, 0.0, 600.0),
+                    (255, 180, 80), 600.0, radius=2500.0)
         _inc()
     unreal.log(f"  Car 02 Tail Quarters B: bunks, communal table, candle lights")
 
@@ -593,33 +593,33 @@ def build_car03_pit(car_x, mats):
 
     # Raised platform/ring in center (slightly elevated floor)
     place_box(f"{p}_RingFloor",
-              unreal.Vector(car_x, 0.0, 10.0),
-              (500.0, 300.0, 20.0), pit_mat)
+              unreal.Vector(car_x, 0.0, 100.0),
+              (5000.0, 3000.0, 200.0), pit_mat)
     _inc()
 
     # Corner posts (4)
-    for i, (dx, dy) in enumerate([(-200, 120), (200, 120), (-200, -120), (200, -120)]):
+    for i, (dx, dy) in enumerate([(-2000, 1200), (2000, 1200), (-2000, -1200), (2000, -1200)]):
         place_box(f"{p}_Post_{i}",
-                  unreal.Vector(car_x + dx, dy, 60.0),
-                  (10.0, 10.0, 100.0), platform_mat)
+                  unreal.Vector(car_x + dx, dy, 600.0),
+                  (100.0, 100.0, 1000.0), platform_mat)
         _inc()
 
     # Spectator benches along walls (crate seats)
     half_l = CAR_LENGTH / 2.0
     for i in range(4):
-        bx = car_x - half_l + 100.0 + i * 300.0
+        bx = car_x - half_l + 1000.0 + i * 3000.0
         place_box(f"{p}_BenchL_{i}",
-                  unreal.Vector(bx, 170.0, 20.0),
-                  (80.0, 30.0, 30.0), mats.get("Bench_Wood"))
+                  unreal.Vector(bx, 1700.0, 200.0),
+                  (800.0, 300.0, 300.0), mats.get("Bench_Wood"))
         place_box(f"{p}_BenchR_{i}",
-                  unreal.Vector(bx, -170.0, 20.0),
-                  (80.0, 30.0, 30.0), mats.get("Bench_Wood"))
+                  unreal.Vector(bx, -1700.0, 200.0),
+                  (800.0, 300.0, 300.0), mats.get("Bench_Wood"))
         _inc(2)
 
     # Bright overhead spotlight on ring
     place_light(f"{p}_Spotlight",
-                unreal.Vector(car_x, 0.0, CAR_HEIGHT - 30.0),
-                (255, 250, 240), 6000.0, radius=500.0)
+                unreal.Vector(car_x, 0.0, CAR_HEIGHT - 300.0),
+                (255, 250, 240), 6000.0, radius=5000.0)
     _inc()
     unreal.log(f"  Car 03 The Pit: ring floor, posts, benches, spotlight")
 
@@ -632,35 +632,35 @@ def build_car04_nursery(car_x, mats):
 
     # 3 partition walls creating small rooms
     for i in range(3):
-        px = car_x - half_l + 300.0 + i * 300.0
+        px = car_x - half_l + 3000.0 + i * 3000.0
         place_box(f"{p}_Partition_{i}",
                   unreal.Vector(px, 0.0, CAR_HEIGHT * 0.4),
-                  (5.0, CAR_WIDTH * 0.5, CAR_HEIGHT * 0.8), nursery_mat)
+                  (50.0, CAR_WIDTH * 0.5, CAR_HEIGHT * 0.8), nursery_mat)
         _inc()
 
     # Small cribs/sleeping areas in each partition
     for i in range(4):
-        cx = car_x - half_l + 150.0 + i * 280.0
-        cy = 80.0 if (i % 2 == 0) else -80.0
+        cx = car_x - half_l + 1500.0 + i * 2800.0
+        cy = 800.0 if (i % 2 == 0) else -800.0
         place_box(f"{p}_Crib_{i}",
-                  unreal.Vector(cx, cy, 20.0),
-                  (80.0, 50.0, 30.0), mats.get("Bunk_Wood"))
+                  unreal.Vector(cx, cy, 200.0),
+                  (800.0, 500.0, 300.0), mats.get("Bunk_Wood"))
         _inc()
 
     # Lockable storage area (quest item) -- reinforced box at far end
     place_box(f"{p}_LockedStorage",
-              unreal.Vector(car_x + half_l - 100.0, 0.0, 40.0),
-              (60.0, 60.0, 60.0), mats.get("Barricade_Rust"))
+              unreal.Vector(car_x + half_l - 1000.0, 0.0, 400.0),
+              (600.0, 600.0, 600.0), mats.get("Barricade_Rust"))
     place_target_point(f"Spawn_{p}_QuestItem",
-                       unreal.Vector(car_x + half_l - 100.0, 0.0, 80.0))
+                       unreal.Vector(car_x + half_l - 1000.0, 0.0, 800.0))
     _inc(2)
 
     # Soft warm lights
     for i in range(3):
-        lx = car_x - 300.0 + i * 300.0
+        lx = car_x - 3000.0 + i * 3000.0
         place_light(f"{p}_SoftLight_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 50.0),
-                    (255, 220, 180), 1500.0, radius=400.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 500.0),
+                    (255, 220, 180), 1500.0, radius=4000.0)
         _inc()
     unreal.log(f"  Car 04 Nursery: partitions, cribs, locked storage, soft lights")
 
@@ -673,38 +673,38 @@ def build_car05_elders(car_x, mats):
 
     # Large meeting table
     place_box(f"{p}_Table",
-              unreal.Vector(car_x, 0.0, 40.0),
-              (300.0, 120.0, 10.0), bench_mat)
+              unreal.Vector(car_x, 0.0, 400.0),
+              (3000.0, 1200.0, 100.0), bench_mat)
     _inc()
 
     # Benches around table
     for i, (dx, dy) in enumerate([
-        (-120, 80), (0, 80), (120, 80),
-        (-120, -80), (0, -80), (120, -80)
+        (-1200, 800), (0, 800), (1200, 800),
+        (-1200, -800), (0, -800), (1200, -800)
     ]):
         place_box(f"{p}_Bench_{i}",
-                  unreal.Vector(car_x + dx, dy, 20.0),
-                  (60.0, 20.0, 30.0), bench_mat)
+                  unreal.Vector(car_x + dx, dy, 200.0),
+                  (600.0, 200.0, 300.0), bench_mat)
         _inc()
 
     # Map on wall (flat box)
     place_box(f"{p}_WallMap",
-              unreal.Vector(car_x - 100.0, CAR_WIDTH / 2.0 - 5.0, 170.0),
-              (120.0, 2.0, 80.0), mats.get("Memorial_Dark"))
+              unreal.Vector(car_x - 1000.0, CAR_WIDTH / 2.0 - 50.0, 1700.0),
+              (1200.0, 20.0, 800.0), mats.get("Memorial_Dark"))
     _inc()
 
     # Quest giver NPC spawn (Gilliam)
     place_target_point(f"Spawn_{p}_Gilliam",
-                       unreal.Vector(car_x, 0.0, 50.0))
+                       unreal.Vector(car_x, 0.0, 500.0))
     _inc()
 
     # Warm lighting (candles, brazier feel)
     place_light(f"{p}_WarmLight_A",
-                unreal.Vector(car_x - 200.0, 0.0, CAR_HEIGHT - 50.0),
-                (240, 200, 140), 2000.0, radius=500.0)
+                unreal.Vector(car_x - 2000.0, 0.0, CAR_HEIGHT - 500.0),
+                (240, 200, 140), 2000.0, radius=5000.0)
     place_light(f"{p}_WarmLight_B",
-                unreal.Vector(car_x + 200.0, 0.0, CAR_HEIGHT - 50.0),
-                (240, 200, 140), 2000.0, radius=500.0)
+                unreal.Vector(car_x + 2000.0, 0.0, CAR_HEIGHT - 500.0),
+                (240, 200, 140), 2000.0, radius=5000.0)
     _inc(2)
     unreal.log(f"  Car 05 Elders: meeting table, benches, map, Gilliam spawn")
 
@@ -718,35 +718,35 @@ def build_car06_sickbay(car_x, mats):
 
     # 4 beds along each wall
     for i in range(4):
-        bx = car_x - half_l + 150.0 + i * 250.0
+        bx = car_x - half_l + 1500.0 + i * 2500.0
         place_box(f"{p}_BedL_{i}",
-                  unreal.Vector(bx, 140.0, 25.0),
-                  (160.0, 70.0, 40.0), bunk_mat)
+                  unreal.Vector(bx, 1400.0, 250.0),
+                  (1600.0, 700.0, 400.0), bunk_mat)
         place_box(f"{p}_BedR_{i}",
-                  unreal.Vector(bx, -140.0, 25.0),
-                  (160.0, 70.0, 40.0), bunk_mat)
+                  unreal.Vector(bx, -1400.0, 250.0),
+                  (1600.0, 700.0, 400.0), bunk_mat)
         _inc(2)
 
     # Medical station -- table with supplies
     place_box(f"{p}_MedTable",
-              unreal.Vector(car_x + 300.0, 0.0, 45.0),
-              (120.0, 80.0, 10.0), sickbay_mat)
+              unreal.Vector(car_x + 3000.0, 0.0, 450.0),
+              (1200.0, 800.0, 100.0), sickbay_mat)
     place_box(f"{p}_MedCabinet",
-              unreal.Vector(car_x + 300.0, 0.0, 100.0),
-              (60.0, 40.0, 80.0), sickbay_mat)
+              unreal.Vector(car_x + 3000.0, 0.0, 1000.0),
+              (600.0, 400.0, 800.0), sickbay_mat)
     _inc(2)
 
     # Doctor NPC spawn
     place_target_point(f"Spawn_{p}_DrAsha",
-                       unreal.Vector(car_x + 300.0, 40.0, 50.0))
+                       unreal.Vector(car_x + 3000.0, 400.0, 500.0))
     _inc()
 
     # Green-tinted lights
     for i in range(3):
-        lx = car_x - 300.0 + i * 300.0
+        lx = car_x - 3000.0 + i * 3000.0
         place_light(f"{p}_GreenLight_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 40.0),
-                    (140, 220, 160), 2800.0, radius=500.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 400.0),
+                    (140, 220, 160), 2800.0, radius=5000.0)
         _inc()
     unreal.log(f"  Car 06 Sickbay: 8 beds, medical station, Dr. Asha spawn, green lights")
 
@@ -760,52 +760,51 @@ def build_car07_workshop(car_x, mats):
 
     # False wall partition at entrance (decoy living space)
     place_box(f"{p}_FalseWall",
-              unreal.Vector(car_x - half_l + 250.0, 0.0, CAR_HEIGHT * 0.45),
-              (8.0, CAR_WIDTH * 0.8, CAR_HEIGHT * 0.9), mats.get("Tail_Wall"))
+              unreal.Vector(car_x - half_l + 2500.0, 0.0, CAR_HEIGHT * 0.45),
+              (80.0, CAR_WIDTH * 0.8, CAR_HEIGHT * 0.9), mats.get("Tail_Wall"))
     _inc()
 
     # Main workbench (large)
     place_box(f"{p}_Workbench",
-              unreal.Vector(car_x, -100.0, 45.0),
-              (250.0, 80.0, 10.0), bench_mat)
+              unreal.Vector(car_x, -1000.0, 450.0),
+              (2500.0, 800.0, 100.0), bench_mat)
     _inc()
 
     # Anvil / forge station
     place_box(f"{p}_Anvil",
-              unreal.Vector(car_x - 100.0, 100.0, 35.0),
-              (50.0, 30.0, 60.0), metal_mat)
+              unreal.Vector(car_x - 1000.0, 1000.0, 350.0),
+              (500.0, 300.0, 600.0), metal_mat)
     _inc()
 
     # Tool racks on left wall (flat boxes)
     for i in range(3):
-        ry = -50.0 + i * 80.0
         place_box(f"{p}_ToolRack_{i}",
-                  unreal.Vector(car_x + 200.0, CAR_WIDTH / 2.0 - 8.0, 130.0 + i * 40.0),
-                  (120.0, 5.0, 30.0), metal_mat)
+                  unreal.Vector(car_x + 2000.0, CAR_WIDTH / 2.0 - 80.0, 1300.0 + i * 400.0),
+                  (1200.0, 50.0, 300.0), metal_mat)
         _inc()
 
     # Crafting station marker
     place_target_point(f"Spawn_{p}_CraftStation",
-                       unreal.Vector(car_x, -100.0, 60.0))
+                       unreal.Vector(car_x, -1000.0, 600.0))
     _inc()
 
     # Forge NPC spawn
     place_target_point(f"Spawn_{p}_Forge",
-                       unreal.Vector(car_x - 100.0, 100.0, 50.0))
+                       unreal.Vector(car_x - 1000.0, 1000.0, 500.0))
     _inc()
 
     # Testing dummy
     place_box(f"{p}_TestDummy",
-              unreal.Vector(car_x + 350.0, 0.0, 80.0),
-              (20.0, 20.0, 140.0), mats.get("Bunk_Wood"))
+              unreal.Vector(car_x + 3500.0, 0.0, 800.0),
+              (200.0, 200.0, 1400.0), mats.get("Bunk_Wood"))
     _inc()
 
     # Industrial overhead lights (bright, harsh)
     for i in range(3):
-        lx = car_x - 200.0 + i * 200.0
+        lx = car_x - 2000.0 + i * 2000.0
         place_light(f"{p}_IndustLight_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 30.0),
-                    (255, 220, 160), 4000.0, radius=600.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 300.0),
+                    (255, 220, 160), 4000.0, radius=6000.0)
         _inc()
     unreal.log(f"  Car 07 Workshop: false wall, workbench, anvil, tool racks, test dummy")
 
@@ -818,46 +817,46 @@ def build_car08_listening_post(car_x, mats):
 
     # Communications console (large table with equipment boxes)
     place_box(f"{p}_ConsoleTable",
-              unreal.Vector(car_x - 100.0, 0.0, 45.0),
-              (200.0, 100.0, 10.0), comms_mat)
+              unreal.Vector(car_x - 1000.0, 0.0, 450.0),
+              (2000.0, 1000.0, 100.0), comms_mat)
     _inc()
 
     # Equipment boxes on table
     for i in range(3):
         place_box(f"{p}_Equipment_{i}",
-                  unreal.Vector(car_x - 180.0 + i * 80.0, 0.0, 70.0),
-                  (50.0, 40.0, 40.0), comms_mat)
+                  unreal.Vector(car_x - 1800.0 + i * 800.0, 0.0, 700.0),
+                  (500.0, 400.0, 400.0), comms_mat)
         _inc()
 
     # Antenna/wire assembly on ceiling (tall thin box)
     place_box(f"{p}_Antenna",
-              unreal.Vector(car_x, 0.0, CAR_HEIGHT - 30.0),
-              (10.0, 10.0, 50.0), comms_mat)
+              unreal.Vector(car_x, 0.0, CAR_HEIGHT - 300.0),
+              (100.0, 100.0, 500.0), comms_mat)
     _inc()
 
     # Intel collectible spawn points (4 locations)
     intel_positions = [
-        (car_x - 300.0, 100.0),
-        (car_x - 100.0, -80.0),
-        (car_x + 150.0, 60.0),
-        (car_x + 400.0, -100.0),
+        (car_x - 3000.0, 1000.0),
+        (car_x - 1000.0, -800.0),
+        (car_x + 1500.0, 600.0),
+        (car_x + 4000.0, -1000.0),
     ]
     for i, (ix, iy) in enumerate(intel_positions):
         place_target_point(f"Spawn_{p}_Intel_{i}",
-                           unreal.Vector(ix, iy, 50.0))
+                           unreal.Vector(ix, iy, 500.0))
         _inc()
 
     # Whisper NPC spawn
     place_target_point(f"Spawn_{p}_Whisper",
-                       unreal.Vector(car_x - 100.0, 50.0, 50.0))
+                       unreal.Vector(car_x - 1000.0, 500.0, 500.0))
     _inc()
 
     # Blue-ish overhead lights
     for i in range(2):
-        lx = car_x - 200.0 + i * 400.0
+        lx = car_x - 2000.0 + i * 4000.0
         place_light(f"{p}_CommsLight_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 40.0),
-                    (160, 180, 220), 2200.0, radius=500.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 400.0),
+                    (160, 180, 220), 2200.0, radius=5000.0)
         _inc()
     unreal.log(f"  Car 08 Listening Post: console, equipment, 4 intel spawns, Whisper spawn")
 
@@ -871,63 +870,63 @@ def build_car09_blockade(car_x, mats):
 
     # Main barricade across center
     place_box(f"{p}_Barricade",
-              unreal.Vector(car_x, 0.0, 50.0),
-              (30.0, CAR_WIDTH * 0.85, 100.0), barricade_mat)
+              unreal.Vector(car_x, 0.0, 500.0),
+              (300.0, CAR_WIDTH * 0.85, 1000.0), barricade_mat)
     _inc()
 
     # Sandbag positions (3)
-    for i, dy in enumerate([-100.0, 0.0, 100.0]):
+    for i, dy in enumerate([-1000.0, 0.0, 1000.0]):
         place_box(f"{p}_Sandbag_{i}",
-                  unreal.Vector(car_x + 100.0, dy, 25.0),
-                  (40.0, 60.0, 40.0), barricade_mat)
+                  unreal.Vector(car_x + 1000.0, dy, 250.0),
+                  (400.0, 600.0, 400.0), barricade_mat)
         _inc()
 
     # Guard booth
     place_box(f"{p}_GuardBooth",
-              unreal.Vector(car_x + 350.0, 120.0, 70.0),
-              (80.0, 60.0, 120.0), metal_mat)
+              unreal.Vector(car_x + 3500.0, 1200.0, 700.0),
+              (800.0, 600.0, 1200.0), metal_mat)
     _inc()
 
     # Overhead catwalk
     place_box(f"{p}_Catwalk",
-              unreal.Vector(car_x, CAR_WIDTH / 2.0 - 40.0, 180.0),
-              (600.0, 40.0, 5.0), metal_mat)
+              unreal.Vector(car_x, CAR_WIDTH / 2.0 - 400.0, 1800.0),
+              (6000.0, 400.0, 50.0), metal_mat)
     _inc()
 
     # Steam pipe valve (interactable marker)
     place_box(f"{p}_SteamValve",
-              unreal.Vector(car_x - 200.0, CAR_WIDTH / 2.0 - 15.0, 120.0),
-              (15.0, 15.0, 15.0), mats.get("Comms_Metal"))
+              unreal.Vector(car_x - 2000.0, CAR_WIDTH / 2.0 - 150.0, 1200.0),
+              (150.0, 150.0, 150.0), mats.get("Comms_Metal"))
     place_target_point(f"Spawn_{p}_SteamValve",
-                       unreal.Vector(car_x - 200.0, CAR_WIDTH / 2.0 - 15.0, 120.0))
+                       unreal.Vector(car_x - 2000.0, CAR_WIDTH / 2.0 - 150.0, 1200.0))
     _inc(2)
 
     # Electrical panel
     place_box(f"{p}_ElecPanel",
-              unreal.Vector(car_x + 100.0, -(CAR_WIDTH / 2.0 - 10.0), 140.0),
-              (30.0, 5.0, 50.0), mats.get("Comms_Metal"))
+              unreal.Vector(car_x + 1000.0, -(CAR_WIDTH / 2.0 - 100.0), 1400.0),
+              (300.0, 50.0, 500.0), mats.get("Comms_Metal"))
     _inc()
 
     # 8 enemy spawn points
     enemy_positions = [
-        (-300.0,  80.0), (-300.0, -80.0),   # approach patrol
-        ( 50.0,  100.0), ( 50.0, -100.0),   # behind barricade
-        ( 150.0,  50.0), ( 150.0, -50.0),   # sandbag positions
-        ( 300.0,  0.0),                       # gate area
-        ( 350.0, 120.0),                      # guard booth
+        (-3000.0,  800.0), (-3000.0, -800.0),   # approach patrol
+        ( 500.0,  1000.0), ( 500.0, -1000.0),   # behind barricade
+        ( 1500.0,  500.0), ( 1500.0, -500.0),   # sandbag positions
+        ( 3000.0,  0.0),                          # gate area
+        ( 3500.0, 1200.0),                        # guard booth
     ]
     for i, (dx, dy) in enumerate(enemy_positions):
         place_target_point(f"Spawn_{p}_Enemy_{i}",
-                           unreal.Vector(car_x + dx, dy, 50.0))
+                           unreal.Vector(car_x + dx, dy, 500.0))
         _inc()
 
     # Harsh overhead lights on Jackboot side, dim on Tail side
     place_light(f"{p}_Light_TailSide",
-                unreal.Vector(car_x - 300.0, 0.0, CAR_HEIGHT - 30.0),
-                (180, 140, 100), 1500.0, radius=400.0)
+                unreal.Vector(car_x - 3000.0, 0.0, CAR_HEIGHT - 300.0),
+                (180, 140, 100), 1500.0, radius=4000.0)
     place_light(f"{p}_Light_JackbootSide",
-                unreal.Vector(car_x + 200.0, 0.0, CAR_HEIGHT - 30.0),
-                (255, 240, 220), 4500.0, radius=600.0)
+                unreal.Vector(car_x + 2000.0, 0.0, CAR_HEIGHT - 300.0),
+                (255, 240, 220), 4500.0, radius=6000.0)
     _inc(2)
     unreal.log(f"  Car 09 Blockade: barricade, sandbags, guard booth, catwalk, 8 enemy spawns")
 
@@ -940,12 +939,12 @@ def build_car10_dark_car(car_x, mats):
     # Overturned bunk debris (maze obstacles)
     debris_mat = mats.get("Bunk_Wood")
     debris_positions = [
-        (-350.0,  80.0, 50.0, 150.0, 60.0, 80.0, 25.0),
-        (-200.0, -60.0, 40.0, 100.0, 80.0, 70.0, -15.0),
-        ( -50.0,  40.0, 60.0, 120.0, 50.0, 90.0, 10.0),
-        ( 100.0, -90.0, 30.0, 80.0, 70.0, 60.0, 40.0),
-        ( 250.0,  70.0, 50.0, 140.0, 40.0, 70.0, -20.0),
-        ( 400.0, -40.0, 45.0, 110.0, 60.0, 80.0, 5.0),
+        (-3500.0,  800.0, 500.0, 1500.0, 600.0, 800.0, 25.0),
+        (-2000.0, -600.0, 400.0, 1000.0, 800.0, 700.0, -15.0),
+        ( -500.0,  400.0, 600.0, 1200.0, 500.0, 900.0, 10.0),
+        ( 1000.0, -900.0, 300.0, 800.0, 700.0, 600.0, 40.0),
+        ( 2500.0,  700.0, 500.0, 1400.0, 400.0, 700.0, -20.0),
+        ( 4000.0, -400.0, 450.0, 1100.0, 600.0, 800.0, 5.0),
     ]
     for i, (dx, dy, dz, sx, sy, sz, _) in enumerate(debris_positions):
         place_box(f"{p}_Debris_{i}",
@@ -954,16 +953,16 @@ def build_car10_dark_car(car_x, mats):
         _inc()
 
     # Hiding spots (recessed areas between debris) -- marked with target points
-    for i, (dx, dy) in enumerate([(-280.0, -120.0), (30.0, 130.0), (350.0, -130.0)]):
+    for i, (dx, dy) in enumerate([(-2800.0, -1200.0), (300.0, 1300.0), (3500.0, -1300.0)]):
         place_target_point(f"Spawn_{p}_HidingSpot_{i}",
-                           unreal.Vector(car_x + dx, dy, 30.0))
+                           unreal.Vector(car_x + dx, dy, 300.0))
         _inc()
 
     # Creature nest markers
     place_target_point(f"Spawn_{p}_Nest_Juvenile",
-                       unreal.Vector(car_x - 100.0, -80.0, 30.0))
+                       unreal.Vector(car_x - 1000.0, -800.0, 300.0))
     place_target_point(f"Spawn_{p}_Nest_Alpha",
-                       unreal.Vector(car_x + 200.0, 0.0, 30.0))
+                       unreal.Vector(car_x + 2000.0, 0.0, 300.0))
     _inc(2)
 
     # Atmospheric fog actor for this car
@@ -975,21 +974,21 @@ def build_car10_dark_car(car_x, mats):
         fog.set_actor_label(f"Fog_Z1_DarkCar")
         fc = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
         if fc:
-            fc.set_editor_property("fog_density", 0.015)
+            fc.set_editor_property("fog_density", 0.005)
             fc.set_editor_property("fog_inscattering_color",
                                    unreal.LinearColor(0.03, 0.03, 0.05, 1.0))
         _inc()
 
     # Only a single very dim entry light
     place_light(f"{p}_EntryGlow",
-                unreal.Vector(car_x - half_l + 80.0, 0.0, CAR_HEIGHT - 50.0),
-                (80, 80, 100), 300.0, radius=200.0)
+                unreal.Vector(car_x - half_l + 800.0, 0.0, CAR_HEIGHT - 500.0),
+                (80, 80, 100), 300.0, radius=2000.0)
     _inc()
 
     # Faint exit glow (light under far door)
     place_light(f"{p}_ExitGlow",
-                unreal.Vector(car_x + half_l - 30.0, 0.0, 10.0),
-                (200, 180, 120), 200.0, radius=150.0)
+                unreal.Vector(car_x + half_l - 300.0, 0.0, 100.0),
+                (200, 180, 120), 200.0, radius=1500.0)
     _inc()
     unreal.log(f"  Car 10 Dark Car: 6 debris pieces, hiding spots, nests, fog, minimal light")
 
@@ -1003,12 +1002,12 @@ def build_car11_freezer(car_x, mats):
 
     # Ice formations on walls (irregular boxes)
     ice_placements = [
-        (-400.0,  half_w - 20.0, 80.0,  60.0, 30.0, 120.0),
-        (-250.0, -(half_w - 20.0), 100.0, 40.0, 25.0, 140.0),
-        (-100.0,  half_w - 15.0, 60.0,  80.0, 20.0, 100.0),
-        ( 50.0, -(half_w - 25.0), 120.0, 50.0, 35.0, 160.0),
-        ( 200.0,  half_w - 18.0, 90.0,  70.0, 22.0, 110.0),
-        ( 350.0, -(half_w - 20.0), 70.0,  45.0, 28.0, 90.0),
+        (-4000.0,  half_w - 200.0, 800.0,  600.0, 300.0, 1200.0),
+        (-2500.0, -(half_w - 200.0), 1000.0, 400.0, 250.0, 1400.0),
+        (-1000.0,  half_w - 150.0, 600.0,  800.0, 200.0, 1000.0),
+        ( 500.0, -(half_w - 250.0), 1200.0, 500.0, 350.0, 1600.0),
+        ( 2000.0,  half_w - 180.0, 900.0,  700.0, 220.0, 1100.0),
+        ( 3500.0, -(half_w - 200.0), 700.0,  450.0, 280.0, 900.0),
     ]
     for i, (dx, dy, dz, sx, sy, sz) in enumerate(ice_placements):
         place_box(f"{p}_Ice_{i}",
@@ -1018,26 +1017,26 @@ def build_car11_freezer(car_x, mats):
 
     # Ice stalactites from ceiling
     for i in range(4):
-        sx = car_x - 300.0 + i * 200.0
+        sx = car_x - 3000.0 + i * 2000.0
         place_box(f"{p}_Stalactite_{i}",
-                  unreal.Vector(sx, -40.0 + i * 30.0, CAR_HEIGHT - 40.0),
-                  (12.0, 12.0, 70.0), ice_mat)
+                  unreal.Vector(sx, -400.0 + i * 300.0, CAR_HEIGHT - 400.0),
+                  (120.0, 120.0, 700.0), ice_mat)
         _inc()
 
     # Breach in right wall (gap represented by removing wall section -- thin box for visual)
     place_box(f"{p}_BreachFrame",
-              unreal.Vector(car_x + 100.0, -(half_w + WALL_THICK / 2.0), 120.0),
-              (80.0, WALL_THICK + 5.0, 60.0), ice_mat)
+              unreal.Vector(car_x + 1000.0, -(half_w + WALL_THICK / 2.0), 1200.0),
+              (800.0, WALL_THICK + 50.0, 600.0), ice_mat)
     _inc()
 
     # Warm pipe safe spots (3 steam pipes)
     for i in range(3):
-        wx = car_x - 300.0 + i * 300.0
+        wx = car_x - 3000.0 + i * 3000.0
         place_box(f"{p}_WarmPipe_{i}",
-                  unreal.Vector(wx, half_w - 30.0, 50.0),
-                  (40.0, 12.0, 12.0), mats.get("Workshop_Metal"))
+                  unreal.Vector(wx, half_w - 300.0, 500.0),
+                  (400.0, 120.0, 120.0), mats.get("Workshop_Metal"))
         place_target_point(f"Spawn_{p}_WarmSpot_{i}",
-                           unreal.Vector(wx, half_w - 50.0, 50.0))
+                           unreal.Vector(wx, half_w - 500.0, 500.0))
         _inc(2)
 
     # Cold zone volume marker
@@ -1047,10 +1046,10 @@ def build_car11_freezer(car_x, mats):
 
     # Blue-white lighting
     for i in range(3):
-        lx = car_x - 300.0 + i * 300.0
+        lx = car_x - 3000.0 + i * 3000.0
         place_light(f"{p}_IceLight_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 30.0),
-                    (160, 200, 255), 3500.0, radius=500.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 300.0),
+                    (160, 200, 255), 3500.0, radius=5000.0)
         _inc()
     unreal.log(f"  Car 11 Freezer: ice formations, stalactites, breach, warm pipes, cold zone")
 
@@ -1064,40 +1063,40 @@ def build_car12_kronole_den(car_x, mats):
 
     # Makeshift mattresses/cushions on floor
     for i in range(5):
-        mx = car_x - 350.0 + i * 180.0
-        my = 100.0 if (i % 2 == 0) else -100.0
+        mx = car_x - 3500.0 + i * 1800.0
+        my = 1000.0 if (i % 2 == 0) else -1000.0
         place_box(f"{p}_Mattress_{i}",
-                  unreal.Vector(mx, my, 8.0),
-                  (120.0, 60.0, 15.0), bunk_mat)
+                  unreal.Vector(mx, my, 80.0),
+                  (1200.0, 600.0, 150.0), bunk_mat)
         _inc()
 
     # Low tables
     for i in range(2):
-        tx = car_x - 150.0 + i * 300.0
+        tx = car_x - 1500.0 + i * 3000.0
         place_box(f"{p}_Table_{i}",
-                  unreal.Vector(tx, 0.0, 20.0),
-                  (80.0, 60.0, 8.0), bunk_mat)
+                  unreal.Vector(tx, 0.0, 200.0),
+                  (800.0, 600.0, 80.0), bunk_mat)
         _inc()
 
     # Curtain partitions (hanging cloth = thin tall boxes)
     for i in range(2):
-        cx = car_x - 200.0 + i * 400.0
+        cx = car_x - 2000.0 + i * 4000.0
         place_box(f"{p}_Curtain_{i}",
                   unreal.Vector(cx, 0.0, CAR_HEIGHT * 0.4),
-                  (3.0, CAR_WIDTH * 0.6, CAR_HEIGHT * 0.7), purple_mat)
+                  (30.0, CAR_WIDTH * 0.6, CAR_HEIGHT * 0.7), purple_mat)
         _inc()
 
     # Kronole Kim dealer NPC spawn
     place_target_point(f"Spawn_{p}_KronoleKim",
-                       unreal.Vector(car_x + 200.0, -50.0, 50.0))
+                       unreal.Vector(car_x + 2000.0, -500.0, 500.0))
     _inc()
 
     # Purple/sickly lights
     for i in range(3):
-        lx = car_x - 300.0 + i * 300.0
+        lx = car_x - 3000.0 + i * 3000.0
         place_light(f"{p}_PurpleLight_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 50.0),
-                    (180, 100, 200), 1800.0, radius=400.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 500.0),
+                    (180, 100, 200), 1800.0, radius=4000.0)
         _inc()
     unreal.log(f"  Car 12 Kronole Den: mattresses, tables, curtains, Kim spawn, purple lights")
 
@@ -1112,12 +1111,12 @@ def build_car13_smugglers_cache(car_x, mats):
 
     # Stacked crates (trade goods display)
     crate_positions = [
-        (-300.0, 120.0, 25.0, 60.0, 50.0, 50.0),
-        (-300.0, 120.0, 70.0, 50.0, 40.0, 40.0),
-        (-150.0, -130.0, 25.0, 70.0, 50.0, 50.0),
-        ( 0.0,   130.0, 25.0, 50.0, 50.0, 50.0),
-        ( 150.0, -120.0, 25.0, 60.0, 60.0, 50.0),
-        ( 150.0, -120.0, 70.0, 40.0, 40.0, 40.0),
+        (-3000.0, 1200.0, 250.0, 600.0, 500.0, 500.0),
+        (-3000.0, 1200.0, 700.0, 500.0, 400.0, 400.0),
+        (-1500.0, -1300.0, 250.0, 700.0, 500.0, 500.0),
+        ( 0.0,   1300.0, 250.0, 500.0, 500.0, 500.0),
+        ( 1500.0, -1200.0, 250.0, 600.0, 600.0, 500.0),
+        ( 1500.0, -1200.0, 700.0, 400.0, 400.0, 400.0),
     ]
     for i, (dx, dy, dz, sx, sy, sz) in enumerate(crate_positions):
         place_box(f"{p}_Crate_{i}",
@@ -1127,29 +1126,29 @@ def build_car13_smugglers_cache(car_x, mats):
 
     # Hidden compartment (floor panel)
     place_box(f"{p}_HiddenFloor",
-              unreal.Vector(car_x + 300.0, 0.0, -2.0),
-              (100.0, 80.0, 5.0), metal_mat)
+              unreal.Vector(car_x + 3000.0, 0.0, -20.0),
+              (1000.0, 800.0, 50.0), metal_mat)
     place_target_point(f"Spawn_{p}_HiddenCompartment",
-                       unreal.Vector(car_x + 300.0, 0.0, 10.0))
+                       unreal.Vector(car_x + 3000.0, 0.0, 100.0))
     _inc(2)
 
     # Trade goods display shelf
     place_box(f"{p}_Shelf",
-              unreal.Vector(car_x, half_w - 15.0, 100.0),
-              (300.0, 8.0, 5.0), metal_mat)
+              unreal.Vector(car_x, half_w - 150.0, 1000.0),
+              (3000.0, 80.0, 50.0), metal_mat)
     _inc()
 
     # Merchant NPC spawn
     place_target_point(f"Spawn_{p}_Merchant",
-                       unreal.Vector(car_x - 50.0, 0.0, 50.0))
+                       unreal.Vector(car_x - 500.0, 0.0, 500.0))
     _inc()
 
     # Moderate warm lighting
     for i in range(2):
-        lx = car_x - 200.0 + i * 400.0
+        lx = car_x - 2000.0 + i * 4000.0
         place_light(f"{p}_Light_{i}",
-                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 40.0),
-                    (200, 180, 140), 2200.0, radius=500.0)
+                    unreal.Vector(lx, 0.0, CAR_HEIGHT - 400.0),
+                    (200, 180, 140), 2200.0, radius=5000.0)
         _inc()
     unreal.log(f"  Car 13 Smuggler's Cache: crates, hidden compartment, shelf, merchant spawn")
 
@@ -1165,73 +1164,73 @@ def build_car14_martyrs_gate(car_x, mats):
 
     # Memorial cairn in center
     place_box(f"{p}_Cairn_Base",
-              unreal.Vector(car_x - 100.0, 0.0, 30.0),
-              (80.0, 80.0, 50.0), stone_mat)
+              unreal.Vector(car_x - 1000.0, 0.0, 300.0),
+              (800.0, 800.0, 500.0), stone_mat)
     place_box(f"{p}_Cairn_Mid",
-              unreal.Vector(car_x - 100.0, 0.0, 65.0),
-              (60.0, 60.0, 30.0), stone_mat)
+              unreal.Vector(car_x - 1000.0, 0.0, 650.0),
+              (600.0, 600.0, 300.0), stone_mat)
     place_box(f"{p}_Cairn_Top",
-              unreal.Vector(car_x - 100.0, 0.0, 90.0),
-              (40.0, 40.0, 20.0), stone_mat)
+              unreal.Vector(car_x - 1000.0, 0.0, 900.0),
+              (400.0, 400.0, 200.0), stone_mat)
     _inc(3)
 
     # Makeshift shrines along walls (12 total, 6 per side)
     for i in range(6):
-        sx = car_x - 400.0 + i * 130.0
+        sx = car_x - 4000.0 + i * 1300.0
         # Left wall shrines
         place_box(f"{p}_ShrineL_{i}",
-                  unreal.Vector(sx, half_w - 25.0, 50.0),
-                  (30.0, 15.0, 40.0), memorial_mat)
+                  unreal.Vector(sx, half_w - 250.0, 500.0),
+                  (300.0, 150.0, 400.0), memorial_mat)
         # Right wall shrines
         place_box(f"{p}_ShrineR_{i}",
-                  unreal.Vector(sx, -(half_w - 25.0), 50.0),
-                  (30.0, 15.0, 40.0), memorial_mat)
+                  unreal.Vector(sx, -(half_w - 250.0), 500.0),
+                  (300.0, 150.0, 400.0), memorial_mat)
         _inc(2)
 
     # Boss arena at far end -- raised platform area
     place_box(f"{p}_BossArena",
-              unreal.Vector(car_x + 350.0, 0.0, 10.0),
-              (250.0, CAR_WIDTH * 0.8, 20.0), metal_mat)
+              unreal.Vector(car_x + 3500.0, 0.0, 100.0),
+              (2500.0, CAR_WIDTH * 0.8, 200.0), metal_mat)
     _inc()
 
     # Gate frame (grand entrance feel -- tall pillars)
-    for dy in [100.0, -100.0]:
+    for dy in [1000.0, -1000.0]:
         place_box(f"{p}_GatePillar_{'L' if dy > 0 else 'R'}",
-                  unreal.Vector(car_x + 350.0, dy, CAR_HEIGHT / 2.0),
-                  (20.0, 20.0, CAR_HEIGHT), metal_mat)
+                  unreal.Vector(car_x + 3500.0, dy, CAR_HEIGHT / 2.0),
+                  (200.0, 200.0, CAR_HEIGHT), metal_mat)
         _inc()
 
     # Historical marker plaques (flat boxes on walls)
     for i in range(3):
-        mx = car_x - 300.0 + i * 250.0
+        mx = car_x - 3000.0 + i * 2500.0
         place_box(f"{p}_Plaque_{i}",
-                  unreal.Vector(mx, half_w - 5.0, 160.0),
-                  (80.0, 2.0, 40.0), memorial_mat)
+                  unreal.Vector(mx, half_w - 50.0, 1600.0),
+                  (800.0, 20.0, 400.0), memorial_mat)
         _inc()
 
     # Boss spawn point
     place_target_point(f"Spawn_{p}_Boss_CmdrGrey",
-                       unreal.Vector(car_x + 400.0, 0.0, 50.0))
+                       unreal.Vector(car_x + 4000.0, 0.0, 500.0))
     _inc()
 
     # Mourner NPC spawn
     place_target_point(f"Spawn_{p}_Mourner",
-                       unreal.Vector(car_x - 100.0, 40.0, 50.0))
+                       unreal.Vector(car_x - 1000.0, 400.0, 500.0))
     _inc()
 
     # Dramatic lighting -- warm in memorial area, bright at boss arena
     place_light(f"{p}_MemorialLight",
-                unreal.Vector(car_x - 200.0, 0.0, CAR_HEIGHT - 30.0),
-                (220, 180, 120), 2000.0, radius=500.0)
+                unreal.Vector(car_x - 2000.0, 0.0, CAR_HEIGHT - 300.0),
+                (220, 180, 120), 2000.0, radius=5000.0)
     place_light(f"{p}_CairnLight",
-                unreal.Vector(car_x - 100.0, 0.0, 120.0),
-                (255, 200, 100), 1000.0, radius=300.0)
+                unreal.Vector(car_x - 1000.0, 0.0, 1200.0),
+                (255, 200, 100), 1000.0, radius=3000.0)
     place_light(f"{p}_BossArenaLight_A",
-                unreal.Vector(car_x + 300.0, 80.0, CAR_HEIGHT - 20.0),
-                (255, 240, 200), 5000.0, radius=600.0)
+                unreal.Vector(car_x + 3000.0, 800.0, CAR_HEIGHT - 200.0),
+                (255, 240, 200), 5000.0, radius=6000.0)
     place_light(f"{p}_BossArenaLight_B",
-                unreal.Vector(car_x + 300.0, -80.0, CAR_HEIGHT - 20.0),
-                (255, 240, 200), 5000.0, radius=600.0)
+                unreal.Vector(car_x + 3000.0, -800.0, CAR_HEIGHT - 200.0),
+                (255, 240, 200), 5000.0, radius=6000.0)
     _inc(4)
     unreal.log(f"  Car 14 Martyr's Gate: cairn, 12 shrines, boss arena, pillars, plaques, dramatic lights")
 
@@ -1311,7 +1310,7 @@ def setup_atmosphere():
     # Directional light -- cold exterior
     dl = level_lib.spawn_actor_from_class(
         unreal.DirectionalLight,
-        unreal.Vector(mid_x, 0.0, 1500.0),
+        unreal.Vector(mid_x, 0.0, 15000.0),
         unreal.Rotator(-35.0, 20.0, 0.0)
     )
     if dl:
@@ -1324,7 +1323,7 @@ def setup_atmosphere():
     # Sky light
     sl = level_lib.spawn_actor_from_class(
         unreal.SkyLight,
-        unreal.Vector(mid_x, 0.0, 800.0)
+        unreal.Vector(mid_x, 0.0, 8000.0)
     )
     if sl:
         sl.set_actor_label("SkyLight_Zone1")
@@ -1398,7 +1397,7 @@ def run():
     unreal.log("")
     unreal.log("=" * 64)
     unreal.log("  SNOWPIERCER: ETERNAL ENGINE")
-    unreal.log("  Zone 1 -- The Tail (15 Cars)")
+    unreal.log("  Zone 1 -- The Tail (15 Cars) [10x SCALE]")
     unreal.log("=" * 64)
     unreal.log("")
 
