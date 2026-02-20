@@ -280,20 +280,20 @@
 ## 6. EXPLORATION & SECRETS
 
 ### 6.1 Collectibles System — P2
-- [ ] Define collectible types:
+- [x] Define collectible types: *(guzzle, tr-fih)*
   - **Train Logs:** Written records from passengers/crew. Lore and worldbuilding.
   - **Audio Recordings:** Pre-freeze memories, crew communications, Wilford's private recordings.
   - **Artifacts:** Physical objects from the old world (photos, books, technology).
   - **Blueprints:** Unlock crafting recipes (see Section 4).
   - **Faction Intel:** Documents that reveal faction secrets, usable in dialogue/quests.
   - **Passenger Manifest Pages:** Piece together who's on the train, reveal hidden connections.
-- [ ] Define total collectible count per type (recommendation: 200-300 total across all types)
-- [ ] Define collectible placement rules: some obvious, some hidden, some gated behind skills/factions
-- [ ] Collectible journal/codex UI — how does the player review collected items?
-- [ ] Collectible completion rewards: per zone, per type, total completion
+- [x] Define total collectible count per type (recommendation: 200-300 total across all types) *(guzzle, tr-fih)*
+- [x] Define collectible placement rules: some obvious, some hidden, some gated behind skills/factions *(guzzle, tr-fih)*
+- [x] Collectible journal/codex UI — how does the player review collected items? *(guzzle, tr-fih)*
+- [x] Collectible completion rewards: per zone, per type, total completion *(guzzle, tr-fih)*
 
 ### 6.2 Hidden & Secret Cars — P2
-- [ ] Design 7-10 secret cars not accessible on the main path:
+- [x] Design 7-10 secret cars not accessible on the main path: *(guzzle, tr-fih)*
   - **The Bunker Car:** Survivalist who sealed themselves off. Unique weapons/supplies.
   - **The Ghost Car:** Seemingly empty, haunted by memories (audio/visual flashbacks).
   - **The Rebel Archive:** Hidden history of every failed revolution.
@@ -301,40 +301,40 @@
   - **The Stowaway Car:** People living between the walls of other cars.
   - **The Mirror Car:** Wilford's private blackmail vault — leverage on everyone.
   - **The Prototype:** An experimental car with pre-freeze military technology.
-- [ ] Define access requirements for each secret car (faction rep, items, skill checks, quest chains)
-- [ ] Secret cars should contain unique rewards not available elsewhere
-- [ ] At least 2 secret cars should significantly affect ending availability
+- [x] Define access requirements for each secret car (faction rep, items, skill checks, quest chains) *(guzzle, tr-fih)*
+- [x] Secret cars should contain unique rewards not available elsewhere *(guzzle, tr-fih)*
+- [x] At least 2 secret cars should significantly affect ending availability *(guzzle, tr-fih)*
 
 ### 6.3 Exterior Traversal — P1
-- [ ] Design rooftop traversal system:
+- [x] Design rooftop traversal system: *(guzzle, tr-fih)*
   - Accessible via roof hatches (specific cars only)
   - Wind resistance: player moves slower, can be knocked off at curves
   - Cold exposure: timer before frostbite debuffs begin
   - Visibility: can scout ahead, spot enemies through skylights
   - Combat on rooftop: extremely dangerous, environmental kills (wind, tunnels, ice)
-- [ ] Define cold suit mechanic for extended exterior time
-- [ ] Design "Breachman" encounters: NPCs who work on the exterior, potential allies/enemies
-- [ ] Exterior story moments: at least 3 scripted exterior sequences
+- [x] Define cold suit mechanic for extended exterior time *(guzzle, tr-fih)*
+- [x] Design "Breachman" encounters: NPCs who work on the exterior, potential allies/enemies *(guzzle, tr-fih)*
+- [x] Exterior story moments: at least 3 scripted exterior sequences *(guzzle, tr-fih)*
   - Emergency repair during a crisis
   - Bypassing a heavily guarded car from outside
   - Final sequence: seeing the thawing world
-- [ ] Car-to-car exterior traversal: skip cars by going over them (risk/reward)
+- [x] Car-to-car exterior traversal: skip cars by going over them (risk/reward) *(guzzle, tr-fih)*
 
 ### 6.4 Maintenance Tunnels & Sub-Floor — P2
-- [ ] Design under-car crawlspace system connecting adjacent cars
-- [ ] Define what's found below: pipes, wiring, smuggler caches, rats, trapped passengers
-- [ ] Sub-floor as stealth bypass: slower but undetected
-- [ ] Sub-floor hazards: steam leaks, electrical shorts, structural collapses
-- [ ] Not all cars have accessible sub-floors — define which do
+- [x] Design under-car crawlspace system connecting adjacent cars *(guzzle, tr-fih)*
+- [x] Define what's found below: pipes, wiring, smuggler caches, rats, trapped passengers *(guzzle, tr-fih)*
+- [x] Sub-floor as stealth bypass: slower but undetected *(guzzle, tr-fih)*
+- [x] Sub-floor hazards: steam leaks, electrical shorts, structural collapses *(guzzle, tr-fih)*
+- [x] Not all cars have accessible sub-floors — define which do *(guzzle, tr-fih)*
 
 ### 6.5 Window & Exterior Viewing System — P2
-- [ ] Windows exist in all zones except Tail
-- [ ] Define what's visible outside per zone/story progression:
+- [x] Windows exist in all zones except Tail *(guzzle, tr-fih)*
+- [x] Define what's visible outside per zone/story progression: *(guzzle, tr-fih)*
   - Early game: nothing but white, frozen wasteland
   - Mid game: frozen cities, landmarks
   - Late game: signs of thaw — green patches, running water, animals
-- [ ] Interactive windows: can be broken (hull breach hazard), looked through for story moments
-- [ ] Window as combat mechanic: break window → enemies near it get sucked toward cold / take cold damage
+- [x] Interactive windows: can be broken (hull breach hazard), looked through for story moments *(guzzle, tr-fih)*
+- [x] Window as combat mechanic: break window → enemies near it get sucked toward cold / take cold damage *(guzzle, tr-fih)*
 
 ---
 
@@ -353,78 +353,78 @@
 - [x] Define Wilford's backstory: who built the train, why, how did ticket allocation work? *(shiny, tr-31z)*
 
 ### 7.2 Exterior Environment System — P2
-- [ ] Dynamic exterior visuals per train section / story progression
-- [ ] Weather system visible through windows: blizzards, clear skies, aurora borealis
-- [ ] Temperature display: external temp shown on UI as worldbuilding element
-- [ ] Frozen landmarks: recognizable cities/structures visible at specific points in the loop
-- [ ] Thaw progression: subtle environmental changes as story progresses (if thaw is part of narrative)
+- [x] Dynamic exterior visuals per train section / story progression *(guzzle, tr-rmn)*
+- [x] Weather system visible through windows: blizzards, clear skies, aurora borealis *(guzzle, tr-rmn)*
+- [x] Temperature display: external temp shown on UI as worldbuilding element *(guzzle, tr-rmn)*
+- [x] Frozen landmarks: recognizable cities/structures visible at specific points in the loop *(guzzle, tr-rmn)*
+- [x] Thaw progression: subtle environmental changes as story progresses (if thaw is part of narrative) *(guzzle, tr-rmn)*
 
 ### 7.3 EVA / Cold Suit Mechanics — P2
-- [ ] Define cold suit stats: time limit outside, movement restrictions, combat limitations
-- [ ] Cold suit acquisition: where found, can it be upgraded?
-- [ ] Define exterior objectives that require cold suit:
+- [x] Define cold suit stats: time limit outside, movement restrictions, combat limitations *(guzzle, tr-rmn)*
+- [x] Cold suit acquisition: where found, can it be upgraded? *(guzzle, tr-rmn)*
+- [x] Define exterior objectives that require cold suit: *(guzzle, tr-rmn)*
   - Repair hull breaches
   - Access cars from outside when interior is blocked
   - Retrieve items from frozen exterior structures (stopped alongside ruins?)
   - Endgame: exit the train entirely
-- [ ] Frostbite system: exposed extremities → progressive debuffs → death
+- [x] Frostbite system: exposed extremities → progressive debuffs → death *(guzzle, tr-rmn)*
 
 ---
 
 ## 8. DIFFICULTY & ACCESSIBILITY
 
 ### 8.1 Difficulty Settings — P2
-- [ ] Define difficulty tiers:
+- [x] Define difficulty tiers: *(rust, tr-57w)*
   - **Passenger:** Story focus. Reduced combat difficulty, generous resources, no companion permadeath.
   - **Survivor:** Balanced. Standard resource scarcity, moderate combat, companion permadeath on.
   - **Eternal Engine:** Hard. Scarce resources, aggressive AI, all permadeath active, no highlighted items.
   - **Mr. Wilford:** Nightmare. One save slot, extreme scarcity, enemies deal massive damage, no HUD.
-- [ ] Define per-difficulty modifiers: enemy health, damage, detection range, resource spawn rates, crafting costs
-- [ ] Adaptive difficulty option: subtle adjustment based on death count per zone (optional toggle)
-- [ ] Can difficulty be changed mid-game?
+- [x] Define per-difficulty modifiers: enemy health, damage, detection range, resource spawn rates, crafting costs *(rust, tr-57w)*
+- [x] Adaptive difficulty option: subtle adjustment based on death count per zone (optional toggle) *(rust, tr-57w)*
+- [x] Can difficulty be changed mid-game? *(rust, tr-57w)*
 
 ### 8.2 Accessibility Options — P1
-- [ ] Full subtitle system with speaker identification and sound descriptions
-- [ ] Subtitle size options (small, medium, large, extra large)
-- [ ] Colorblind modes: protanopia, deuteranopia, tritanopia
-- [ ] High contrast mode for UI elements
-- [ ] Screen reader support for menus (future consideration)
-- [ ] Full control remapping: keyboard, mouse, controller
-- [ ] One-handed controller layout option
-- [ ] Toggle vs hold options for: sprint, crouch, aim
-- [ ] Camera shake intensity slider
-- [ ] Motion blur toggle
-- [ ] Screen flash intensity reduction
-- [ ] Auto-aim assist toggle and strength slider
-- [ ] Text-to-speech for dialogue (if not voice acted)
-- [ ] Dyslexia-friendly font option
+- [x] Full subtitle system with speaker identification and sound descriptions *(rust, tr-57w)*
+- [x] Subtitle size options (small, medium, large, extra large) *(rust, tr-57w)*
+- [x] Colorblind modes: protanopia, deuteranopia, tritanopia *(rust, tr-57w)*
+- [x] High contrast mode for UI elements *(rust, tr-57w)*
+- [x] Screen reader support for menus (future consideration) *(rust, tr-57w)*
+- [x] Full control remapping: keyboard, mouse, controller *(rust, tr-57w)*
+- [x] One-handed controller layout option *(rust, tr-57w)*
+- [x] Toggle vs hold options for: sprint, crouch, aim *(rust, tr-57w)*
+- [x] Camera shake intensity slider *(rust, tr-57w)*
+- [x] Motion blur toggle *(rust, tr-57w)*
+- [x] Screen flash intensity reduction *(rust, tr-57w)*
+- [x] Auto-aim assist toggle and strength slider *(rust, tr-57w)*
+- [x] Text-to-speech for dialogue (if not voice acted) *(rust, tr-57w)*
+- [x] Dyslexia-friendly font option *(rust, tr-57w)*
 
 ---
 
 ## 9. TUTORIAL & ONBOARDING
 
 ### 9.1 Tutorial Design — P1
-- [ ] Tutorial must feel organic — NO tutorial pop-ups breaking immersion
-- [ ] Cars 1-5 serve as progressive tutorial:
+- [x] Tutorial must feel organic — NO tutorial pop-ups breaking immersion *(rust, tr-rlx)*
+- [x] Cars 1-5 serve as progressive tutorial: *(rust, tr-rlx)*
   - Car 1: Movement, camera, interaction (pick up items, open containers, read notes)
   - Car 2: Crafting introduction (make first improvised tool)
   - Car 3: Combat basics (unarmed → first weapon, blocking, dodging)
   - Car 4: Moral choice tutorial (small-stakes choice to teach the system)
   - Car 5: Quest/objective system, companion recruitment, faction introduction
-- [ ] Environmental teaching: use level design to teach mechanics (narrow path forces crouch, dark room forces torch use)
-- [ ] Companion dialogue as tutorial: companions explain systems in-character
-- [ ] New mechanics in later zones introduced via:
+- [x] Environmental teaching: use level design to teach mechanics (narrow path forces crouch, dark room forces torch use) *(rust, tr-rlx)*
+- [x] Companion dialogue as tutorial: companions explain systems in-character *(rust, tr-rlx)*
+- [x] New mechanics in later zones introduced via: *(rust, tr-rlx)*
   - NPC demonstrations
   - Environmental necessity (MUST use the system to progress)
   - Companion suggestions
-- [ ] Optional "advanced tips" loading screen hints for later mechanics
-- [ ] Practice rooms: can the player return to The Pit (Car 3) to practice combat?
+- [x] Optional "advanced tips" loading screen hints for later mechanics *(rust, tr-rlx)*
+- [x] Practice rooms: can the player return to The Pit (Car 3) to practice combat? *(rust, tr-rlx)*
 
 ### 9.2 Tooltip & Hint System — P2
-- [ ] Context-sensitive tooltips: appear only when relevant, fade after first use
-- [ ] Hint system: if player is stuck >3 minutes, subtle environmental cue
-- [ ] Hint frequency tied to difficulty level (more hints on Passenger, none on Mr. Wilford)
-- [ ] Disable all hints toggle
+- [x] Context-sensitive tooltips: appear only when relevant, fade after first use *(rust, tr-rlx)*
+- [x] Hint system: if player is stuck >3 minutes, subtle environmental cue *(rust, tr-rlx)*
+- [x] Hint frequency tied to difficulty level (more hints on Passenger, none on Mr. Wilford) *(rust, tr-rlx)*
+- [x] Disable all hints toggle *(rust, tr-rlx)*
 
 ---
 
@@ -600,111 +600,111 @@
 ## 13. REPLAYABILITY
 
 ### 13.1 New Game+ — P2
-- [ ] Define what carries over: skills, recipes, collectible progress?
-- [ ] Define what changes: harder enemies, new dialogue options, hidden content unlocked?
-- [ ] New NG+ exclusive content: at minimum 1 secret car and 1 alternative quest path
-- [ ] NG+ difficulty scaling: enemies scale to player level
+- [x] Define what carries over: skills, recipes, collectible progress? *(chrome, tr-o3s)*
+- [x] Define what changes: harder enemies, new dialogue options, hidden content unlocked? *(chrome, tr-o3s)*
+- [x] New NG+ exclusive content: at minimum 1 secret car and 1 alternative quest path *(chrome, tr-o3s)*
+- [x] NG+ difficulty scaling: enemies scale to player level *(chrome, tr-o3s)*
 
 ### 13.2 Branching Path Tracking — P2
-- [ ] Post-game statistics screen: choices made, companions survived, factions aligned, ending achieved
-- [ ] "Road not taken" indicators: show player what they missed without spoiling specifics
-- [ ] Chapter/zone select after first completion: replay individual zones with current character
-- [ ] Completion percentage: per zone and total, visible in save file
+- [x] Post-game statistics screen: choices made, companions survived, factions aligned, ending achieved *(chrome, tr-o3s)*
+- [x] "Road not taken" indicators: show player what they missed without spoiling specifics *(chrome, tr-o3s)*
+- [x] Chapter/zone select after first completion: replay individual zones with current character *(chrome, tr-o3s)*
+- [x] Completion percentage: per zone and total, visible in save file *(chrome, tr-o3s)*
 
 ### 13.3 Procedural Elements — P3
-- [ ] Minor loot randomization per playthrough
-- [ ] NPC placement variation for non-critical NPCs
-- [ ] Optional daily/weekly challenge mode: randomly selected 10-car gauntlet with leaderboard
-- [ ] Roguelike mode: permadeath, randomized car order (subset of full game), run-based unlocks
+- [x] Minor loot randomization per playthrough *(chrome, tr-o3s)*
+- [x] NPC placement variation for non-critical NPCs *(chrome, tr-o3s)*
+- [x] Optional daily/weekly challenge mode: randomly selected 10-car gauntlet with leaderboard *(chrome, tr-o3s)*
+- [x] Roguelike mode: permadeath, randomized car order (subset of full game), run-based unlocks *(chrome, tr-o3s)*
 
 ---
 
 ## 14. STEAM & PUBLISHING
 
 ### 14.1 Steam Integration — P1
-- [ ] Steam Achievements list (recommendation: 50-80 achievements):
+- [x] Steam Achievements list (recommendation: 50-80 achievements): *(nitro, tr-611)*
   - Story progression: 1 per zone completed (7)
   - Endings: 1 per ending (5-6)
   - Combat: kill milestones, boss-specific challenges, pacifist run
   - Exploration: all collectibles per type, all secret cars, all cars visited
   - Social: max loyalty with each companion, max rep with each faction
   - Challenges: speedrun, no-death, minimal combat, Kronole-free, full addiction
-- [ ] Steam Cloud saves
-- [ ] Steam trading cards (if applicable)
-- [ ] Steam Workshop support (for mods — see 14.3)
-- [ ] Rich Presence: show current zone, playtime, completion % in Steam profile
+- [x] Steam Cloud saves *(nitro, tr-611)*
+- [x] Steam trading cards (if applicable) *(nitro, tr-611)*
+- [x] Steam Workshop support (for mods — see 14.3) *(nitro, tr-611)*
+- [x] Rich Presence: show current zone, playtime, completion % in Steam profile *(nitro, tr-611)*
 
 ### 14.2 Store Page & Marketing — P2
-- [ ] Write Steam store description (short and long)
-- [ ] Define minimum system requirements and recommended specs
-- [ ] Plan screenshot set: 1 per zone minimum (7), plus combat, crafting, dialogue, exterior
-- [ ] Trailer plan: teaser trailer (30-60s), gameplay trailer (2-3min), launch trailer
-- [ ] Define Early Access strategy:
+- [x] Write Steam store description (short and long) *(nitro, tr-611)*
+- [x] Define minimum system requirements and recommended specs *(nitro, tr-611)*
+- [x] Plan screenshot set: 1 per zone minimum (7), plus combat, crafting, dialogue, exterior *(nitro, tr-611)*
+- [x] Trailer plan: teaser trailer (30-60s), gameplay trailer (2-3min), launch trailer *(nitro, tr-611)*
+- [x] Define Early Access strategy: *(nitro, tr-611)*
   - EA launch with Zones 1-3 (Cars 1-48)?
   - Full launch with all content?
   - EA roadmap if applicable
-- [ ] Demo plan: free demo with Cars 1-10 (Tail only)?
+- [x] Demo plan: free demo with Cars 1-10 (Tail only)? *(nitro, tr-611)*
 
 ### 14.3 Content Rating — P1
-- [ ] Identify ESRB/PEGI-relevant content:
+- [x] Identify ESRB/PEGI-relevant content: *(nitro, tr-611)*
   - Violence: melee combat, blood, environmental kills
   - Drug use: Kronole as a core game mechanic
   - Language: profanity level in dialogue
   - Child endangerment: children in the Engine, children's rations theft
   - Cannibalism: referenced in lore (from the film)
   - Mature themes: class warfare, eugenics, human experimentation
-- [ ] Target rating: M (Mature) / PEGI 18 — confirm this is acceptable
-- [ ] Content warnings on store page
-- [ ] Sensitive content toggles in settings (reduce gore, skip disturbing scenes)?
+- [x] Target rating: M (Mature) / PEGI 18 — confirm this is acceptable *(nitro, tr-611)*
+- [x] Content warnings on store page *(nitro, tr-611)*
+- [x] Sensitive content toggles in settings (reduce gore, skip disturbing scenes)? *(nitro, tr-611)*
 
 ### 14.4 Mod Support — P3
-- [ ] Define mod scope: custom cars, custom items, total conversions?
-- [ ] Modding tools: custom car editor, item definition files, dialogue scripting
-- [ ] Steam Workshop integration for mod distribution
-- [ ] Mod load order management
+- [x] Define mod scope: custom cars, custom items, total conversions? *(nitro, tr-611)*
+- [x] Modding tools: custom car editor, item definition files, dialogue scripting *(nitro, tr-611)*
+- [x] Steam Workshop integration for mod distribution *(nitro, tr-611)*
+- [x] Mod load order management *(nitro, tr-611)*
 
 ---
 
 ## 15. TECHNICAL SPECIFICATIONS
 
 ### 15.1 Engine Decision — P0
-- [ ] **CRITICAL DECISION:** Confirm engine choice and development workflow
+- [x] **CRITICAL DECISION:** Confirm engine choice and development workflow *(nitro, tr-ipc)*
   - Option A: UE5 + Editor (requires visual editing, Megascans/Quixel for free assets)
   - Option B: UE5 + procedural generation (all geometry from code, stylized aesthetic)
   - Option C: Godot + procedural (better terminal-only workflow, GDScript/C#)
   - Option D: Custom engine (maximum control, maximum effort)
-- [ ] Define art pipeline based on engine choice:
+- [x] Define art pipeline based on engine choice: *(nitro, tr-ipc)*
   - If procedural: define modular geometry kit (wall panels, floor tiles, door frames, furniture blocks)
   - If UE5: define Megascans material palette per zone
   - If Godot: define shader/material approach
 
 ### 15.2 Save System — P0
-- [ ] Save file format: JSON? Binary? SQLite?
-- [ ] Save data per car: NPC states, loot collected, doors opened, faction control, environmental changes
-- [ ] Global save data: player stats, inventory, quest progress, faction rep, choice flags, companion states
-- [ ] Save slot count: 3 manual saves + 1 autosave? More?
-- [ ] Autosave triggers: car entry, quest completion, major choice, timed interval
-- [ ] Save file size budget per slot
-- [ ] Save file versioning for patches/updates
-- [ ] Cloud save format compatible with Steam Cloud
+- [x] Save file format: JSON? Binary? SQLite? *(nitro, tr-ipc)*
+- [x] Save data per car: NPC states, loot collected, doors opened, faction control, environmental changes *(nitro, tr-ipc)*
+- [x] Global save data: player stats, inventory, quest progress, faction rep, choice flags, companion states *(nitro, tr-ipc)*
+- [x] Save slot count: 3 manual saves + 1 autosave? More? *(nitro, tr-ipc)*
+- [x] Autosave triggers: car entry, quest completion, major choice, timed interval *(nitro, tr-ipc)*
+- [x] Save file size budget per slot *(nitro, tr-ipc)*
+- [x] Save file versioning for patches/updates *(nitro, tr-ipc)*
+- [x] Cloud save format compatible with Steam Cloud *(nitro, tr-ipc)*
 
 ### 15.3 Car Streaming Architecture — P0
-- [ ] Define car loading strategy: max 3 cars in memory (current + 1 forward + 1 back)
-- [ ] Door opening animation = loading mask (define minimum animation time for loading budget)
-- [ ] Preloading: begin loading next car when player enters 2nd half of current car
-- [ ] Backtracking: keep previous car loaded until 2nd car back is requested
-- [ ] Memory budget per car: define max based on target hardware
-- [ ] LOD strategy for visible-but-not-entered cars (through windows, over rooftops)
+- [x] Define car loading strategy: max 3 cars in memory (current + 1 forward + 1 back) *(nitro, tr-ipc)*
+- [x] Door opening animation = loading mask (define minimum animation time for loading budget) *(nitro, tr-ipc)*
+- [x] Preloading: begin loading next car when player enters 2nd half of current car *(nitro, tr-ipc)*
+- [x] Backtracking: keep previous car loaded until 2nd car back is requested *(nitro, tr-ipc)*
+- [x] Memory budget per car: define max based on target hardware *(nitro, tr-ipc)*
+- [x] LOD strategy for visible-but-not-entered cars (through windows, over rooftops) *(nitro, tr-ipc)*
 
 ### 15.4 Performance Budgets — P1
-- [ ] Target framerate: 60fps on defined minimum spec
-- [ ] Define minimum spec hardware
-- [ ] Define recommended spec hardware
-- [ ] Per-car polygon budget
-- [ ] Per-car texture memory budget
-- [ ] Maximum concurrent NPCs per car
-- [ ] Maximum concurrent particle effects per car
-- [ ] Draw call budget
-- [ ] Physics object limit per car
+- [x] Target framerate: 60fps on defined minimum spec *(nitro, tr-ipc)*
+- [x] Define minimum spec hardware *(nitro, tr-ipc)*
+- [x] Define recommended spec hardware *(nitro, tr-ipc)*
+- [x] Per-car polygon budget *(nitro, tr-ipc)*
+- [x] Per-car texture memory budget *(nitro, tr-ipc)*
+- [x] Maximum concurrent NPCs per car *(nitro, tr-ipc)*
+- [x] Maximum concurrent particle effects per car *(nitro, tr-ipc)*
+- [x] Draw call budget *(nitro, tr-ipc)*
+- [x] Physics object limit per car *(nitro, tr-ipc)*
 
 ### 15.5 Networking & Steam — P1  `
