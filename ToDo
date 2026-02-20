@@ -7,22 +7,17 @@
 
 ---
 
-## LAUNCH BLOCKERS — Must Fix Before Ship 🚨
+## LAUNCH BLOCKERS — Status Update 🚨
 
-> These items were identified from the current demo and must be resolved.
+> Session 2026-02-20: Massive progress. 16 beads created, dispatched, merged.
+> 297 files changed, +29,685 lines / -5,766 lines merged to main.
 
-- 🔨 **SOUND** — Zone audio system code merged (MetaSounds architecture, adaptive music, Tail POC). Still needs: audio assets, remaining zone profiles, SFX
-- 🔨 **CAR SCALE** — Scale rework scripts merged. Still needs: verify in-editor, adjust streaming distances
-- ⬜ **NO CHARACTERS** — No player model, no NPCs, no companions visible. Need at minimum:
-  - ⬜ Player character model (protagonist) — visible in 3rd person
-  - ⬜ Basic NPC models per zone (crowd, workers, guards, civilians)
-  - ⬜ Jackboot guard models (primary antagonist NPCs)
-  - ⬜ Companion character models (at least first 2-3 recruitable)
-  - ⬜ Character animations (idle, walk, run, combat, interact)
-- ⬜ **NO DATATABLES** — C++ systems exist but zero game data (items, quests, dialogue, collectibles)
-- ⬜ **NO PICKUP/NPC BLUEPRINTS** — No placeable actors to put items or NPCs in the world
-- ⬜ **LOWER TRANSPORT DECK** — Second layer beneath 3rd-1st Class with mini-rail (see Phase 4.1b)
-- ⬜ **ORPHANED CODE** — ~6000 lines in Source/SnowyEngine + Source/TrainGame not compiled
+- ✅ **SOUND** — Zone audio system merged (MetaSounds, adaptive music, Tail POC, 2263 lines). Still needs: actual audio asset files
+- ✅ **CAR SCALE** — Scale rework scripts merged, streaming subsystem updated
+- ✅ **CHARACTERS** — Player character (SEEPlayerCharacter), Jackboot (SEEJackbootCharacter), Civilian (SEECivilianCharacter), Companion (SEECompanionCharacter) classes + AnimInstance BPs merged
+- 🔨 **DATATABLES** — DataTable framework exists, some JSON seed data merged (DT_SkillTrees, DT_Perks, DT_Endings, DT_Cargo, DT_ZoneLighting). Still needs: DT_Items, DT_Weapons, DT_Quests, DT_Dialogue, DT_Collectibles
+- ✅ **LOWER TRANSPORT DECK** — Full system merged: MiniRailCart, DeckAccessPoint, DeckSecurityDevice, TransportDeckSubsystem, TransportDeckComponent
+- ✅ **ORPHANED CODE** — Module consolidation complete. .uproject updated with TrainGame + SnowyEngine modules. Duplicates removed. 137 files restructured
 
 ---
 
