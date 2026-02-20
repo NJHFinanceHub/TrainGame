@@ -1,4 +1,4 @@
 *.blend filter=lfs diff=lfs merge=lfs -text
-metal_plate_diff_4k.png filter=lfs diff=lfs merge=lfs -text
-rusty_metal_04_diff_4k.png filter=lfs diff=lfs merge=lfs -text
-textures/crepe_satin_diff_4k.png filter=lfs diff=lfs merge=lfs -text
+Assets/Textures/Metals/metal_plate_diff_4k.png filter=lfs diff=lfs merge=lfs -text
+Assets/Textures/Metals/rusty_metal_04_diff_4k.png filter=lfs diff=lfs merge=lfs -text
+Assets/Textures/Environment/crepe_satin_diff_4k.png filter=lfs diff=lfs merge=lfs -text

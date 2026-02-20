@@ -18,7 +18,8 @@ import sys
 # Repo root is 3 levels up from Scripts/ inside the UE project
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)  # SnowpiercerEE/
-RIG_DIR = os.path.dirname(os.path.dirname(PROJECT_DIR))  # mayor/rig/
+REPO_ROOT = os.path.dirname(os.path.dirname(PROJECT_DIR))  # TrainGame repo root
+ASSETS_DIR = os.path.join(REPO_ROOT, "Assets")
 
 # Asset destinations (UE Content paths)
 DEST = {
@@ -196,7 +197,7 @@ def run_import():
         # 1. MODULAR PIPES — FBX Meshes
         # ===================================================================
         unreal.log("=== Importing Modular Pipe Meshes ===")
-        pipes_dir = os.path.join(RIG_DIR, "ModularPipes")
+        pipes_dir = os.path.join(ASSETS_DIR, "Meshes", "ModularPipes")
         if os.path.isdir(pipes_dir):
             for f in sorted(os.listdir(pipes_dir)):
                 if f.endswith(".fbx"):
@@ -251,7 +252,7 @@ def run_import():
         # 3. BAKED TEXTURES (props: tanks, vents, towers, etc.)
         # ===================================================================
         unreal.log("=== Importing Baked Prop Textures ===")
-        baked_dir = os.path.join(RIG_DIR, "baked_textures")
+        baked_dir = os.path.join(ASSETS_DIR, "Textures", "BakedProps")
         baked_sets = {}  # Group by prop name
         if os.path.isdir(baked_dir):
             for f in sorted(os.listdir(baked_dir)):
@@ -320,7 +321,7 @@ def run_import():
         ]
 
         for f in metal_files:
-            src = os.path.join(RIG_DIR, f)
+            src = os.path.join(ASSETS_DIR, "Textures", "Metals", f)
             if os.path.exists(src):
                 slow_task.enter_progress_frame(1, f"Importing {f}")
                 result = import_texture(src, DEST["tex_metals"])
@@ -330,8 +331,8 @@ def run_import():
                     set_texture_type(result, tex_type)
 
         # Environment textures
-        for f in ["textures/crepe_satin_diff_4k.png"]:
-            src = os.path.join(RIG_DIR, f)
+        for f in ["crepe_satin_diff_4k.png"]:
+            src = os.path.join(ASSETS_DIR, "Textures", "Environment", f)
             if os.path.exists(src):
                 slow_task.enter_progress_frame(1, f"Importing {f}")
                 result = import_texture(src, DEST["tex_environment"])
@@ -340,7 +341,7 @@ def run_import():
 
         # Brass 4K PBR set
         unreal.log("=== Importing Brass 4K PBR Set ===")
-        brass_dir = os.path.join(RIG_DIR, "brass-4K")
+        brass_dir = os.path.join(ASSETS_DIR, "Textures", "Brass")
         brass_textures = {}
         if os.path.isdir(brass_dir):
             for f in sorted(os.listdir(brass_dir)):
@@ -365,7 +366,7 @@ def run_import():
         # 5. AUDIO
         # ===================================================================
         unreal.log("=== Importing Audio ===")
-        audio_dir = os.path.join(RIG_DIR, "audio")
+        audio_dir = os.path.join(ASSETS_DIR, "Audio")
         if os.path.isdir(audio_dir):
             for f in sorted(os.listdir(audio_dir)):
                 if f.endswith((".mp3", ".wav", ".ogg")):
@@ -381,7 +382,7 @@ def run_import():
         # 6. CONCEPT ART (reference only)
         # ===================================================================
         unreal.log("=== Importing Concept Art ===")
-        concept_dir = os.path.join(RIG_DIR, "concept_art")
+        concept_dir = os.path.join(ASSETS_DIR, "ConceptArt")
         if os.path.isdir(concept_dir):
             for f in sorted(os.listdir(concept_dir)):
                 if f.endswith((".png", ".jpg")):

@@ -12,27 +12,27 @@
 ### 3D Models (FBX) — 13 meshes
 | Source | UE Destination | Description |
 |--------|---------------|-------------|
-| `ModularPipes/PipeKit_Base_Floor.fbx` | `/Game/Meshes/ModularPipes/` | Floor-mounted pipe base |
-| `ModularPipes/PipeKit_Base_Wall.fbx` | `/Game/Meshes/ModularPipes/` | Wall-mounted pipe base |
-| `ModularPipes/PipeKit_Connector_*.fbx` (x8) | `/Game/Meshes/ModularPipes/` | Pipe connectors (2-way, 3-way, 4-way, 6-way, crossover, straight) |
-| `ModularPipes/PipeKit_Pipe_*.fbx` (x3) | `/Game/Meshes/ModularPipes/` | Pipe segments (short, medium, long) |
+| `Assets/Meshes/ModularPipes/PipeKit_Base_Floor.fbx` | `/Game/Meshes/ModularPipes/` | Floor-mounted pipe base |
+| `Assets/Meshes/ModularPipes/PipeKit_Base_Wall.fbx` | `/Game/Meshes/ModularPipes/` | Wall-mounted pipe base |
+| `Assets/Meshes/ModularPipes/PipeKit_Connector_*.fbx` (x8) | `/Game/Meshes/ModularPipes/` | Pipe connectors (2-way, 3-way, 4-way, 6-way, crossover, straight) |
+| `Assets/Meshes/ModularPipes/PipeKit_Pipe_*.fbx` (x3) | `/Game/Meshes/ModularPipes/` | Pipe segments (short, medium, long) |
 
 ### PBR Texture Sets — 4 pipe material sets
 | Source | UE Material | Channels |
 |--------|------------|----------|
-| `ModularPipes/Textures/BareMetal/` | `/Game/Materials/ModularPipes/M_BareMetal` | BaseColor, Height, Metallic, Normal, Roughness |
-| `ModularPipes/Textures/PaintedMetal/` | `/Game/Materials/ModularPipes/M_PaintedMetal` | BaseColor, Height, Metallic, Normal, Roughness |
-| `ModularPipes/Textures/RustyMetal/` | `/Game/Materials/ModularPipes/M_RustyMetal` | BaseColor, Height, Metallic, Normal, Roughness |
-| `ModularPipes/Textures/RustyPaintedMetal/` | `/Game/Materials/ModularPipes/M_RustyPaintedMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `Assets/Meshes/ModularPipes/Textures/BareMetal/` | `/Game/Materials/ModularPipes/M_BareMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `Assets/Meshes/ModularPipes/Textures/PaintedMetal/` | `/Game/Materials/ModularPipes/M_PaintedMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `Assets/Meshes/ModularPipes/Textures/RustyMetal/` | `/Game/Materials/ModularPipes/M_RustyMetal` | BaseColor, Height, Metallic, Normal, Roughness |
+| `Assets/Meshes/ModularPipes/Textures/RustyPaintedMetal/` | `/Game/Materials/ModularPipes/M_RustyPaintedMetal` | BaseColor, Height, Metallic, Normal, Roughness |
 
 ### Brass PBR Set — 4K
 | Source | UE Destination |
 |--------|---------------|
-| `brass-4K/4K-Brass_Base Color.jpg` | `/Game/Textures/Brass/` |
-| `brass-4K/4K-Brass_Height.jpg` | `/Game/Textures/Brass/` |
-| `brass-4K/4K-Brass_Metallic.jpg` | `/Game/Textures/Brass/` |
-| `brass-4K/4K-Brass_Normal.jpg` | `/Game/Textures/Brass/` |
-| `brass-4K/4K-Brass_Roughness.jpg` | `/Game/Textures/Brass/` |
+| `Assets/Textures/Brass/4K-Brass_Base Color.jpg` | `/Game/Textures/Brass/` |
+| `Assets/Textures/Brass/4K-Brass_Height.jpg` | `/Game/Textures/Brass/` |
+| `Assets/Textures/Brass/4K-Brass_Metallic.jpg` | `/Game/Textures/Brass/` |
+| `Assets/Textures/Brass/4K-Brass_Normal.jpg` | `/Game/Textures/Brass/` |
+| `Assets/Textures/Brass/4K-Brass_Roughness.jpg` | `/Game/Textures/Brass/` |
 | **Material** | `/Game/Materials/Metals/M_Brass_4K` |
 
 ### Baked Prop Textures — ~100 textures, ~20 props
@@ -69,48 +69,48 @@ Each prop has Diffuse + Normal + Specular + AO channels.
 ### Loose Metal/Environment Textures — ~45 textures
 | Source | UE Destination | Notes |
 |--------|---------------|-------|
-| `brushed_metal*.jpg/png` (x4) | `/Game/Textures/Metals/` | Diff, variant, normal, spec |
-| `concrete*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
-| `concrete_wall*.jpg` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
-| `dirty_metal*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
-| `marble001_color_2k.png` | `/Game/Textures/Metals/` | First Class car marble |
-| `metal001_color_2k.png` | `/Game/Textures/Metals/` | Generic metal |
-| `metal1*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
-| `metal2*.jpg` (x2) | `/Game/Textures/Metals/` | Diff, spec |
-| `metal_ground*.jpg` (x3) | `/Game/Textures/Metals/` | Floor panels |
-| `metal_orange*.jpg` (x2) | `/Game/Textures/Metals/` | Painted metal |
-| `metal_pipe*.jpg` (x4) | `/Game/Textures/Metals/` | Pipe detail textures |
-| `metal_planks.png` | `/Game/Textures/Metals/` | Walking surface |
-| `metal_plate*.jpg/png` (x4) | `/Game/Textures/Metals/` | Wall/floor plates |
-| `metal_stuff*.jpg` (x4) | `/Game/Textures/Metals/` | Industrial detail |
-| `metals_norm.jpg` | `/Game/Textures/Metals/` | Shared normal |
-| `red_metal*.jpg` (x3) | `/Game/Textures/Metals/` | Emergency/signage |
-| `rusty_metal_04_diff_4k.png` | `/Game/Textures/Metals/` | 4K rust overlay |
-| `scratchy_metal*.jpg` (x4) | `/Game/Textures/Metals/` | Worn surfaces |
-| `wire*.jpg/png` (x3) | `/Game/Textures/Metals/` | Electrical wiring |
-| `textures/crepe_satin_diff_4k.png` | `/Game/Textures/Environment/` | First Class fabric |
+| `Assets/Textures/Metals/brushed_metal*.jpg/png` (x4) | `/Game/Textures/Metals/` | Diff, variant, normal, spec |
+| `Assets/Textures/Metals/concrete*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `Assets/Textures/Metals/concrete_wall*.jpg` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `Assets/Textures/Metals/dirty_metal*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `Assets/Textures/Metals/marble001_color_2k.png` | `/Game/Textures/Metals/` | First Class car marble |
+| `Assets/Textures/Metals/metal001_color_2k.png` | `/Game/Textures/Metals/` | Generic metal |
+| `Assets/Textures/Metals/metal1*.jpg/png` (x3) | `/Game/Textures/Metals/` | Diff, normal, spec |
+| `Assets/Textures/Metals/metal2*.jpg` (x2) | `/Game/Textures/Metals/` | Diff, spec |
+| `Assets/Textures/Metals/metal_ground*.jpg` (x3) | `/Game/Textures/Metals/` | Floor panels |
+| `Assets/Textures/Metals/metal_orange*.jpg` (x2) | `/Game/Textures/Metals/` | Painted metal |
+| `Assets/Textures/Metals/metal_pipe*.jpg` (x4) | `/Game/Textures/Metals/` | Pipe detail textures |
+| `Assets/Textures/Metals/metal_planks.png` | `/Game/Textures/Metals/` | Walking surface |
+| `Assets/Textures/Metals/metal_plate*.jpg/png` (x4) | `/Game/Textures/Metals/` | Wall/floor plates |
+| `Assets/Textures/Metals/metal_stuff*.jpg` (x4) | `/Game/Textures/Metals/` | Industrial detail |
+| `Assets/Textures/Metals/metals_norm.jpg` | `/Game/Textures/Metals/` | Shared normal |
+| `Assets/Textures/Metals/red_metal*.jpg` (x3) | `/Game/Textures/Metals/` | Emergency/signage |
+| `Assets/Textures/Metals/rusty_metal_04_diff_4k.png` | `/Game/Textures/Metals/` | 4K rust overlay |
+| `Assets/Textures/Metals/scratchy_metal*.jpg` (x4) | `/Game/Textures/Metals/` | Worn surfaces |
+| `Assets/Textures/Metals/wire*.jpg/png` (x3) | `/Game/Textures/Metals/` | Electrical wiring |
+| `Assets/Textures/Environment/crepe_satin_diff_4k.png` | `/Game/Textures/Environment/` | First Class fabric |
 
 ### Audio — 2 files
 | Source | UE Destination | Usage |
 |--------|---------------|-------|
-| `audio/train_interior.mp3` | `/Game/Audio/` | Ambient loop for SEETrainMovementComponent |
-| `audio/train_whistle.mp3` | `/Game/Audio/` | Event SFX |
+| `Assets/Audio/train_interior.mp3` | `/Game/Audio/` | Ambient loop for SEETrainMovementComponent |
+| `Assets/Audio/train_whistle.mp3` | `/Game/Audio/` | Event SFX |
 
 ### Concept Art — 6 reference images
 | Source | UE Destination |
 |--------|---------------|
-| `concept_art/engine_concept.png` | `/Game/Reference/ConceptArt/` |
-| `concept_art/first_class_concept.png` | `/Game/Reference/ConceptArt/` |
-| `concept_art/sanctum_concept.png` | `/Game/Reference/ConceptArt/` |
-| `concept_art/second_class_concept.png` | `/Game/Reference/ConceptArt/` |
-| `concept_art/tail_zone_concept.png` | `/Game/Reference/ConceptArt/` |
-| `concept_art/third_class_concept.png` | `/Game/Reference/ConceptArt/` |
+| `Assets/ConceptArt/engine_concept.png` | `/Game/Reference/ConceptArt/` |
+| `Assets/ConceptArt/first_class_concept.png` | `/Game/Reference/ConceptArt/` |
+| `Assets/ConceptArt/sanctum_concept.png` | `/Game/Reference/ConceptArt/` |
+| `Assets/ConceptArt/second_class_concept.png` | `/Game/Reference/ConceptArt/` |
+| `Assets/ConceptArt/tail_zone_concept.png` | `/Game/Reference/ConceptArt/` |
+| `Assets/ConceptArt/third_class_concept.png` | `/Game/Reference/ConceptArt/` |
 
 ### Blender Source Files (NOT imported — reference only)
 | Source | Description |
 |--------|-------------|
-| `industrial_final.blend` | Final industrial scene (export FBX for additional props) |
-| `industrial_old.blend` | Legacy version |
+| `Assets/Blender/industrial_final.blend` | Final industrial scene (export FBX for additional props) |
+| `Assets/Blender/industrial_old.blend` | Legacy version |
 
 ## Content Directory Structure (after import)
 ```
