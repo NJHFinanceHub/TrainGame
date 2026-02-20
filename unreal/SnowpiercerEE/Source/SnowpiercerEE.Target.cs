@@ -6,7 +6,7 @@ public class SnowpiercerEETarget : TargetRules
     public SnowpiercerEETarget(TargetInfo Target) : base(Target)
     {
         Type = TargetType.Game;
-        DefaultBuildSettings = BuildSettingsVersion.V5;
+        DefaultBuildSettings = BuildSettingsVersion.V6;
         IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
         ExtraModuleNames.Add("SnowpiercerEE");
     }
