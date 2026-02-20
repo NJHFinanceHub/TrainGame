@@ -1,0 +1,973 @@
+[
+  {
+    "Name": "SQ_Z1_RatCatcher",
+    "QuestID": "SQ_Z1_RatCatcher",
+    "QuestName": "Rat Catcher",
+    "Description": "The cook needs 5 pieces of rat meat to keep the Tail fed. The rats nest in the walls between Cars 1 and 3.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_RC_01", "Description": "Collect 5 Rat Meat", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_RatMeat", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_RC_02", "Description": "Deliver the meat to the Cook", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Cook", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 150,
+    "ItemRewards": ["Item_ProteinBlock", "Item_ProteinBlock"],
+    "FactionRepRewards": {"Tailies": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_MedicineRun",
+    "QuestID": "SQ_Z1_MedicineRun",
+    "QuestName": "Medicine Run",
+    "Description": "An injured Tailie is dying of infection. Find antiseptic in the Sickbay stores of Car 8.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_MR_01", "Description": "Speak to the Injured Tailie", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_InjuredTailie", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_MR_02", "Description": "Find Antiseptic in Car 8 Sickbay", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_Antiseptic", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_MR_03", "Description": "Return the Antiseptic to the Injured Tailie", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_InjuredTailie", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": ["Item_Bandage", "Item_Bandage", "Item_Bandage"],
+    "FactionRepRewards": {"Tailies": 25},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_KronoleCleanup",
+    "QuestID": "SQ_Z1_KronoleCleanup",
+    "QuestName": "Kronole Cleanup",
+    "Description": "The Kronole dealer is poisoning the Tail. Deal with them by force, persuasion, or cunning.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_KC_01", "Description": "Confront the Kronole Dealer", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_KronoleDealer", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_KC_02A", "Description": "(Optional) Defeat the Kronole Dealer", "Type": "ESEEObjectiveType::Kill", "TargetID": "NPC_KronoleDealer", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": true},
+      {"ObjectiveID": "SQ_Z1_KC_02B", "Description": "(Optional) Persuade the Dealer to stop selling", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_KronoleDealer_Persuade", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": true},
+      {"ObjectiveID": "SQ_Z1_KC_03", "Description": "Report back to Old Man Pike", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Pike", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": ["Item_Kronole", "Item_Kronole"],
+    "FactionRepRewards": {"Tailies": 20, "KronoleNetwork": -30},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_TheWorkshop",
+    "QuestID": "SQ_Z1_TheWorkshop",
+    "QuestName": "The Workshop",
+    "Description": "The Tail's mechanic can teach you to craft weapons and gear. Gather materials and forge your first weapon.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_WS_01", "Description": "Speak to Workshop Mechanic Josie", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Josie", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_WS_02", "Description": "Collect 3 Scrap Metal", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_ScrapMetal", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_WS_03", "Description": "Collect 2 Cloth Strips", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_ClothStrips", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_WS_04", "Description": "Craft a Reinforced Shiv at the workbench", "Type": "ESEEObjectiveType::Custom", "TargetID": "Craft_ReinforcedShiv", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": ["Item_Shiv"],
+    "FactionRepRewards": {"Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_ListeningPost",
+    "QuestID": "SQ_Z1_ListeningPost",
+    "QuestName": "Listening Post",
+    "Description": "Scattered intel documents reveal the Jackboots' patrol schedules and weak points.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_LP_01", "Description": "Find Intel Document 1 — Guard Roster", "Type": "ESEEObjectiveType::Collect", "TargetID": "Collect_Intel_Z1_01", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_LP_02", "Description": "Find Intel Document 2 — Supply Manifest", "Type": "ESEEObjectiveType::Collect", "TargetID": "Collect_Intel_Z1_02", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_LP_03", "Description": "Find Intel Document 3 — Encrypted Orders", "Type": "ESEEObjectiveType::Collect", "TargetID": "Collect_Intel_Z1_03", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_CommanderOrders"],
+    "FactionRepRewards": {"Tailies": 30, "Jackboots": -20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_AshasTriage",
+    "QuestID": "SQ_Z1_AshasTriage",
+    "QuestName": "Asha's Triage",
+    "Description": "Dr. Asha needs help organizing the Sickbay. Complete her medical training to unlock her triage option in the Medicine Allocation choice.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_AT_01", "Description": "Speak to Dr. Asha in the Sickbay (Car 6)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DrAsha", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_AT_02", "Description": "Collect medical supplies from Cars 2-4", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_MedicalSupplies", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_AT_03", "Description": "Complete the triage training exercise", "Type": "ESEEObjectiveType::Custom", "TargetID": "Training_Triage", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": ["Item_Bandage", "Item_Painkillers"],
+    "FactionRepRewards": {"Tailies": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_NixOneNetwork",
+    "QuestID": "SQ_Z1_NixOneNetwork",
+    "QuestName": "The Nix One Network",
+    "Description": "The Tail's black market needs a new supplier. Establish trade routes through the maintenance tunnels.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_NN_01", "Description": "Meet Nix One in the Smuggler's Cache (Car 13)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_NixOne", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_NN_02", "Description": "Map the maintenance tunnel route", "Type": "ESEEObjectiveType::GoTo", "TargetID": "MaintenanceTunnel_Route", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_NN_03", "Description": "Deliver the trade goods to Nix Two", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_NixTwo", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": ["Item_ScrapMetal", "Item_ScrapMetal", "Item_Chemicals"],
+    "FactionRepRewards": {"KronoleNetwork": 20, "Tailies": 5},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_TheRecitation",
+    "QuestID": "SQ_Z1_TheRecitation",
+    "QuestName": "The Recitation",
+    "Description": "Grandmother Sook-ja holds the Tail's oral history. Learn the stories before they are lost forever.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_TR_01", "Description": "Visit Grandmother Sook-ja (Car 5)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Sookja", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_TR_02", "Description": "Collect 3 memory tokens from Tail elders", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_MemoryToken", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_TR_03", "Description": "Return for the full Recitation", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Sookja_Recitation", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Tailies": 20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_FreezerBreach",
+    "QuestID": "SQ_Z1_FreezerBreach",
+    "QuestName": "Freezer Breach",
+    "Description": "Car 11's insulation has failed. Survive the freezing cold to retrieve trapped supplies before hypothermia claims you.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_FB_01", "Description": "Craft or find cold protection gear", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_ColdProtection", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_FB_02", "Description": "Enter Car 11 and reach the supply cache", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car11_SupplyCache", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_FB_03", "Description": "Retrieve 5 frozen supply crates", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_FrozenSupplyCrate", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_FB_04", "Description": "Escape before cold exposure reaches critical", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car11_Exit", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_WaterRation", "Item_Moonshine", "Item_ClothStrips"],
+    "FactionRepRewards": {"Tailies": 20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_ZhorasBetterFormula",
+    "QuestID": "SQ_Z1_ZhorasBetterFormula",
+    "QuestName": "Zhora's Better Formula",
+    "Description": "Zhora believes she can create a safer version of Kronole. Help her gather ingredients from the Kronole Den's hidden stashes.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_ZBF_01", "Description": "Talk to Zhora in the Kronole Den (Car 12)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Zhora", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_ZBF_02", "Description": "Collect 3 Chemical Compounds", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_Chemicals", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_ZBF_03", "Description": "Find the pre-Freeze pharmaceutical reference", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_PharmRef", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_ZBF_04", "Description": "Return to Zhora with materials", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Zhora", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": ["Item_PurifiedKronole"],
+    "FactionRepRewards": {"KronoleNetwork": 15, "Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_WorkerSolidarity",
+    "QuestID": "SQ_Z2_WorkerSolidarity",
+    "QuestName": "Worker Solidarity",
+    "Description": "The factory workers need proof that conditions can improve. Recover safety equipment from an abandoned storage car.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_WS_01", "Description": "Talk to Ivan Borodin at the factory (Car 22)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_IvanBorodin", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_WS_02", "Description": "Find the abandoned equipment car (Car 25)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car25_Storage", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_WS_03", "Description": "Collect 4 Safety Equipment pieces", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SafetyEquipment", "RequiredCount": 4, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_WS_04", "Description": "Deliver equipment to Ivan", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_IvanBorodin", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_WorkerOveralls"],
+    "FactionRepRewards": {"ThirdClassUnion": 25},
+    "PrerequisiteQuests": ["MQ_Z2_UnionRising"]
+  },
+  {
+    "Name": "SQ_Z2_PitFighter",
+    "QuestID": "SQ_Z2_PitFighter",
+    "QuestName": "Pit Fighter",
+    "Description": "Prove yourself in the Third Class fighting pit. Three rounds, three opponents, one reputation.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_PF_01", "Description": "Enter the Pit and speak to the Pit Boss (Car 20)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_PitBoss", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_PF_02", "Description": "Win Round 1: The Novice", "Type": "ESEEObjectiveType::Kill", "TargetID": "PitFighter_Novice", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_PF_03", "Description": "Win Round 2: The Veteran", "Type": "ESEEObjectiveType::Kill", "TargetID": "PitFighter_Veteran", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_PF_04", "Description": "Win Round 3: The Champion", "Type": "ESEEObjectiveType::Kill", "TargetID": "PitFighter_Champion", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_ReinforcedBat", "Item_Moonshine"],
+    "FactionRepRewards": {"ThirdClassUnion": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_SwitchbladeNetwork",
+    "QuestID": "SQ_Z2_SwitchbladeNetwork",
+    "QuestName": "Switchblade's Network",
+    "Description": "Cora 'Switchblade' Mendez runs the Third Class black market. Help her identify a Jackboot informant.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_SN_01", "Description": "Meet Cora in the Market (Car 19)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_CoraMendez", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SN_02", "Description": "Investigate Suspect 1: the shopkeeper", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Suspect_Shopkeeper", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SN_03", "Description": "Investigate Suspect 2: the mechanic", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Suspect_Mechanic", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SN_04", "Description": "Investigate Suspect 3: the parent (Belen)", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Belen", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SN_05", "Description": "Report your findings to Cora", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_CoraMendez", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_Shiv"],
+    "FactionRepRewards": {"KronoleNetwork": 15, "ThirdClassUnion": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_TheSchoolcar",
+    "QuestID": "SQ_Z2_TheSchoolcar",
+    "QuestName": "The School Car",
+    "Description": "Third Class children haven't had a teacher in two years. Help organize a school and find educational materials.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_SC_01", "Description": "Talk to Teacher Nkemdirim (Car 17)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Nkemdirim", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SC_02", "Description": "Collect 5 salvaged books from Cars 16-20", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SalvagedBook", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SC_03", "Description": "Find writing supplies", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_WritingSupplies", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_SC_04", "Description": "Clear the abandoned car for the school", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car17_SchoolSetup", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": [],
+    "FactionRepRewards": {"ThirdClassUnion": 20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_WaterReclamation",
+    "QuestID": "SQ_Z2_WaterReclamation",
+    "QuestName": "Water Reclamation",
+    "Description": "Third Class water recycler is failing. Find replacement parts before rationing gets worse.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_WR_01", "Description": "Inspect the failing recycler (Car 21)", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car21_Recycler", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_WR_02", "Description": "Find a replacement filter in maintenance tunnels", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_WaterFilter", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_WR_03", "Description": "Collect 2 Seal Gaskets", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SealGasket", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_WR_04", "Description": "Repair the recycler (requires CUN 10 or Yuki)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Repair_Recycler", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_WaterRation", "Item_WaterRation", "Item_WaterRation"],
+    "FactionRepRewards": {"ThirdClassUnion": 25},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_GrigorysLedger",
+    "QuestID": "SQ_Z2_GrigorysLedger",
+    "QuestName": "Grigory's Ledger",
+    "Description": "The Pit boss Grigory Petrov keeps records of every fighter's debts. Steal the ledger to free the fighters — or use it as leverage.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_GL_01", "Description": "Learn about the ledger from a pit fighter", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_PitFighter_Informant", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_GL_02", "Description": "Find Grigory's quarters (Car 20 upper level)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car20_GrigorysQuarters", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_GL_03", "Description": "Steal the ledger", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_GrigorysLedger", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": [],
+    "FactionRepRewards": {"ThirdClassUnion": 20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_BrokenBulkhead",
+    "QuestID": "SQ_Z2_BrokenBulkhead",
+    "QuestName": "The Broken Bulkhead",
+    "Description": "A structural failure in Car 24 threatens to depressurize the car. Seal the breach before the cold gets in.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_BB_01", "Description": "Investigate the breach in Car 24", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car24_Breach", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_BB_02", "Description": "Collect 3 Metal Plates", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_MetalPlate", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_BB_03", "Description": "Collect Welding Compound", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_WeldingCompound", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_BB_04", "Description": "Seal the breach before cold exposure kills", "Type": "ESEEObjectiveType::Custom", "TargetID": "Repair_Bulkhead", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_ScrapVest"],
+    "FactionRepRewards": {"ThirdClassUnion": 25},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_KesslersFaith",
+    "QuestID": "SQ_Z2_KesslersFaith",
+    "QuestName": "Kessler's Faith",
+    "Description": "Brother Kessler needs help protecting his congregation from Ezra's hardline doctrine. Gather evidence of the chapel's community value.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_KF_01", "Description": "Speak to Brother Kessler (Car 23)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Kessler", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_KF_02", "Description": "Collect 3 testimonials from congregation members", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Congregation", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_KF_03", "Description": "Find Kessler's theological rebuttal notes", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_KesslerNotes", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": [],
+    "FactionRepRewards": {"OrderOfTheEngine": -10, "ThirdClassUnion": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_WhispersGame",
+    "QuestID": "SQ_Z3_WhispersGame",
+    "QuestName": "Whisper's Game",
+    "Description": "A mysterious Second Class operative offers access to the Surveillance Hub — for a price.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_WG_01", "Description": "Follow the dead drops to contact Whisper", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_DeadDrop", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_WG_02", "Description": "Complete Whisper's test: retrieve a package from Car 37", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_WhispersPackage", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_WG_03", "Description": "Meet Whisper in the Surveillance Hub (Car 44)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Whisper", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_SurveillanceAccess"],
+    "FactionRepRewards": {"Bureaucracy": 15},
+    "PrerequisiteQuests": ["MQ_Z3_TheTrialOfSnowpiercer"]
+  },
+  {
+    "Name": "SQ_Z3_TheForgery",
+    "QuestID": "SQ_Z3_TheForgery",
+    "QuestName": "The Forgery",
+    "Description": "A Second Class artisan can forge transit passes that bypass checkpoints. Help him gather materials.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_TF_01", "Description": "Meet the Forger in his workshop (Car 35)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Forger", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_TF_02", "Description": "Steal ink from the Bureaucracy print shop (Car 40)", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SpecialInk", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_TF_03", "Description": "Find a genuine pass to copy", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_GenuinePass", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_TF_04", "Description": "Deliver materials to the Forger", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Forger", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_ForgedPass", "Item_ForgedPass"],
+    "FactionRepRewards": {"Bureaucracy": -10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_OkonkwosSon",
+    "QuestID": "SQ_Z3_OkonkwosSon",
+    "QuestName": "Okonkwo's Son",
+    "Description": "Emeka Okonkwo, the magistrate's son, is a Kronole addict hiding in the lower levels. Finding him changes the trial.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_OS_01", "Description": "Hear rumors about Emeka from Second Class residents", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_SecondClassGossip", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_OS_02", "Description": "Search the lower maintenance corridors of Cars 33-36", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car33_LowerCorridors", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_OS_03", "Description": "Find Emeka in his hiding place", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Emeka", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_OS_04", "Description": "Decide: help Emeka recover or use him as leverage", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_EmekasFate", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Bureaucracy": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_TheCensus",
+    "QuestID": "SQ_Z3_TheCensus",
+    "QuestName": "The Census",
+    "Description": "The official passenger count doesn't match reality. Find the census discrepancy records to prove systematic erasure.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_TC_01", "Description": "Access the Census Office (Car 41)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car41_CensusOffice", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_TC_02", "Description": "Collect census records from 3 eras", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_CensusRecord", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_TC_03", "Description": "Cross-reference with Archive data", "Type": "ESEEObjectiveType::Custom", "TargetID": "Research_Census", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_TrialEvidence"],
+    "FactionRepRewards": {"Bureaucracy": 5, "Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_VossShadow",
+    "QuestID": "SQ_Z3_VossShadow",
+    "QuestName": "Voss's Shadow",
+    "Description": "Melena Voss is hunting you. Learn her patrol patterns and set a trap — or evade her entirely.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_VS_01", "Description": "Identify Voss's agents in Second Class", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_VossAgent", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_VS_02", "Description": "Map Voss's patrol route", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_VossPatrol", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_VS_03", "Description": "Set up a diversion or ambush", "Type": "ESEEObjectiveType::Custom", "TargetID": "Trap_VossAmbush", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_VossIntel"],
+    "FactionRepRewards": {"Jackboots": -15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_LibrarianSecret",
+    "QuestID": "SQ_Z3_LibrarianSecret",
+    "QuestName": "The Librarian's Secret",
+    "Description": "Konstantin Volkov guards more than books. Earn his trust to access the restricted Archive section.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_LS_01", "Description": "Return 3 overdue books to Konstantin", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_OverdueBook", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_LS_02", "Description": "Debate Konstantin on the value of historical truth (CHA 8)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Konstantin_Debate", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_LS_03", "Description": "Access the Restricted Section", "Type": "ESEEObjectiveType::Interact", "TargetID": "Archive_RestrictedSection", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_TrialEvidence", "Item_ArchiveKey"],
+    "FactionRepRewards": {"Bureaucracy": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_ArtOfResistance",
+    "QuestID": "SQ_Z3_ArtOfResistance",
+    "QuestName": "Art of Resistance",
+    "Description": "A Second Class painter is creating revolutionary art in secret. Protect her work from Jackboot censors.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_AR_01", "Description": "Meet the painter in her hidden studio (Car 38)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Painter", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_AR_02", "Description": "Collect pigment materials from 3 sources", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_Pigment", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_AR_03", "Description": "Distract the Jackboot patrol during the mural painting", "Type": "ESEEObjectiveType::Custom", "TargetID": "Distraction_JackbootPatrol", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Bureaucracy": 10, "Jackboots": -5},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_SashasStory",
+    "QuestID": "SQ_Z4_SashasStory",
+    "QuestName": "Sasha's Story",
+    "Description": "A former Engine child escaped to the Working Spine. Find her and learn the truth about what happens inside the machine.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_SS_01", "Description": "Follow maintenance crew rumors about 'the small one'", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_MaintenanceCrew", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_SS_02", "Description": "Find Sasha's hiding spot in the ventilation system (Car 53)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car53_Ventilation", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_SS_03", "Description": "Earn Sasha's trust (provide food and warmth)", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Sasha_Trust", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_SS_04", "Description": "Listen to Sasha's testimony", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Sasha_Testimony", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_ChildLaborEvidence"],
+    "FactionRepRewards": {"TheThaw": 10, "Tailies": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_GearsWorkshop",
+    "QuestID": "SQ_Z4_GearsWorkshop",
+    "QuestName": "Gears' Workshop",
+    "Description": "The Working Spine's veteran mechanic has a lead on the infrastructure saboteur. Help her investigate.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_GW_01", "Description": "Meet Gears at the Maintenance Hub (Car 52)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Gears", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_GW_02", "Description": "Inspect 3 sabotaged systems", "Type": "ESEEObjectiveType::Interact", "TargetID": "SabotageSite", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_GW_03", "Description": "Identify the saboteur's access pattern", "Type": "ESEEObjectiveType::Custom", "TargetID": "Investigation_Saboteur", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_GW_04", "Description": "Confront the saboteur (Ren) in Car 57", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Ren", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_EngineersToolkit"],
+    "FactionRepRewards": {"TheThaw": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_ColdLabExperiment",
+    "QuestID": "SQ_Z4_ColdLabExperiment",
+    "QuestName": "Cold Lab Experiment",
+    "Description": "Dr. Holst's Cold Lab contains temperature data from outside. Help calibrate the sensors for accurate readings.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_CLE_01", "Description": "Speak to Dr. Maren Holst (Car 56)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DrHolst", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_CLE_02", "Description": "Retrieve sensor modules from exterior access panels", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SensorModule", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_CLE_03", "Description": "Install sensors in 3 external positions (cold exposure risk)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Install_ExteriorSensor", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_CLE_04", "Description": "Return to Dr. Holst for data analysis", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DrHolst_Results", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_ThawEvidence"],
+    "FactionRepRewards": {"TheThaw": 25},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_TheBrig",
+    "QuestID": "SQ_Z4_TheBrig",
+    "QuestName": "The Brig",
+    "Description": "The Working Spine brig holds political prisoners from all classes. Free them or leave them.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_TB_01", "Description": "Locate the brig (Car 55)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car55_Brig", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_TB_02", "Description": "Speak to the prisoners", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Prisoners", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_TB_03", "Description": "Obtain brig keys from the guard post", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_BrigKeys", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_TB_04", "Description": "Free the prisoners (or negotiate their release)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_FreePrisoners", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Tailies": 15, "ThirdClassUnion": 10, "Jackboots": -15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_IronsideExpedition",
+    "QuestID": "SQ_Z4_IronsideExpedition",
+    "QuestName": "Ironside's Expedition",
+    "Description": "Ironside, a Thaw Believer scout, claims to have survived an exterior walk. Find proof.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_IE_01", "Description": "Meet Ironside at the Exterior Access Point (Car 58)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Ironside", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_IE_02", "Description": "Examine Ironside's exterior samples", "Type": "ESEEObjectiveType::Interact", "TargetID": "Item_ExteriorSamples", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_IE_03", "Description": "Find corroborating evidence in the Cold Lab", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_ThawCorroboration", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_ThawEvidence"],
+    "FactionRepRewards": {"TheThaw": 20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_ArmoryRaid",
+    "QuestID": "SQ_Z4_ArmoryRaid",
+    "QuestName": "The Armory Raid",
+    "Description": "A Jackboot armory in the Working Spine is lightly guarded during shift change. Steal weapons for the revolution.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_ArmR_01", "Description": "Scout the armory schedule (Car 54)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_ArmoryScout", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_ArmR_02", "Description": "Enter during the shift change window", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car54_Armory", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_ArmR_03", "Description": "Collect 5 weapons crates", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_WeaponsCrate", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_ArmR_04", "Description": "Escape without triggering the alarm", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_ArmoryEscape", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 450,
+    "ItemRewards": ["Item_JackbootBaton", "Item_Machete"],
+    "FactionRepRewards": {"Tailies": 20, "Jackboots": -25},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_TheSoiree",
+    "QuestID": "SQ_Z5_TheSoiree",
+    "QuestName": "The Soiree",
+    "Description": "Infiltrate a First Class dinner party to gather blackmail material on the elite.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_TS_01", "Description": "Acquire formal attire (steal or barter)", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_FormalAttire", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TS_02", "Description": "Obtain an invitation (forge or steal)", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SoireeInvitation", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TS_03", "Description": "Attend the party without blowing your cover", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_SoireeCover", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TS_04", "Description": "Eavesdrop on 3 private conversations", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_Eavesdrop", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TS_05", "Description": "Steal documents from the host's study", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_BeaumontEvidence", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 500,
+    "ItemRewards": ["Item_BeaumontEvidence"],
+    "FactionRepRewards": {"FirstClassElite": -10},
+    "PrerequisiteQuests": ["MQ_Z5_TheGildedCage"]
+  },
+  {
+    "Name": "SQ_Z5_ThePainting",
+    "QuestID": "SQ_Z5_ThePainting",
+    "QuestName": "The Stolen Rothko",
+    "Description": "Lord Ashworth's Rothko has been stolen by a Third Class servant. Art, theft, and class collide.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_TP_01", "Description": "Speak to Lord Ashworth about the theft (Car 75)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_LordAshworth", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TP_02", "Description": "Find the servant who stole the painting", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Servant_Thief", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TP_03", "Description": "Locate the painting", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_StolenRothko", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_TP_04", "Description": "Decide the painting's fate", "Type": "ESEEObjectiveType::Custom", "TargetID": "MoralChoice_Painting", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": [],
+    "FactionRepRewards": {},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_SorensensResearch",
+    "QuestID": "SQ_Z5_SorensensResearch",
+    "QuestName": "Sorensen's Research",
+    "Description": "Dr. Sorensen's population sustainability research needs field data from across the train.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_SR_01", "Description": "Meet Dr. Sorensen in the Medical Suite (Car 66)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DrSorensen", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_SR_02", "Description": "Collect birth rate data from Second and Third Class", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_BirthRateData", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_SR_03", "Description": "Collect mortality data from the Tail records", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_MortalityData", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_SR_04", "Description": "Return to Sorensen for analysis", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DrSorensen_Analysis", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": [],
+    "FactionRepRewards": {"FirstClassElite": 5, "Bureaucracy": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_PembertonCharity",
+    "QuestID": "SQ_Z5_PembertonCharity",
+    "QuestName": "Pemberton's Charity",
+    "Description": "Lord Pemberton secretly sends food surpluses to Third Class. Help him organize the next delivery.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_PC_01", "Description": "Meet Lord Pemberton (Car 72)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_LordPemberton", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_PC_02", "Description": "Collect surplus food from willing First Class donors", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_FoodSurplus", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_PC_03", "Description": "Navigate the delivery route past Jackboot checkpoints", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_FoodDelivery", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_PC_04", "Description": "Deliver the food to Third Class", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car28_FoodDropoff", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": [],
+    "FactionRepRewards": {"FirstClassElite": 10, "ThirdClassUnion": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_DrawerWake",
+    "QuestID": "SQ_Z5_DrawerWake",
+    "QuestName": "Drawer Wake",
+    "Description": "A Drawer prisoner's family wants them back. Help navigate the complex medical process of safe awakening.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_DW_01", "Description": "Meet the prisoner's spouse (Car 67)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DrawerSpouse", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_DW_02", "Description": "Find the prisoner's Drawer number in the records", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_DrawerRecord", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_DW_03", "Description": "Gather medical revival supplies", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_RevivalSupplies", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_DW_04", "Description": "Assist Dr. Sorensen with the awakening procedure", "Type": "ESEEObjectiveType::Custom", "TargetID": "Medical_DrawerRevival", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": [],
+    "FactionRepRewards": {"FirstClassElite": 5, "Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_WinecellarMystery",
+    "QuestID": "SQ_Z5_WinecellarMystery",
+    "QuestName": "The Wine Cellar Mystery",
+    "Description": "Someone is poisoning First Class wine stocks. Investigate before the next dinner party turns deadly.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_WM_01", "Description": "Examine the poisoned wine bottles (Car 71)", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car71_WineCellar", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_WM_02", "Description": "Interview 3 First Class staff members", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_FirstClassStaff", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_WM_03", "Description": "Identify the poison compound (requires PER 10 or Marta)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Investigation_Poison", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_WM_04", "Description": "Confront the poisoner", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Poisoner", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_Moonshine"],
+    "FactionRepRewards": {"FirstClassElite": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z6_EmbersFaith",
+    "QuestID": "SQ_Z6_EmbersFaith",
+    "QuestName": "Ember's Faith",
+    "Description": "Sister Ember represents the Order's reform wing. Help her build support among moderate Acolytes.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z6_EF_01", "Description": "Meet Sister Ember in the lower Sanctum (Car 85)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Ember", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_EF_02", "Description": "Speak to 4 wavering Acolytes", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_WaveringAcolyte", "RequiredCount": 4, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_EF_03", "Description": "Find evidence of Ezra's chemical exposure", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_EzraMedicalRecords", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_EF_04", "Description": "Help Ember deliver her reform sermon", "Type": "ESEEObjectiveType::Custom", "TargetID": "Event_ReformSermon", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": [],
+    "FactionRepRewards": {"OrderOfTheEngine": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z6_HelenasFrosts",
+    "QuestID": "SQ_Z6_HelenasFrosts",
+    "QuestName": "Helena's Legacy",
+    "Description": "Helena Frost's genetic research contains both horror and hope. Navigate the eugenics lab's records.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z6_HL_01", "Description": "Access the Eugenics Lab records (Car 93)", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car93_Records", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_HL_02", "Description": "Find Helena's personal journal", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_HelenaJournal", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_HL_03", "Description": "Locate the separated couples registry", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SeparatedCouplesRegistry", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_HL_04", "Description": "Extract the population genetics data", "Type": "ESEEObjectiveType::Custom", "TargetID": "Data_GeneticViability", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_GeneticData"],
+    "FactionRepRewards": {"OrderOfTheEngine": -15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z6_TheAcolytesConfession",
+    "QuestID": "SQ_Z6_TheAcolytesConfession",
+    "QuestName": "The Acolyte's Confession",
+    "Description": "A senior Acolyte wants to defect but fears Ezra's retribution. Protect them during their escape.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z6_AC_01", "Description": "Receive the coded message in the Confession Hall", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car87_ConfessionNote", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_AC_02", "Description": "Meet the Acolyte at the designated rendezvous", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_DefectingAcolyte", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_AC_03", "Description": "Escort the Acolyte past 3 patrol checkpoints", "Type": "ESEEObjectiveType::Escort", "TargetID": "NPC_DefectingAcolyte", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_OrderIntelligence"],
+    "FactionRepRewards": {"OrderOfTheEngine": -10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z6_EnginePilgrimage",
+    "QuestID": "SQ_Z6_EnginePilgrimage",
+    "QuestName": "Engine Pilgrimage",
+    "Description": "The Order allows select pilgrims to approach the Engine room. Use the pilgrimage to map the defenses.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z6_EP_01", "Description": "Disguise as a pilgrim", "Type": "ESEEObjectiveType::Custom", "TargetID": "Disguise_Pilgrim", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_EP_02", "Description": "Join the pilgrimage procession", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car90_Pilgrimage", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_EP_03", "Description": "Map 4 defensive positions along the route", "Type": "ESEEObjectiveType::Custom", "TargetID": "Intel_DefenseMap", "RequiredCount": 4, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_EP_04", "Description": "Return without being identified", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_PilgrimageReturn", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 450,
+    "ItemRewards": ["Item_SanctumMap"],
+    "FactionRepRewards": {"OrderOfTheEngine": -5},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z6_LukasToy",
+    "QuestID": "SQ_Z6_LukasToy",
+    "QuestName": "Luka's Toy",
+    "Description": "A child in the Engine left a toy bear behind before being taken. Find it and return it — a small mercy in a vast machine.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z6_LT_01", "Description": "Learn about Luka from a maintenance worker", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_MaintenanceWorker_Luka", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_LT_02", "Description": "Search the child's old quarters (Car 86)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car86_LukasRoom", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_LT_03", "Description": "Find the toy bear", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_LukasToyBear", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_LT_04", "Description": "Deliver the bear to Luka inside the Engine", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_Luka", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_SupplyTrainHeist",
+    "QuestID": "SQ_Z4_SupplyTrainHeist",
+    "QuestName": "Supply Train Heist",
+    "Description": "A scheduled supply transfer between cars creates a window to redirect resources to the revolution.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_STH_01", "Description": "Get the supply schedule from a sympathetic clerk", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_SupplyClerk", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_STH_02", "Description": "Position allies at 3 diversion points", "Type": "ESEEObjectiveType::Custom", "TargetID": "Setup_DiversionPoints", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_STH_03", "Description": "Redirect the supply cargo", "Type": "ESEEObjectiveType::Custom", "TargetID": "Heist_SupplyRedirect", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_STH_04", "Description": "Escape before the alarm", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_HeistEscape", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_ProteinBlock", "Item_ProteinBlock", "Item_ProteinBlock", "Item_WaterRation", "Item_WaterRation"],
+    "FactionRepRewards": {"Tailies": 15, "ThirdClassUnion": 10, "Jackboots": -20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_DeadMansSwitch",
+    "QuestID": "SQ_Z3_DeadMansSwitch",
+    "QuestName": "Dead Man's Switch",
+    "Description": "A Second Class engineer built a failsafe into the train's communication system. Find it before the Jackboots do.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_DMS_01", "Description": "Decode the engineer's last message (Car 36)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Decode_EngineerMessage", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_DMS_02", "Description": "Find the failsafe device in the communications relay", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car43_CommRelay", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_DMS_03", "Description": "Decide: activate, disable, or modify the failsafe", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_Failsafe", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_CommRelay"],
+    "FactionRepRewards": {"Bureaucracy": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_GardenOfEden",
+    "QuestID": "SQ_Z5_GardenOfEden",
+    "QuestName": "Garden of Eden",
+    "Description": "First Class maintains a hydroponic garden. Steal seeds for the lower classes or negotiate access for all.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_GoE_01", "Description": "Discover the garden (Car 69)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car69_Garden", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_GoE_02", "Description": "Speak to the head gardener", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_HeadGardener", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_GoE_03", "Description": "Collect 5 seed packets", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SeedPacket", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_GoE_04", "Description": "Decide: steal seeds, negotiate shared access, or expand the garden", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_GardenFate", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_FreshApple", "Item_FreshApple"],
+    "FactionRepRewards": {"FirstClassElite": -5, "ThirdClassUnion": 10, "Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z2_ForgottenDead",
+    "QuestID": "SQ_Z2_ForgottenDead",
+    "QuestName": "The Forgotten Dead",
+    "Description": "A sealed car in Third Class contains the bodies of those who died in the second revolt. Families want closure.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z2_FD_01", "Description": "Learn about the sealed car from Third Class elders", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_ThirdClassElder", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_FD_02", "Description": "Find the sealed car entrance (Car 29)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car29_Sealed", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_FD_03", "Description": "Open the sealed car (requires STR 12 or tools)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Open_SealedCar", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z2_FD_04", "Description": "Identify the dead and report to families", "Type": "ESEEObjectiveType::Custom", "TargetID": "Identify_Dead", "RequiredCount": 5, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": [],
+    "FactionRepRewards": {"ThirdClassUnion": 20, "Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_GilliamsChess",
+    "QuestID": "SQ_Z1_GilliamsChess",
+    "QuestName": "Gilliam's Chess",
+    "Description": "Gilliam plays chess against himself every evening. Beat him to earn his respect and unlock bonus dialogue options.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_GC_01", "Description": "Challenge Gilliam to chess (Car 5)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Gilliam_Chess", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_GC_02", "Description": "Win 2 out of 3 games (requires CUN 8)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Game_Chess", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 150,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Tailies": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_MuseumCar",
+    "QuestID": "SQ_Z3_MuseumCar",
+    "QuestName": "The Museum Car",
+    "Description": "Second Class preserves artifacts from the old world. A curator offers access in exchange for a specific item.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_MC_01", "Description": "Visit the Museum Car (Car 34)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car34_Museum", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_MC_02", "Description": "Speak to Curator Hana", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_CuratorHana", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_MC_03", "Description": "Find the missing exhibit piece (a pre-Freeze music box)", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_MusicBox", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_MC_04", "Description": "Return the music box for full Museum access", "Type": "ESEEObjectiveType::Interact", "TargetID": "NPC_CuratorHana", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": ["Item_MuseumPass"],
+    "FactionRepRewards": {"Bureaucracy": 10},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_RosasData",
+    "QuestID": "SQ_Z4_RosasData",
+    "QuestName": "Rosa's Data",
+    "Description": "Rosa, a Thaw Believer botanist, has been growing plants in exterior-temperature conditions. Her results could change everything.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_RD_01", "Description": "Find Rosa's greenhouse in the maintenance corridors (Car 59)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car59_Greenhouse", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_RD_02", "Description": "Help Rosa with 3 plant experiments", "Type": "ESEEObjectiveType::Custom", "TargetID": "Experiment_PlantGrowth", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_RD_03", "Description": "Protect the greenhouse from Jackboot inspection", "Type": "ESEEObjectiveType::Custom", "TargetID": "Stealth_GreenhouseProtection", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 350,
+    "ItemRewards": ["Item_ThawEvidence"],
+    "FactionRepRewards": {"TheThaw": 20},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_AshworthSecret",
+    "QuestID": "SQ_Z5_AshworthSecret",
+    "QuestName": "The Ashworth Secret",
+    "Description": "Vivienne's father Lord Ashworth keeps a locked room. What's inside reveals the elite's darkest bargain with Wilford.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_AS_01", "Description": "Learn about the locked room from servants (Car 75)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_AshworthServant", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_AS_02", "Description": "Find the key or pick the lock (CUN 12)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Unlock_AshworthRoom", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_AS_03", "Description": "Discover the contents of the room", "Type": "ESEEObjectiveType::Interact", "TargetID": "Car75_SecretRoom", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_AS_04", "Description": "Decide what to do with the information", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_AshworthSecret", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_BeaumontEvidence"],
+    "FactionRepRewards": {"FirstClassElite": -15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z6_FinalTransmission",
+    "QuestID": "SQ_Z6_FinalTransmission",
+    "QuestName": "Final Transmission",
+    "Description": "The train's long-range radio has been picking up a repeating signal. Someone is alive out there.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z6_FT_01", "Description": "Access the long-range radio array (Car 97)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car97_RadioArray", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_FT_02", "Description": "Repair the damaged receiver", "Type": "ESEEObjectiveType::Custom", "TargetID": "Repair_Receiver", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_FT_03", "Description": "Decode the signal", "Type": "ESEEObjectiveType::Custom", "TargetID": "Decode_Signal", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z6_FT_04", "Description": "Decide: respond, record, or ignore the transmission", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_Transmission", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 500,
+    "ItemRewards": ["Item_ThawEvidence"],
+    "FactionRepRewards": {"TheThaw": 30},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z1_CouncilPolitics",
+    "QuestID": "SQ_Z1_CouncilPolitics",
+    "QuestName": "Council Politics",
+    "Description": "The Tail Council is split on strategy. Mediate the factions or pick a side.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z1_CP_01", "Description": "Attend the Council meeting (Car 5)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Council", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_CP_02", "Description": "Speak to Samuel about military strategy", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Samuel", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_CP_03", "Description": "Speak to Martha about logistics", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Martha", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z1_CP_04", "Description": "Make your recommendation to Gilliam", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_CouncilStrategy", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 200,
+    "ItemRewards": [],
+    "FactionRepRewards": {"Tailies": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z3_TheGambler",
+    "QuestID": "SQ_Z3_TheGambler",
+    "QuestName": "The Gambler",
+    "Description": "A Second Class gambler owes dangerous debts. Win the pot or help him escape before his creditors collect.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z3_TG_01", "Description": "Meet the Gambler in the social car (Car 37)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Gambler", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z3_TG_02", "Description": "Win 3 rounds at the card table (CUN 10)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Game_CardGame", "RequiredCount": 3, "CurrentCount": 0, "bCompleted": false, "bOptional": true},
+      {"ObjectiveID": "SQ_Z3_TG_03", "Description": "Negotiate with the creditors", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Creditors", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": true},
+      {"ObjectiveID": "SQ_Z3_TG_04", "Description": "Resolve the Gambler's situation", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_GamblerFate", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 250,
+    "ItemRewards": ["Item_Moonshine"],
+    "FactionRepRewards": {},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z5_SpaConspriacy",
+    "QuestID": "SQ_Z5_SpaConspiracy",
+    "QuestName": "The Spa Conspiracy",
+    "Description": "First Class spa treatments use a sedative compound. The same compound is in the protein blocks. Investigate the connection.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z5_SC_01", "Description": "Investigate the spa (Car 70)", "Type": "ESEEObjectiveType::GoTo", "TargetID": "Car70_Spa", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_SC_02", "Description": "Collect a sample of the spa compound", "Type": "ESEEObjectiveType::Collect", "TargetID": "Item_SpaCompound", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_SC_03", "Description": "Compare with protein block compound (requires Marta or PER 12)", "Type": "ESEEObjectiveType::Custom", "TargetID": "Analysis_CompoundComparison", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z5_SC_04", "Description": "Confront the pharmaceutical supplier", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_PharmSupplier", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 400,
+    "ItemRewards": ["Item_TrialEvidence"],
+    "FactionRepRewards": {"FirstClassElite": -10, "Tailies": 15},
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "SQ_Z4_BrassInTheBrig",
+    "QuestID": "SQ_Z4_BrassInTheBrig",
+    "QuestName": "Brass in the Brig",
+    "Description": "A former Jackboot officer sits in the brig with valuable intelligence. He'll trade information for his freedom.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {"ObjectiveID": "SQ_Z4_BIB_01", "Description": "Find Brass in the brig (Car 55)", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_Brass", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_BIB_02", "Description": "Verify Brass's claims with 2 independent sources", "Type": "ESEEObjectiveType::Dialogue", "TargetID": "NPC_BrassVerification", "RequiredCount": 2, "CurrentCount": 0, "bCompleted": false, "bOptional": false},
+      {"ObjectiveID": "SQ_Z4_BIB_03", "Description": "Decide: free Brass, leave him, or use him", "Type": "ESEEObjectiveType::Custom", "TargetID": "Choice_BrassFate", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": false, "bOptional": false}
+    ],
+    "XPReward": 300,
+    "ItemRewards": ["Item_JackbootIntel"],
+    "FactionRepRewards": {"Jackboots": -10},
+    "PrerequisiteQuests": []
+  }
+]
