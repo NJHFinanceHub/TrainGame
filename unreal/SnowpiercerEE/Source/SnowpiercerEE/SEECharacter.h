@@ -10,6 +10,9 @@ class USEECombatComponent;
 class USEEInventoryComponent;
 class USEEHungerComponent;
 class USEEColdComponent;
+class USEESkillTreeComponent;
+class UClimbingComponent;
+class USwimmingComponent;
 
 UCLASS()
 class SNOWPIERCEREE_API ASEECharacter : public ACharacter
@@ -132,6 +135,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USEEColdComponent> ColdComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEESkillTreeComponent> SkillTreeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UClimbingComponent> ClimbingComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USwimmingComponent> SwimmingComponent;
 
 private:
 	UPROPERTY()
