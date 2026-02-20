@@ -8,6 +8,12 @@
 #include "Widgets/SSEETrainMap.h"
 #include "Widgets/SSEECraftingPanel.h"
 #include "Widgets/SSEEFactionPanel.h"
+#include "Widgets/SSEEQuestLog.h"
+#include "Widgets/SSEECharacterScreen.h"
+#include "Widgets/SSEECompanionScreen.h"
+#include "Widgets/SSEECodexPanel.h"
+#include "Widgets/SSEEPauseMenu.h"
+#include "Widgets/SSEEDeathScreen.h"
 
 #include "SnowyEngine/Survival/SurvivalComponent.h"
 #include "SnowyEngine/Survival/KronoleComponent.h"
@@ -15,6 +21,9 @@
 #include "SnowyEngine/Crafting/CraftingComponent.h"
 #include "TrainGame/Combat/CombatComponent.h"
 #include "TrainGame/Weapons/WeaponComponent.h"
+#include "SnowpiercerEE/SEEStatsComponent.h"
+#include "SnowpiercerEE/SEEQuestManager.h"
+#include "TrainGame/Companions/CompanionRosterSubsystem.h"
 
 #include "Widgets/SOverlay.h"
 #include "Widgets/SWeakWidget.h"
@@ -48,6 +57,7 @@ void ASEEGameHUD::BindToPlayerPawn()
 	InventoryComp = Pawn->FindComponentByClass<UInventoryComponent>();
 	CraftingComp = Pawn->FindComponentByClass<UCraftingComponent>();
 	KronoleComp = Pawn->FindComponentByClass<UKronoleComponent>();
+	StatsComp = Pawn->FindComponentByClass<USEEStatsComponent>();
 }
 
 void ASEEGameHUD::UnbindFromPlayerPawn()
@@ -58,6 +68,7 @@ void ASEEGameHUD::UnbindFromPlayerPawn()
 	InventoryComp.Reset();
 	CraftingComp.Reset();
 	KronoleComp.Reset();
+	StatsComp.Reset();
 }
 
 void ASEEGameHUD::CreateWidgets()
@@ -146,6 +157,70 @@ void ASEEGameHUD::CreateWidgets()
 		SNew(SWeakWidget).PossiblyNullContent(FactionWidget.ToSharedRef()),
 		50
 	);
+
+	// Quest log - hidden by default
+	QuestLogWidget = SNew(SSEEQuestLog);
+	QuestLogWidget->SetVisibility(EVisibility::Collapsed);
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		QuestLogWidget->SetQuestManager(GI->GetSubsystem<USEEQuestManager>());
+	}
+
+	GEngine->GameViewport->AddViewportWidgetContent(
+		SNew(SWeakWidget).PossiblyNullContent(QuestLogWidget.ToSharedRef()),
+		50
+	);
+
+	// Character screen - hidden by default
+	CharacterWidget = SNew(SSEECharacterScreen)
+		.StatsComponent(StatsComp.Get())
+		.InventoryComponent(InventoryComp.Get());
+	CharacterWidget->SetVisibility(EVisibility::Collapsed);
+
+	GEngine->GameViewport->AddViewportWidgetContent(
+		SNew(SWeakWidget).PossiblyNullContent(CharacterWidget.ToSharedRef()),
+		50
+	);
+
+	// Companion screen - hidden by default
+	CompanionWidget = SNew(SSEECompanionScreen);
+	CompanionWidget->SetVisibility(EVisibility::Collapsed);
+	if (UGameInstance* GI = GetWorld() ? GetWorld()->GetGameInstance() : nullptr)
+	{
+		CompanionWidget->SetRosterSubsystem(GI->GetSubsystem<UCompanionRosterSubsystem>());
+	}
+
+	GEngine->GameViewport->AddViewportWidgetContent(
+		SNew(SWeakWidget).PossiblyNullContent(CompanionWidget.ToSharedRef()),
+		50
+	);
+
+	// Codex panel - hidden by default
+	CodexWidget = SNew(SSEECodexPanel);
+	CodexWidget->SetVisibility(EVisibility::Collapsed);
+
+	GEngine->GameViewport->AddViewportWidgetContent(
+		SNew(SWeakWidget).PossiblyNullContent(CodexWidget.ToSharedRef()),
+		50
+	);
+
+	// Pause menu - hidden by default
+	PauseMenuWidget = SNew(SSEEPauseMenu);
+	PauseMenuWidget->SetVisibility(EVisibility::Collapsed);
+
+	GEngine->GameViewport->AddViewportWidgetContent(
+		SNew(SWeakWidget).PossiblyNullContent(PauseMenuWidget.ToSharedRef()),
+		100 // Z-order: above all gameplay panels
+	);
+
+	// Death screen - hidden by default
+	DeathScreenWidget = SNew(SSEEDeathScreen);
+	DeathScreenWidget->SetVisibility(EVisibility::Collapsed);
+
+	GEngine->GameViewport->AddViewportWidgetContent(
+		SNew(SWeakWidget).PossiblyNullContent(DeathScreenWidget.ToSharedRef()),
+		110 // Z-order: above everything
+	);
 }
 
 void ASEEGameHUD::RemoveWidgets()
@@ -163,6 +238,12 @@ void ASEEGameHUD::RemoveWidgets()
 	TrainMapWidget.Reset();
 	CraftingWidget.Reset();
 	FactionWidget.Reset();
+	QuestLogWidget.Reset();
+	CharacterWidget.Reset();
+	CompanionWidget.Reset();
+	CodexWidget.Reset();
+	PauseMenuWidget.Reset();
+	DeathScreenWidget.Reset();
 	ActivePanel.Reset();
 }
 
@@ -255,6 +336,22 @@ void ASEEGameHUD::CloseAllPanels()
 	{
 		FactionWidget->SetVisibility(EVisibility::Collapsed);
 	}
+	if (QuestLogWidget.IsValid())
+	{
+		QuestLogWidget->SetVisibility(EVisibility::Collapsed);
+	}
+	if (CharacterWidget.IsValid())
+	{
+		CharacterWidget->SetVisibility(EVisibility::Collapsed);
+	}
+	if (CompanionWidget.IsValid())
+	{
+		CompanionWidget->SetVisibility(EVisibility::Collapsed);
+	}
+	if (CodexWidget.IsValid())
+	{
+		CodexWidget->SetVisibility(EVisibility::Collapsed);
+	}
 	ActivePanel.Reset();
 }
 
@@ -292,5 +389,89 @@ void ASEEGameHUD::SetFactionReputations(const TArray<FFactionReputation>& Reputa
 	if (FactionWidget.IsValid())
 	{
 		FactionWidget->UpdateReputations(Reputations);
+	}
+}
+
+void ASEEGameHUD::ToggleQuestLog()
+{
+	if (!QuestLogWidget.IsValid())
+	{
+		return;
+	}
+
+	const bool bIsVisible = QuestLogWidget->GetVisibility() != EVisibility::Collapsed;
+	SetPanelVisible(QuestLogWidget, !bIsVisible);
+}
+
+void ASEEGameHUD::ToggleCharacterScreen()
+{
+	if (!CharacterWidget.IsValid())
+	{
+		return;
+	}
+
+	const bool bIsVisible = CharacterWidget->GetVisibility() != EVisibility::Collapsed;
+	SetPanelVisible(CharacterWidget, !bIsVisible);
+}
+
+void ASEEGameHUD::ToggleCompanionScreen()
+{
+	if (!CompanionWidget.IsValid())
+	{
+		return;
+	}
+
+	const bool bIsVisible = CompanionWidget->GetVisibility() != EVisibility::Collapsed;
+	SetPanelVisible(CompanionWidget, !bIsVisible);
+}
+
+void ASEEGameHUD::ToggleCodex()
+{
+	if (!CodexWidget.IsValid())
+	{
+		return;
+	}
+
+	const bool bIsVisible = CodexWidget->GetVisibility() != EVisibility::Collapsed;
+	SetPanelVisible(CodexWidget, !bIsVisible);
+}
+
+void ASEEGameHUD::ShowPauseMenu()
+{
+	if (PauseMenuWidget.IsValid())
+	{
+		CloseAllPanels();
+		PauseMenuWidget->SetVisibility(EVisibility::Visible);
+		bPauseMenuActive = true;
+	}
+}
+
+void ASEEGameHUD::HidePauseMenu()
+{
+	if (PauseMenuWidget.IsValid())
+	{
+		PauseMenuWidget->SetVisibility(EVisibility::Collapsed);
+		bPauseMenuActive = false;
+	}
+}
+
+void ASEEGameHUD::ShowDeathScreen(const FText& DeathCause)
+{
+	if (DeathScreenWidget.IsValid())
+	{
+		CloseAllPanels();
+		HidePauseMenu();
+		DeathScreenWidget->SetDeathCause(DeathCause);
+		DeathScreenWidget->SetVisibility(EVisibility::Visible);
+		bDeathScreenActive = true;
+	}
+}
+
+void ASEEGameHUD::HideDeathScreen()
+{
+	if (DeathScreenWidget.IsValid())
+	{
+		DeathScreenWidget->SetVisibility(EVisibility::Collapsed);
+		bDeathScreenActive = false;
 	}
 }

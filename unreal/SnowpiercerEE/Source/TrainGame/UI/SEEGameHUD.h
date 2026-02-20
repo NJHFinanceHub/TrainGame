@@ -13,6 +13,12 @@ class SSEEDialoguePanel;
 class SSEETrainMap;
 class SSEECraftingPanel;
 class SSEEFactionPanel;
+class SSEEQuestLog;
+class SSEECharacterScreen;
+class SSEECompanionScreen;
+class SSEECodexPanel;
+class SSEEPauseMenu;
+class SSEEDeathScreen;
 
 class USurvivalComponent;
 class UCombatComponent;
@@ -20,6 +26,9 @@ class UWeaponComponent;
 class UInventoryComponent;
 class UCraftingComponent;
 class UKronoleComponent;
+class USEEStatsComponent;
+class USEEQuestManager;
+class UCompanionRosterSubsystem;
 class USEECarStreamingSubsystem;
 
 /**
@@ -55,6 +64,30 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void ToggleFactionPanel();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleQuestLog();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleCharacterScreen();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleCompanionScreen();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ToggleCodex();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ShowPauseMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void HidePauseMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void ShowDeathScreen(const FText& DeathCause);
+
+	UFUNCTION(BlueprintCallable, Category = "HUD")
+	void HideDeathScreen();
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void CloseAllPanels();
@@ -115,6 +148,9 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UKronoleComponent> KronoleComp;
 
+	UPROPERTY()
+	TWeakObjectPtr<USEEStatsComponent> StatsComp;
+
 private:
 	// Slate widget references
 	TSharedPtr<SSEESurvivalBars> SurvivalBarsWidget;
@@ -124,9 +160,17 @@ private:
 	TSharedPtr<SSEETrainMap> TrainMapWidget;
 	TSharedPtr<SSEECraftingPanel> CraftingWidget;
 	TSharedPtr<SSEEFactionPanel> FactionWidget;
+	TSharedPtr<SSEEQuestLog> QuestLogWidget;
+	TSharedPtr<SSEECharacterScreen> CharacterWidget;
+	TSharedPtr<SSEECompanionScreen> CompanionWidget;
+	TSharedPtr<SSEECodexPanel> CodexWidget;
+	TSharedPtr<SSEEPauseMenu> PauseMenuWidget;
+	TSharedPtr<SSEEDeathScreen> DeathScreenWidget;
 
 	// Track which full-screen panel is open (only one at a time)
 	TSharedPtr<SWidget> ActivePanel;
 
 	bool bDialogueActive = false;
+	bool bPauseMenuActive = false;
+	bool bDeathScreenActive = false;
 };
