@@ -1,9 +1,9 @@
 # Demo Plan
 
-## Scope: Cars 1-10 (Zone 1 Partial)
+## Scope: Cars 1-14 (Zone 1, Tail Only — Excluding Boss)
 
 ### Overview
-The demo covers the first 10 cars of the Tail — enough to introduce all core mechanics, establish the world, and end on a hook that drives wishlists. Estimated playtime: **2-3 hours**.
+The demo covers Cars 1-14 of the Tail — the full Zone 1 experience minus the Commander Grey boss fight in Car 15 (Threshold). This showcases all core mechanics, the complete Tail narrative arc, and ends on a cliffhanger at the gates of revolution. Estimated playtime: **3-4 hours**.
 
 ---
 
@@ -14,26 +14,32 @@ The demo covers the first 10 cars of the Tail — enough to introduce all core m
 - Introduction to the Tail's daily life: protein block distribution, Jackboot patrols, cramped living
 - The inciting incident: the revolution's spark
 - First moral choice encounter (the antibiotic triage decision)
-- Introduction to the Kronole situation (setup only, not the full den choice)
-- Ends at Car 10 with a clear "the revolution has begun" moment and a "Continue in the full game" transition
+- Full Kronole Den encounter (Car 12) — the drug moral choice
+- Trading system introduction (Smuggler's Cache, Car 13)
+- Revolution history lore (Martyr's Gate, Car 14)
+- Ends at Car 14 with a cliffhanger: the Threshold (Car 15) gates are visible but locked. "The revolution begins now." CTA to continue in full game.
 
 ### Mechanics Introduced
 | Mechanic | Cars | Notes |
 |----------|------|-------|
-| **Melee combat** | Cars 3-4 | First Jackboot encounter, improvised weapons |
+| **Melee combat** | Cars 3-4 | First Jackboot encounter, improvised weapons (The Pit) |
 | **Stealth basics** | Cars 5-6 | Hiding spots, basic detection, first locker hide |
-| **Dialogue system** | Cars 1-2, 7-8 | NPC conversations, first Charisma check (low threshold) |
-| **Crafting (intro)** | Car 6 | First workbench, basic weapon crafting from scrap |
-| **Exploration** | Cars 8-10 | First non-linear car with multiple paths, a vent route, a locked door |
-| **Collectibles** | Cars 1-10 | ~10 collectibles (Train Logs, an Audio Recording, an Artifact) |
+| **Dialogue system** | Cars 1-2, 5, 7-8 | NPC conversations, Charisma checks, quest dialogue |
+| **Crafting** | Car 7 | Workshop — crafting station with full recipe access for Tier 1-2 |
+| **Cold hazards** | Car 11 | Freezer Breach — cold exposure, survival mechanics |
+| **Economy / Trading** | Car 13 | Smuggler's Cache — barter system, buying/selling |
+| **Stealth (advanced)** | Car 10 | Dark Car — full stealth car with horror elements |
+| **Exploration** | Cars 8-14 | Non-linear paths, vents, locked doors, intel gathering |
+| **Collectibles** | Cars 1-14 | ~20 collectibles (Train Logs, Audio Recordings, Artifacts, Faction Intel) |
 
 ### Companions in Demo
 - **Marta Vasquez** joins in Car 2 (tutorial companion, demonstrates healing)
 - **Edgar Kowalski** joins in Car 5 (demonstrates melee combat companion AI)
 
 ### Boss: None
-- Commander Grey is the Zone 1 boss at Car 15 — the demo ends before reaching him
-- The demo's climactic moment is the first coordinated Jackboot fight in Car 9-10 (4v4 corridor battle)
+- Commander Grey is the Zone 1 boss at Car 15 — the demo ends just before reaching him
+- The demo's climactic moment is the Car 14 (Martyr's Gate) lore reveal and the view of the Threshold gates
+- The 4v4 Jackboot corridor battle in Car 9 serves as the demo's major combat climax
 
 ---
 
@@ -66,7 +72,7 @@ The demo covers the first 10 cars of the Tail — enough to introduce all core m
 
 ### Store Page Integration
 - Demo button prominently placed on store page
-- Demo description: "Play the first 10 cars of the Tail. Your progress carries to the full game."
+- Demo description: "Play 14 cars of the Tail — nearly the entire first zone. Your progress carries to the full game."
 - Demo-specific screenshots (if needed): reuse main store screenshots from Zone 1
 
 ---
