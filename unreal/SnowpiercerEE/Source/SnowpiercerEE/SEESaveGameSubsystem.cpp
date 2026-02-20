@@ -1,4 +1,5 @@
 #include "SEESaveGameSubsystem.h"
+#include "Endings/SEELedgerSubsystem.h"
 #include "Kismet/GameplayStatics.h"
 
 void USEESaveGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
@@ -39,6 +40,17 @@ bool USEESaveGameSubsystem::WriteToSlot()
     }
 
     SaveObj->CarStates = RuntimeCarStates;
+
+    // Persist Ledger data
+    USEELedgerSubsystem* Ledger = GetGameInstance()->GetSubsystem<USEELedgerSubsystem>();
+    if (Ledger)
+    {
+        SaveObj->LedgerScores = Ledger->GetScoresForSave();
+        SaveObj->GlobalFlags = Ledger->GetGlobalFlagsForSave();
+        SaveObj->GlobalIntFlags = Ledger->GetGlobalIntFlagsForSave();
+        SaveObj->ChoiceHistory = Ledger->GetHistoryForSave();
+    }
+
     return UGameplayStatics::SaveGameToSlot(SaveObj, SaveSlotName, UserIndex);
 }
 
@@ -58,5 +70,16 @@ bool USEESaveGameSubsystem::LoadFromSlot()
     }
 
     RuntimeCarStates = SaveObj->CarStates;
+
+    // Restore Ledger data
+    USEELedgerSubsystem* Ledger = GetGameInstance()->GetSubsystem<USEELedgerSubsystem>();
+    if (Ledger)
+    {
+        Ledger->LoadScoresFromSave(SaveObj->LedgerScores);
+        Ledger->LoadGlobalFlagsFromSave(SaveObj->GlobalFlags);
+        Ledger->LoadGlobalIntFlagsFromSave(SaveObj->GlobalIntFlags);
+        Ledger->LoadHistoryFromSave(SaveObj->ChoiceHistory);
+    }
+
     return true;
 }
