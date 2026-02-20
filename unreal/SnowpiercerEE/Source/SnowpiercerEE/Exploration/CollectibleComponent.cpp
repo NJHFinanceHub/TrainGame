@@ -28,7 +28,7 @@ bool UCollectibleComponent::TryPickup(AActor* Collector)
     return true;
 }
 
-void UCollectibleComponent::Activate()
+void UCollectibleComponent::ActivateCollectible()
 {
     bIsActivated = true;
 }
