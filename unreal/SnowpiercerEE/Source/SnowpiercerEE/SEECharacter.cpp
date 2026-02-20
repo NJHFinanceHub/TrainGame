@@ -10,6 +10,9 @@
 #include "SEEInventoryComponent.h"
 #include "SEEHungerComponent.h"
 #include "SEEColdComponent.h"
+#include "Progression/SkillTreeComponent.h"
+#include "Exploration/ClimbingComponent.h"
+#include "Exploration/SwimmingComponent.h"
 
 ASEECharacter::ASEECharacter()
 {
@@ -59,6 +62,9 @@ ASEECharacter::ASEECharacter()
 	InventoryComponent = CreateDefaultSubobject<USEEInventoryComponent>(TEXT("InventoryComponent"));
 	HungerComponent = CreateDefaultSubobject<USEEHungerComponent>(TEXT("HungerComponent"));
 	ColdComponent = CreateDefaultSubobject<USEEColdComponent>(TEXT("ColdComponent"));
+	SkillTreeComponent = CreateDefaultSubobject<USEESkillTreeComponent>(TEXT("SkillTreeComponent"));
+	ClimbingComponent = CreateDefaultSubobject<UClimbingComponent>(TEXT("ClimbingComponent"));
+	SwimmingComponent = CreateDefaultSubobject<USwimmingComponent>(TEXT("SwimmingComponent"));
 }
 
 void ASEECharacter::BeginPlay()
