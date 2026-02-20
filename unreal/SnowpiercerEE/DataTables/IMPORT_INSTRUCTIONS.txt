@@ -1,0 +1,47 @@
+=============================================================================
+  Snowpiercer: Eternal Engine — DataTable JSON Import Instructions
+=============================================================================
+
+These JSON files contain all game data for DataTables. To import them into
+Unreal Engine 5:
+
+METHOD 1 — Reimport via Editor (Recommended)
+---------------------------------------------
+1. Open UE5 Editor with the SnowpiercerEE project.
+2. In Content Browser, right-click > Miscellaneous > DataTable.
+3. Select the Row Structure:
+     DT_Items.json          -> FSEEItemData
+     DT_Dialogue_Zone1.json -> FSEEDialogueNode
+     DT_Quests.json         -> FSEEQuest  (requires FTableRowBase wrapper)
+     DT_Collectibles.json   -> FCollectibleData
+4. Name the DataTable (e.g., DT_Items).
+5. Right-click the new DataTable > Reimport > select the JSON file.
+6. Save the asset.
+
+METHOD 2 — Python Script (Inside Editor)
+-----------------------------------------
+1. Open UE5 Editor.
+2. Edit > Execute Python Script...
+3. Browse to: Scripts/create_datatables.py
+4. The script auto-detects the editor environment and creates all tables.
+
+METHOD 3 — Console Command
+---------------------------
+In the UE5 Output Log, type:
+    py "Scripts/create_datatables.py"
+
+STRUCT MAPPING
+--------------
+  DT_Items          -> FSEEItemData        (SEEItemBase.h)
+  DT_Dialogue_Zone1 -> FSEEDialogueNode    (SEEDialogueManager.h)
+  DT_Quests         -> FSEEQuest            (SEEQuestManager.h)
+  DT_Collectibles   -> FCollectibleData     (Exploration/CollectibleTypes.h)
+
+NOTE: FSEEQuest does not extend FTableRowBase in the current C++ code.
+      To use it as a DataTable row struct, either:
+        a) Add ": public FTableRowBase" to FSEEQuest in SEEQuestManager.h, or
+        b) Create a wrapper struct FSEEQuestRow : public FTableRowBase that
+           contains an FSEEQuest member, or
+        c) Load quest data at runtime via UDataAsset or JSON deserialization.
+      The JSON format provided here supports all three approaches.
+=============================================================================

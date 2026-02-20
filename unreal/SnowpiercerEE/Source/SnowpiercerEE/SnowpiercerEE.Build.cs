@@ -15,7 +15,10 @@ public class SnowpiercerEE : ModuleRules
             "EnhancedInput",
             "UMG",
             "Slate",
-            "SlateCore"
+            "SlateCore",
+            "AIModule",
+            "NavigationSystem",
+            "GameplayTasks"
         });
     }
 }

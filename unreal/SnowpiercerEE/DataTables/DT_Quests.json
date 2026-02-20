@@ -1,0 +1,327 @@
+[
+  {
+    "Name": "Quest_LongWalkForward",
+    "QuestID": "Quest_LongWalkForward",
+    "QuestName": "The Long Walk Forward",
+    "Description": "Reach Car 14 to establish contact with the Third Class Union. The revolution begins with a single step — through a hundred metres of hostile territory.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "LWF_01",
+        "Description": "Speak to Old Man Pike",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "Pike_01",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "LWF_02",
+        "Description": "Collect 3 Revolution Map fragments",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_RevolutionMap",
+        "RequiredCount": 3,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "LWF_03",
+        "Description": "Obtain the Gate Key",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_GateKey",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "LWF_04",
+        "Description": "Pass through the Tail Gate",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "TailGate",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "LWF_05",
+        "Description": "Reach Car 14 — Third Class Union Hall",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car14_UnionHall",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 500,
+    "ItemRewards": [
+      "Item_Machete"
+    ],
+    "FactionRepRewards": {
+      "Tailies": 50,
+      "ThirdClassUnion": 25
+    },
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "Quest_RatCatcher",
+    "QuestID": "Quest_RatCatcher",
+    "QuestName": "Rat Catcher",
+    "Description": "The cook needs 5 pieces of rat meat to keep the Tail fed. The rats nest in the walls between Cars 1 and 3 — bring back what you can.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {
+        "ObjectiveID": "RC_01",
+        "Description": "Collect 5 Rat Meat",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_RatMeat",
+        "RequiredCount": 5,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "RC_02",
+        "Description": "Deliver the meat to the Cook",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "NPC_Cook",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 150,
+    "ItemRewards": [
+      "Item_ProteinBlock",
+      "Item_ProteinBlock"
+    ],
+    "FactionRepRewards": {
+      "Tailies": 15
+    },
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "Quest_MedicineRun",
+    "QuestID": "Quest_MedicineRun",
+    "QuestName": "Medicine Run",
+    "Description": "An injured Tailie is dying of infection. Find antiseptic in the Sickbay stores of Car 8 and bring it back before it's too late.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {
+        "ObjectiveID": "MR_01",
+        "Description": "Speak to the Injured Tailie",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "Injured_01",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MR_02",
+        "Description": "Find Antiseptic in Car 8 Sickbay",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_Antiseptic",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MR_03",
+        "Description": "Return the Antiseptic to the Injured Tailie",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "NPC_InjuredTailie",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 200,
+    "ItemRewards": [
+      "Item_Bandage",
+      "Item_Bandage",
+      "Item_Bandage"
+    ],
+    "FactionRepRewards": {
+      "Tailies": 25
+    },
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "Quest_KronoleCleanup",
+    "QuestID": "Quest_KronoleCleanup",
+    "QuestName": "Kronole Cleanup",
+    "Description": "The Kronole dealer is poisoning the Tail. Deal with them — by force, persuasion, or by turning the Network against itself.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {
+        "ObjectiveID": "KC_01",
+        "Description": "Confront the Kronole Dealer",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "Dealer_01",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "KC_02A",
+        "Description": "(Optional) Defeat the Kronole Dealer in combat",
+        "Type": "ESEEObjectiveType::Kill",
+        "TargetID": "NPC_KronoleDealer",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": true
+      },
+      {
+        "ObjectiveID": "KC_02B",
+        "Description": "(Optional) Persuade the Dealer to stop selling",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "Dealer_Persuade",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": true
+      },
+      {
+        "ObjectiveID": "KC_03",
+        "Description": "Report back to Old Man Pike",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "Pike_KronoleReport",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 250,
+    "ItemRewards": [
+      "Item_Kronole",
+      "Item_Kronole"
+    ],
+    "FactionRepRewards": {
+      "Tailies": 20,
+      "KronoleNetwork": -30
+    },
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "Quest_TheWorkshop",
+    "QuestID": "Quest_TheWorkshop",
+    "QuestName": "The Workshop",
+    "Description": "The Tail's mechanic can teach you to craft weapons and gear. Gather materials and forge your first weapon.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {
+        "ObjectiveID": "WS_01",
+        "Description": "Speak to the Workshop Mechanic",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "Mechanic_01",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "WS_02",
+        "Description": "Collect 3 Scrap Metal",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_ScrapMetal",
+        "RequiredCount": 3,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "WS_03",
+        "Description": "Collect 2 Cloth Strips",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_ClothStrips",
+        "RequiredCount": 2,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "WS_04",
+        "Description": "Craft a Reinforced Shiv at the workbench",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "Craft_ReinforcedShiv",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 200,
+    "ItemRewards": [
+      "Item_Shiv"
+    ],
+    "FactionRepRewards": {
+      "Tailies": 10
+    },
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "Quest_ListeningPost",
+    "QuestID": "Quest_ListeningPost",
+    "QuestName": "Listening Post",
+    "Description": "Scattered throughout Zone 1 are intel documents that reveal the Jackboots' patrol schedules and weak points. Find them all.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": false,
+    "Objectives": [
+      {
+        "ObjectiveID": "LP_01",
+        "Description": "Find Intel Document 1 — Guard Roster",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Collect_Intel_Z1_01",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "LP_02",
+        "Description": "Find Intel Document 2 — Supply Manifest",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Collect_Intel_Z1_02",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "LP_03",
+        "Description": "Find Intel Document 3 — Encrypted Orders",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Collect_Intel_Z1_03",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 300,
+    "ItemRewards": [
+      "Item_CommanderOrders"
+    ],
+    "FactionRepRewards": {
+      "Tailies": 30,
+      "Jackboots": -20
+    },
+    "PrerequisiteQuests": []
+  }
+]

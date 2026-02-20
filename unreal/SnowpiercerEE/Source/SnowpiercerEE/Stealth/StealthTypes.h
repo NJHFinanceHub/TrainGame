@@ -1,0 +1,229 @@
+// Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "StealthTypes.generated.h"
+
+// ============================================================================
+// Stealth System Type Definitions
+// Snowpiercer: Eternal Engine - Stealth, Disguises & Non-Lethal Systems
+// ============================================================================
+
+/** NPC alert/detection state */
+UENUM(BlueprintType)
+enum class EDetectionState : uint8
+{
+	Unaware		UMETA(DisplayName = "Unaware"),
+	Suspicious	UMETA(DisplayName = "Suspicious"),
+	Alerted		UMETA(DisplayName = "Alerted"),
+	Combat		UMETA(DisplayName = "Combat")
+};
+
+/** Lighting level affecting sight detection */
+UENUM(BlueprintType)
+enum class ELightingLevel : uint8
+{
+	Bright		UMETA(DisplayName = "Bright"),
+	Normal		UMETA(DisplayName = "Normal"),
+	Dim			UMETA(DisplayName = "Dim"),
+	Dark		UMETA(DisplayName = "Dark"),
+	Flickering	UMETA(DisplayName = "Flickering")
+};
+
+/** Floor surface type affecting footstep noise */
+UENUM(BlueprintType)
+enum class ESurfaceType : uint8
+{
+	MetalGrating	UMETA(DisplayName = "Metal Grating"),
+	Carpet			UMETA(DisplayName = "Carpet"),
+	WoodenPlanks	UMETA(DisplayName = "Wooden Planks"),
+	Water			UMETA(DisplayName = "Water/Puddle"),
+	DirtGravel		UMETA(DisplayName = "Dirt/Gravel"),
+	IceFrost		UMETA(DisplayName = "Ice/Frost")
+};
+
+/** Sound intensity for noise events */
+UENUM(BlueprintType)
+enum class ESoundIntensity : uint8
+{
+	None		UMETA(DisplayName = "None"),
+	Minimal		UMETA(DisplayName = "Minimal"),
+	Low			UMETA(DisplayName = "Low"),
+	Medium		UMETA(DisplayName = "Medium"),
+	High		UMETA(DisplayName = "High"),
+	Combat		UMETA(DisplayName = "Combat")
+};
+
+/** Player movement mode for detection calculations */
+UENUM(BlueprintType)
+enum class EStealthMovement : uint8
+{
+	Stationary	UMETA(DisplayName = "Stationary"),
+	CrouchWalk	UMETA(DisplayName = "Crouch Walk"),
+	Walk		UMETA(DisplayName = "Walk"),
+	Run			UMETA(DisplayName = "Run"),
+	Sprint		UMETA(DisplayName = "Sprint")
+};
+
+/** Train zone for disguise system */
+UENUM(BlueprintType)
+enum class EStealthTrainZone : uint8
+{
+	Tail			UMETA(DisplayName = "Tail"),
+	ThirdClass		UMETA(DisplayName = "Third Class"),
+	SecondClass		UMETA(DisplayName = "Second Class"),
+	FirstClass		UMETA(DisplayName = "First Class"),
+	EngineSection	UMETA(DisplayName = "Engine Section"),
+	Security		UMETA(DisplayName = "Security/Jackboot"),
+	Medical			UMETA(DisplayName = "Medical")
+};
+
+/** Quality tier for disguises */
+UENUM(BlueprintType)
+enum class EDisguiseQuality : uint8
+{
+	None		UMETA(DisplayName = "No Disguise"),
+	Partial		UMETA(DisplayName = "Partial"),
+	Good		UMETA(DisplayName = "Good"),
+	Perfect		UMETA(DisplayName = "Perfect")
+};
+
+/** Types of hiding spots */
+UENUM(BlueprintType)
+enum class EHidingSpotType : uint8
+{
+	Locker		UMETA(DisplayName = "Locker/Closet"),
+	UnderBunk	UMETA(DisplayName = "Under Bunk"),
+	Curtain		UMETA(DisplayName = "Behind Curtain"),
+	CeilingVent	UMETA(DisplayName = "Ceiling Vent"),
+	CargoStack	UMETA(DisplayName = "Cargo Stack"),
+	CrowdBlend	UMETA(DisplayName = "Crowd Blend"),
+	DarkAlcove	UMETA(DisplayName = "Dark Alcove")
+};
+
+/** State of an incapacitated body */
+UENUM(BlueprintType)
+enum class EBodyState : uint8
+{
+	Stunned			UMETA(DisplayName = "Stunned"),
+	Unconscious		UMETA(DisplayName = "Unconscious"),
+	Dead			UMETA(DisplayName = "Dead"),
+	Hidden			UMETA(DisplayName = "Hidden"),
+	Restrained		UMETA(DisplayName = "Restrained")
+};
+
+/** Non-lethal damage type extension (supplements EDamageType from CombatTypes) */
+UENUM(BlueprintType)
+enum class ENonLethalMethod : uint8
+{
+	StealthTakedown	UMETA(DisplayName = "Stealth Takedown"),
+	Taser			UMETA(DisplayName = "Improvised Taser"),
+	Chloroform		UMETA(DisplayName = "Chloroform"),
+	TranqDart		UMETA(DisplayName = "Tranq Dart"),
+	FlashGrenade	UMETA(DisplayName = "Flash Grenade"),
+	SonicEmitter	UMETA(DisplayName = "Sonic Emitter"),
+	SleepGas		UMETA(DisplayName = "Sleep Gas"),
+	Environmental	UMETA(DisplayName = "Environmental")
+};
+
+// ----------------------------------------------------------------------------
+// Structs
+// ----------------------------------------------------------------------------
+
+/** NPC vision cone configuration */
+USTRUCT(BlueprintType)
+struct FVisionConeConfig
+{
+	GENERATED_BODY()
+
+	/** Inner cone half-angle (full perception) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth|Vision")
+	float InnerConeHalfAngle = 30.f;
+
+	/** Outer cone half-angle (peripheral, slower detection) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth|Vision")
+	float OuterConeHalfAngle = 60.f;
+
+	/** Maximum sight range */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth|Vision")
+	float MaxRange = 2500.f;
+
+	/** Within this range, always detected regardless of cone */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stealth|Vision")
+	float CloseRange = 300.f;
+};
+
+/** A noise event generated by an action */
+USTRUCT(BlueprintType)
+struct FNoiseEvent
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector Origin = FVector::ZeroVector;
+
+	UPROPERTY(BlueprintReadOnly)
+	float Radius = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	ESoundIntensity Intensity = ESoundIntensity::None;
+
+	UPROPERTY(BlueprintReadOnly)
+	AActor* Instigator = nullptr;
+};
+
+/** Disguise item data */
+USTRUCT(BlueprintType)
+struct FDisguiseData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName DisguiseName = NAME_None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EStealthTrainZone TargetZone = EStealthTrainZone::Tail;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EDisguiseQuality Quality = EDisguiseQuality::None;
+
+	/** Current degradation (0 = pristine, 100 = destroyed) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Degradation = 0.f;
+
+	/** Whether this disguise includes required zone props */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bHasRequiredProps = false;
+
+	EDisguiseQuality GetEffectiveQuality() const
+	{
+		if (Degradation > 50.f && Quality > EDisguiseQuality::Partial)
+		{
+			return static_cast<EDisguiseQuality>(static_cast<uint8>(Quality) - 1);
+		}
+		return Quality;
+	}
+};
+
+/** Result of a stealth takedown attempt */
+USTRUCT(BlueprintType)
+struct FTakedownResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bSuccess = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bDetected = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bLethal = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	float NoiseGenerated = 0.f;
+
+	UPROPERTY(BlueprintReadOnly)
+	ENonLethalMethod Method = ENonLethalMethod::StealthTakedown;
+};
