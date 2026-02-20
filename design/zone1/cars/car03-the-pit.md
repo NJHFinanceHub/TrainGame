@@ -13,12 +13,12 @@ An open area where Tailies settle disputes and fight for extra rations. The Jack
 ```
 [DOOR ← Car 02]
 |                                    |
-|  [Spectator benches — crate seats]|  Section A: Entrance/Viewing (8m)
+|  [Spectator benches — crate seats]|  Section A: Entrance/Viewing (80m)
 |  [Betting table — the bookmaker]  |
 |                                    |
 |======= Rope ring boundary ========|
 |                                    |
-|                                    |  Section B: THE PIT (20m)
+|                                    |  Section B: THE PIT (200m)
 |        [Fighting Ring]             |
 |   [Sand/grit floor covering]      |
 |   [4 corner posts w/ rope]        |
@@ -26,13 +26,13 @@ An open area where Tailies settle disputes and fight for extra rations. The Jack
 |                                    |
 |======= Rope ring boundary ========|
 |                                    |
-|  [Kez's corner — gear, wraps]    |  Section C: Fighter's Area (12m)
+|  [Kez's corner — gear, wraps]    |  Section C: Fighter's Area (120m)
 |  [Water bucket] [Rags]            |
 |  [Trophy shelf — taken items]     |
 |                                    |
 |-------- Open passage -------------|
 |                                    |
-|  [Recovery area — crude mats]     |  Section D: Exit/Recovery (10m)
+|  [Recovery area — crude mats]     |  Section D: Exit/Recovery (100m)
 |  [First aid — bandage wraps]      |
 |                                    |
 [DOOR → Car 04]
@@ -46,7 +46,7 @@ An open area where Tailies settle disputes and fight for extra rations. The Jack
 - Crowd is excited, hostile, hungry. This is entertainment in the Tail.
 
 ### Section B: The Pit
-- The ring is ~6m x 6m, marked by rope strung between pipe-posts welded to the floor.
+- The ring is ~60m x 60m, marked by rope strung between pipe-posts welded to the floor.
 - Floor is covered in sand/grit for traction and blood absorption.
 - Overhead, a single strong work light illuminates the ring — everything outside is shadow.
 - Bloodstains in the sand. Some old, some fresh.

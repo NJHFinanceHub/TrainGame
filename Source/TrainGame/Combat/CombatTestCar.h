@@ -18,6 +18,7 @@ class UEnvironmentalHazardComponent;
 // Snowpiercer car (~50m long, standard gauge width).
 //
 // This is "The Pit" (Car 3) - where Tailies fight for extra rations.
+// Dimensions at 10x scale — each car feels like a building interior.
 // ============================================================================
 
 UCLASS()
@@ -45,17 +46,17 @@ protected:
 
 	// --- Car Dimensions (Snowpiercer standard) ---
 
-	/** Car length in cm (~50 meters) */
+	/** Car length in cm (~500 meters, 10x scale) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestCar|Dimensions")
-	float CarLength = 5000.f;
+	float CarLength = 50000.f;
 
-	/** Car width in cm (~3 meters for standard gauge, tight corridors) */
+	/** Car width in cm (~30 meters, 10x scale for massive interiors) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestCar|Dimensions")
-	float CarWidth = 300.f;
+	float CarWidth = 3000.f;
 
-	/** Car height in cm (~2.8 meters) */
+	/** Car height in cm (~28 meters, 10x scale) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TestCar|Dimensions")
-	float CarHeight = 280.f;
+	float CarHeight = 2800.f;
 
 	// --- Enemy Spawning ---
 

@@ -38,6 +38,8 @@ private:
     UPROPERTY()
     int32 CurrentCarIndex = INDEX_NONE;
 
+    // 3-car window is sufficient even at 10x scale — larger cars mean
+    // longer traversal time, giving more streaming headroom.
     UPROPERTY()
     int32 MaxLoadedCars = 3;
 

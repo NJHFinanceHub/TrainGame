@@ -152,7 +152,7 @@ def create_demo_level():
     # --- Place PlayerStart ---
     player_start = level_lib.spawn_actor_from_class(
         unreal.PlayerStart,
-        unreal.Vector(0.0, 0.0, 100.0),
+        unreal.Vector(0.0, 0.0, 1000.0),
         unreal.Rotator(0.0, 0.0, 0.0)
     )
     if player_start:
@@ -162,7 +162,7 @@ def create_demo_level():
     # --- Place Directional Light (cold blue ambient) ---
     dir_light = level_lib.spawn_actor_from_class(
         unreal.DirectionalLight,
-        unreal.Vector(0.0, 0.0, 500.0),
+        unreal.Vector(0.0, 0.0, 5000.0),
         unreal.Rotator(-45.0, 30.0, 0.0)
     )
     if dir_light:
@@ -175,9 +175,9 @@ def create_demo_level():
 
     # --- Place Point Lights (warm interior) ---
     light_positions = [
-        unreal.Vector(-400.0, 0.0, 250.0),
-        unreal.Vector(0.0, 0.0, 250.0),
-        unreal.Vector(400.0, 0.0, 250.0),
+        unreal.Vector(-4000.0, 0.0, 2500.0),
+        unreal.Vector(0.0, 0.0, 2500.0),
+        unreal.Vector(4000.0, 0.0, 2500.0),
     ]
     for i, pos in enumerate(light_positions):
         point_light = level_lib.spawn_actor_from_class(
@@ -190,14 +190,14 @@ def create_demo_level():
             light_comp = point_light.get_component_by_class(unreal.PointLightComponent)
             if light_comp:
                 light_comp.set_editor_property("intensity", 5000.0)
-                light_comp.set_editor_property("attenuation_radius", 600.0)
+                light_comp.set_editor_property("attenuation_radius", 6000.0)
                 light_comp.set_editor_property("light_color", unreal.Color(255, 220, 180, 255))
             unreal.log(f"  Placed Point Light {i}")
 
     # --- Place Atmospheric Fog / Sky ---
     sky = level_lib.spawn_actor_from_class(
         unreal.SkyLight,
-        unreal.Vector(0.0, 0.0, 300.0)
+        unreal.Vector(0.0, 0.0, 3000.0)
     )
     if sky:
         sky.set_actor_label("SkyLight_Ambient")
@@ -208,14 +208,14 @@ def create_demo_level():
 
     # --- Place Pipe Meshes if imported ---
     pipe_meshes = [
-        ("PipeKit_Pipe_Long", unreal.Vector(-400.0, 140.0, 250.0), unreal.Rotator(0.0, 0.0, 0.0)),
-        ("PipeKit_Pipe_Medium", unreal.Vector(0.0, 140.0, 250.0), unreal.Rotator(0.0, 0.0, 0.0)),
-        ("PipeKit_Pipe_Short", unreal.Vector(200.0, 140.0, 250.0), unreal.Rotator(0.0, 0.0, 0.0)),
-        ("PipeKit_Pipe_Long", unreal.Vector(-400.0, -140.0, 250.0), unreal.Rotator(0.0, 0.0, 0.0)),
-        ("PipeKit_Connector_Straight", unreal.Vector(0.0, -140.0, 250.0), unreal.Rotator(0.0, 0.0, 0.0)),
-        ("PipeKit_Base_Wall", unreal.Vector(500.0, 100.0, 150.0), unreal.Rotator(0.0, 90.0, 0.0)),
-        ("PipeKit_Base_Wall", unreal.Vector(500.0, -100.0, 150.0), unreal.Rotator(0.0, 90.0, 0.0)),
-        ("PipeKit_Base_Floor", unreal.Vector(-200.0, 0.0, 0.0), unreal.Rotator(0.0, 0.0, 0.0)),
+        ("PipeKit_Pipe_Long", unreal.Vector(-4000.0, 1400.0, 2500.0), unreal.Rotator(0.0, 0.0, 0.0)),
+        ("PipeKit_Pipe_Medium", unreal.Vector(0.0, 1400.0, 2500.0), unreal.Rotator(0.0, 0.0, 0.0)),
+        ("PipeKit_Pipe_Short", unreal.Vector(2000.0, 1400.0, 2500.0), unreal.Rotator(0.0, 0.0, 0.0)),
+        ("PipeKit_Pipe_Long", unreal.Vector(-4000.0, -1400.0, 2500.0), unreal.Rotator(0.0, 0.0, 0.0)),
+        ("PipeKit_Connector_Straight", unreal.Vector(0.0, -1400.0, 2500.0), unreal.Rotator(0.0, 0.0, 0.0)),
+        ("PipeKit_Base_Wall", unreal.Vector(5000.0, 1000.0, 1500.0), unreal.Rotator(0.0, 90.0, 0.0)),
+        ("PipeKit_Base_Wall", unreal.Vector(5000.0, -1000.0, 1500.0), unreal.Rotator(0.0, 90.0, 0.0)),
+        ("PipeKit_Base_Floor", unreal.Vector(-2000.0, 0.0, 0.0), unreal.Rotator(0.0, 0.0, 0.0)),
     ]
 
     pipes_placed = 0
@@ -248,7 +248,7 @@ def create_demo_level():
         sound = editor_util.load_asset(audio_path)
         ambient = level_lib.spawn_actor_from_class(
             unreal.AmbientSound,
-            unreal.Vector(0.0, 0.0, 150.0)
+            unreal.Vector(0.0, 0.0, 1500.0)
         )
         if ambient:
             ambient.set_actor_label("TrainAmbient_Loop")
@@ -310,7 +310,7 @@ def run():
     unreal.log("  4. Add more meshes/actors from the Content Browser")
     unreal.log("")
     unreal.log("To build a full train car:")
-    unreal.log("  - Use BSP Box (12m x 3m x 2.8m) for walls/floor/ceiling")
+    unreal.log("  - Use BSP Box (120m x 30m x 28m) for walls/floor/ceiling (10x scale)")
     unreal.log("  - Apply metal materials from /Game/Materials/")
     unreal.log("  - Line pipes along ceiling and walls")
     unreal.log("  - Add more point lights for atmosphere")

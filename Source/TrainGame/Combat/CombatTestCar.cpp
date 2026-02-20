@@ -26,23 +26,23 @@ void ACombatTestCar::SetupDefaultLayout()
 	// Steam vents along the walls at intervals
 	if (SteamVentPositions.Num() == 0)
 	{
-		SteamVentPositions.Add(FVector(1000.f, 140.f, 0.f));   // Right wall, 10m in
-		SteamVentPositions.Add(FVector(2500.f, -140.f, 0.f));  // Left wall, 25m in
-		SteamVentPositions.Add(FVector(4000.f, 140.f, 0.f));   // Right wall, 40m in
+		SteamVentPositions.Add(FVector(10000.f, 1400.f, 0.f));   // Right wall, 100m in
+		SteamVentPositions.Add(FVector(25000.f, -1400.f, 0.f));  // Left wall, 250m in
+		SteamVentPositions.Add(FVector(40000.f, 1400.f, 0.f));   // Right wall, 400m in
 	}
 
 	// Electrical panels
 	if (ElectricalPanelPositions.Num() == 0)
 	{
-		ElectricalPanelPositions.Add(FVector(1500.f, 145.f, 120.f));  // Right wall, chest height
-		ElectricalPanelPositions.Add(FVector(3500.f, -145.f, 120.f)); // Left wall
+		ElectricalPanelPositions.Add(FVector(15000.f, 1450.f, 1200.f));  // Right wall, chest height
+		ElectricalPanelPositions.Add(FVector(35000.f, -1450.f, 1200.f)); // Left wall
 	}
 
 	// Window breach points (along the outer walls)
 	if (WindowBreachPositions.Num() == 0)
 	{
-		WindowBreachPositions.Add(FVector(2000.f, 150.f, 140.f));  // Right window, 20m in
-		WindowBreachPositions.Add(FVector(3000.f, -150.f, 140.f)); // Left window, 30m in
+		WindowBreachPositions.Add(FVector(20000.f, 1500.f, 1400.f));  // Right window, 200m in
+		WindowBreachPositions.Add(FVector(30000.f, -1500.f, 1400.f)); // Left window, 300m in
 	}
 
 	// Default enemy spawn positions (distributed along car length)
@@ -52,7 +52,7 @@ void ACombatTestCar::SetupDefaultLayout()
 		for (int32 i = 0; i < EnemyCount; ++i)
 		{
 			float X = Spacing * (i + 1);
-			float Y = (i % 2 == 0) ? 50.f : -50.f; // Alternate sides
+			float Y = (i % 2 == 0) ? 500.f : -500.f; // Alternate sides
 			EnemySpawnOffsets.Add(FVector(X, Y, 0.f));
 		}
 	}
@@ -67,9 +67,9 @@ void ACombatTestCar::SetupDefaultLayout()
 
 	if (WeaponSpawnPositions.Num() == 0)
 	{
-		WeaponSpawnPositions.Add(FVector(500.f, 0.f, 50.f));    // Near entrance
-		WeaponSpawnPositions.Add(FVector(2500.f, 100.f, 50.f)); // Mid-car
-		WeaponSpawnPositions.Add(FVector(4500.f, -80.f, 50.f)); // Near exit
+		WeaponSpawnPositions.Add(FVector(5000.f, 0.f, 500.f));    // Near entrance
+		WeaponSpawnPositions.Add(FVector(25000.f, 1000.f, 500.f)); // Mid-car
+		WeaponSpawnPositions.Add(FVector(45000.f, -800.f, 500.f)); // Near exit
 	}
 }
 

@@ -27,13 +27,13 @@ asset_tools = unreal.AssetToolsHelpers.get_asset_tools()
 # Config — all units in cm (UE default)
 # ---------------------------------------------------------------------------
 
-CAR_LENGTH = 10000.0    # 100m long
-CAR_WIDTH  = 1500.0     # 15m wide
-CAR_HEIGHT = 800.0      # 8m tall
-WALL_THICK = 20.0       # 20cm walls
-DOOR_WIDTH = 250.0      # 2.5m door opening
-DOOR_HEIGHT = 350.0     # 3.5m door height
-CAR_GAP = 150.0         # 1.5m connector between cars
+CAR_LENGTH = 100000.0   # 1000m long (10x scale)
+CAR_WIDTH  = 15000.0    # 150m wide (10x scale)
+CAR_HEIGHT = 8000.0     # 80m tall (10x scale)
+WALL_THICK = 200.0      # 2m walls (10x scale)
+DOOR_WIDTH = 2500.0     # 25m door opening (10x scale)
+DOOR_HEIGHT = 3500.0    # 35m door height (10x scale)
+CAR_GAP = 1500.0        # 15m connector between cars (10x scale)
 
 NUM_CARS = 100
 
@@ -344,14 +344,14 @@ def build_train():
                       (WALL_THICK, CAR_WIDTH, CAR_HEIGHT), mat_wall)
             total_actors += 1
 
-        # Interior lights — every ~20m along car, alternating sides
-        num_lights = int(CAR_LENGTH / 2000.0)
+        # Interior lights — every ~200m along car, alternating sides
+        num_lights = int(CAR_LENGTH / 20000.0)
         for li in range(num_lights):
             lx = car_x - half_l + (li + 0.5) * (CAR_LENGTH / num_lights)
-            ly = 300.0 if (li % 2 == 0) else -300.0
+            ly = 3000.0 if (li % 2 == 0) else -3000.0
             pl = level_lib.spawn_actor_from_class(
                 unreal.PointLight,
-                unreal.Vector(lx, ly, CAR_HEIGHT - 80.0),
+                unreal.Vector(lx, ly, CAR_HEIGHT - 800.0),
                 unreal.Rotator(0.0, 0.0, 0.0)
             )
             if pl:
@@ -359,7 +359,7 @@ def build_train():
                 plc = pl.get_component_by_class(unreal.PointLightComponent)
                 if plc:
                     plc.set_editor_property("intensity", light_i)
-                    plc.set_editor_property("attenuation_radius", 2000.0)
+                    plc.set_editor_property("attenuation_radius", 20000.0)
                     plc.set_editor_property("light_color",
                         unreal.Color(int(light_c[0]), int(light_c[1]), int(light_c[2]), 255))
                 total_actors += 1
@@ -384,7 +384,7 @@ def setup_atmosphere():
     # Directional light
     dl = level_lib.spawn_actor_from_class(
         unreal.DirectionalLight,
-        unreal.Vector(mid_x, 0.0, 2000.0),
+        unreal.Vector(mid_x, 0.0, 20000.0),
         unreal.Rotator(-35.0, 20.0, 0.0)
     )
     if dl:
@@ -397,7 +397,7 @@ def setup_atmosphere():
     # Sky light
     sl = level_lib.spawn_actor_from_class(
         unreal.SkyLight,
-        unreal.Vector(mid_x, 0.0, 1000.0)
+        unreal.Vector(mid_x, 0.0, 10000.0)
     )
     if sl:
         sl.set_actor_label("SkyLight_Ambient")
@@ -456,7 +456,7 @@ def setup_player():
     # Start in tail section (car 0) — authentic Snowpiercer experience
     ps = level_lib.spawn_actor_from_class(
         unreal.PlayerStart,
-        unreal.Vector(0.0, 0.0, 100.0),
+        unreal.Vector(0.0, 0.0, 1000.0),
         unreal.Rotator(0.0, 0.0, 0.0)
     )
     if ps:
