@@ -24,7 +24,10 @@ public class TrainGame : ModuleRules
 		{
 			"Slate",
 			"SlateCore",
-			"UMG"
+			"UMG",
+			"AudioMixer",
+			"MetasoundFrontend",
+			"MetasoundEngine"
 		});
 	}
 }
