@@ -90,7 +90,7 @@ void USEECarStreamingSubsystem::RefreshStreamingSet()
         }
     }
 
-    for (int32 CarIndex : TArray<int32>(LoadedCars))
+    for (int32 CarIndex : LoadedCars.Array())
     {
         if (!DesiredCars.Contains(CarIndex))
         {
@@ -119,7 +119,7 @@ void USEECarStreamingSubsystem::StreamLevel(FName LevelName, bool bShouldLoad)
     else
     {
         UGameplayStatics::UnloadStreamLevel(this, LevelName, LatentInfo, false);
-        for (int32 CarIndex : TArray<int32>(LoadedCars))
+        for (int32 CarIndex : LoadedCars.Array())
         {
             if (CarLevelByIndex.FindRef(CarIndex) == LevelName)
             {
