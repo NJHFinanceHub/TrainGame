@@ -5,7 +5,6 @@
 #include "SEECharacter.h"
 #include "SEEHUD.h"
 #include "SEECarStreamingSubsystem.h"
-#include "TrainGame/Settings/DifficultyTypes.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 

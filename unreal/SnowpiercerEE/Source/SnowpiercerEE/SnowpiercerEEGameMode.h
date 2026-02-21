@@ -5,10 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "SEETypes.h"
+#include "TrainGame/Settings/DifficultyTypes.h"
 #include "SnowpiercerEEGameMode.generated.h"
-
-struct FDifficultyModifiers;
-enum class EDifficultyTier : uint8;
 
 UENUM(BlueprintType)
 enum class EGamePhase : uint8
