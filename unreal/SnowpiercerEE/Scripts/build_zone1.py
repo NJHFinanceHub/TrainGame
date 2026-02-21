@@ -1309,7 +1309,7 @@ def create_or_load_sublevel(car_idx):
     else:
         # Create a new empty sublevel and add it
         streaming = level_utils.create_new_streaming_level(
-            world, sl_path, False)
+            unreal.LevelStreamingDynamic, sl_path, False)
 
     if streaming:
         # Make this sublevel the current editing target

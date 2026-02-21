@@ -91,6 +91,7 @@ protected:
 	TSubclassOf<USEEDeathScreenWidget> DeathScreenWidgetClass;
 
 private:
+	UFUNCTION()
 	void OnScreenChanged(ESEEUIScreen NewScreen);
 	void ShowScreenWidget(ESEEUIScreen Screen);
 	void HideAllScreenWidgets();

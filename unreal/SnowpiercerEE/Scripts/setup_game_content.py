@@ -26,7 +26,7 @@ level_lib = unreal.EditorLevelLibrary
 mat_lib = unreal.MaterialEditingLibrary
 
 # Blueprint / asset factory handles
-subsystem = unreal.get_editor_subsystem(unreal.SubobjectDataSubsystem) if hasattr(unreal, "SubobjectDataSubsystem") else None
+subsystem = None  # SubobjectDataSubsystem not available as EditorSubsystem in UE 5.7
 
 
 def ensure_directory(content_path):
