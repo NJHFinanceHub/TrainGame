@@ -22,9 +22,9 @@ void ACrowdNPCController::OnPossess(APawn* InPawn)
 		AnchorPoint = InPawn->GetActorLocation();
 
 		// Set walk speed
-		if (ACharacter* Character = Cast<ACharacter>(InPawn))
+		if (ACharacter* CrowdChar = Cast<ACharacter>(InPawn))
 		{
-			if (UCharacterMovementComponent* MoveComp = Character->GetCharacterMovement())
+			if (UCharacterMovementComponent* MoveComp = CrowdChar->GetCharacterMovement())
 			{
 				MoveComp->MaxWalkSpeed = WalkSpeed;
 			}
@@ -67,9 +67,9 @@ void ACrowdNPCController::TriggerFlee(FVector ThreatLocation)
 	FleeFromLocation = ThreatLocation;
 
 	// Set flee speed
-	if (ACharacter* Character = Cast<ACharacter>(GetPawn()))
+	if (ACharacter* CrowdChar = Cast<ACharacter>(GetPawn()))
 	{
-		if (UCharacterMovementComponent* MoveComp = Character->GetCharacterMovement())
+		if (UCharacterMovementComponent* MoveComp = CrowdChar->GetCharacterMovement())
 		{
 			MoveComp->MaxWalkSpeed = FleeSpeed;
 		}
@@ -90,9 +90,9 @@ void ACrowdNPCController::StopFleeing()
 	if (CurrentBehavior != ECrowdBehavior::Flee) return;
 
 	// Restore walk speed
-	if (ACharacter* Character = Cast<ACharacter>(GetPawn()))
+	if (ACharacter* CrowdChar = Cast<ACharacter>(GetPawn()))
 	{
-		if (UCharacterMovementComponent* MoveComp = Character->GetCharacterMovement())
+		if (UCharacterMovementComponent* MoveComp = CrowdChar->GetCharacterMovement())
 		{
 			MoveComp->MaxWalkSpeed = WalkSpeed;
 		}

@@ -81,9 +81,9 @@ void ANPCAIController::SetAIState(ENPCAIState NewState)
 	CurrentState = NewState;
 
 	// Adjust movement speed based on state
-	if (ACharacter* Character = Cast<ACharacter>(GetPawn()))
+	if (ACharacter* NPCChar = Cast<ACharacter>(GetPawn()))
 	{
-		if (UCharacterMovementComponent* MoveComp = Character->GetCharacterMovement())
+		if (UCharacterMovementComponent* MoveComp = NPCChar->GetCharacterMovement())
 		{
 			switch (NewState)
 			{
@@ -198,7 +198,9 @@ void ANPCAIController::InitializeBehaviorTree()
 	{
 		if (BlackboardAsset)
 		{
-			UseBlackboard(BlackboardAsset, Blackboard);
+			UBlackboardComponent* BBComp = Blackboard.Get();
+			UseBlackboard(BlackboardAsset, BBComp);
+			Blackboard = BBComp;
 		}
 
 		RunBehaviorTree(BehaviorTreeAsset);

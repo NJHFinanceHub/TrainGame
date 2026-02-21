@@ -69,13 +69,13 @@ void AJackbootAIController::PropagateAlert(EAlertLevel Level, FVector ThreatLoca
 
 		for (AActor* Actor : AllPawns)
 		{
-			APawn* Pawn = Cast<APawn>(Actor);
-			if (!Pawn) continue;
+			APawn* NearbyPawn = Cast<APawn>(Actor);
+			if (!NearbyPawn) continue;
 
-			ACrowdNPCController* CrowdAI = Cast<ACrowdNPCController>(Pawn->GetController());
+			ACrowdNPCController* CrowdAI = Cast<ACrowdNPCController>(NearbyPawn->GetController());
 			if (CrowdAI)
 			{
-				float Dist = FVector::Dist(Pawn->GetActorLocation(), ThreatLocation);
+				float Dist = FVector::Dist(NearbyPawn->GetActorLocation(), ThreatLocation);
 				if (Dist < VocalAlertRange)
 				{
 					CrowdAI->TriggerFlee(ThreatLocation);
