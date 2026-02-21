@@ -8,11 +8,8 @@
 #include "TransportDeck/TransportDeckTypes.h"
 #include "TransportDeckComponent.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeckEntered, int32, CarIndex);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeckExited);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCartBoarded, FName, CartID, int32, CarIndex);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCartExited, FName, CartID);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSecurityTriggered, EDeckSecurityType, SecurityType);
+// FOnDeckEntered, FOnDeckExited, FOnCartBoarded, FOnCartExited declared in TransportDeckTypes.h
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSecurityTriggeredLocal, EDeckSecurityType, SecurityType);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAlertLevelChanged, EDeckAlertLevel, NewLevel);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCargoInteraction, FName, CargoID, ECargoType, CargoType);
 
@@ -180,7 +177,7 @@ public:
 	FOnCartExited OnCartExited;
 
 	UPROPERTY(BlueprintAssignable, Category = "TransportDeck|Events")
-	FOnSecurityTriggered OnSecurityTriggered;
+	FOnSecurityTriggeredLocal OnSecurityTriggered;
 
 	UPROPERTY(BlueprintAssignable, Category = "TransportDeck|Events")
 	FOnAlertLevelChanged OnAlertLevelChanged;

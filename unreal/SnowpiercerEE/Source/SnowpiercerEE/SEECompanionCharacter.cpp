@@ -1,4 +1,5 @@
 #include "SEECompanionCharacter.h"
+#include "SEETypes.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"

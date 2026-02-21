@@ -82,6 +82,26 @@ enum class EDeckAlertLevel : uint8
 	Lockdown		UMETA(DisplayName = "Lockdown")
 };
 
+/** Mini-rail track junction types */
+UENUM(BlueprintType)
+enum class ERailJunction : uint8
+{
+	Straight	UMETA(DisplayName = "Straight"),
+	SwitchLeft	UMETA(DisplayName = "Switch Left"),
+	SwitchRight	UMETA(DisplayName = "Switch Right"),
+	Terminus	UMETA(DisplayName = "Terminus")
+};
+
+/** Mini-rail cart operational state (simple) */
+UENUM(BlueprintType)
+enum class ECartState : uint8
+{
+	Stationary	UMETA(DisplayName = "Stationary"),
+	Moving		UMETA(DisplayName = "Moving"),
+	Loading		UMETA(DisplayName = "Loading"),
+	Derailed	UMETA(DisplayName = "Derailed")
+};
+
 /** Environmental hazard on the lower deck */
 UENUM(BlueprintType)
 enum class EDeckHazard : uint8
@@ -254,6 +274,94 @@ struct FCargoDataRow : public FTableRowBase
 	/** Minimum zone where this cargo type appears */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ESEETrainZone MinZone = ESEETrainZone::ThirdClass;
+};
+
+/** Lower deck segment — defines a section of transport deck beneath a car */
+USTRUCT(BlueprintType)
+struct FTransportDeckSegment
+{
+	GENERATED_BODY()
+
+	/** Upper-level car index this segment sits beneath */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	int32 CarIndex = 0;
+
+	/** Name of this lower deck segment */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	FName SegmentName = NAME_None;
+
+	/** Which zone this segment belongs to */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	ESEETrainZone Zone = ESEETrainZone::ThirdClass;
+
+	/** Whether this segment has an active mini-rail track */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	bool bHasRailTrack = true;
+
+	/** Track junction type at this segment */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	ERailJunction JunctionType = ERailJunction::Straight;
+
+	/** Access points available from upper level */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	TArray<EDeckAccessType> AccessPoints;
+
+	/** Cargo types stored/transited in this segment */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	TArray<ECargoType> CargoPresent;
+
+	/** Security devices in this segment */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	TArray<EDeckSecurityType> SecurityDevices;
+
+	/** Which faction controls this segment */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	ESEEFaction ControllingFaction = ESEEFaction::Neutral;
+
+	/** Whether the Kronole Network uses this segment for smuggling */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	bool bKronoleSmuggling = false;
+
+	/** Sub-level name for streaming */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "TransportDeck")
+	FName SubLevelName = NAME_None;
+};
+
+/** Mini-rail cart definition */
+USTRUCT(BlueprintType)
+struct FMiniRailCart
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	FName CartID = NAME_None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	ECartState State = ECartState::Stationary;
+
+	/** Current segment car index */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	int32 CurrentCarIndex = 0;
+
+	/** Speed in m/s */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	float Speed = 5.0f;
+
+	/** Maximum speed */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	float MaxSpeed = 12.0f;
+
+	/** Cargo loaded on this cart */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	TArray<FCargoManifest> LoadedCargo;
+
+	/** Whether player is riding this cart */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	bool bPlayerRiding = false;
+
+	/** Whether cart generates noise (alerting security) */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "MiniRail")
+	float NoiseRadius = 8.0f;
 };
 
 // ----------------------------------------------------------------------------

@@ -13,7 +13,7 @@ class ASEECharacter;
 class USEEGameHUDWidget;
 class USEEInventoryWidget;
 class USEECharacterWidget;
-class USEEQuestLogWidget;
+// NOTE: Quest log is now SSEEQuestLogWidget (Slate). UMG placeholder uses UUserWidget.
 class USEETrainMapWidget;
 class USEEFactionWidget;
 class USEECompanionWidget;
@@ -64,7 +64,7 @@ protected:
 	TSubclassOf<USEECharacterWidget> CharacterWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEQuestLogWidget> QuestLogWidgetClass;
+	TSubclassOf<UUserWidget> QuestLogWidgetClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
 	TSubclassOf<USEETrainMapWidget> TrainMapWidgetClass;
@@ -138,7 +138,7 @@ private:
 	TObjectPtr<USEECharacterWidget> CharacterWidget;
 
 	UPROPERTY()
-	TObjectPtr<USEEQuestLogWidget> QuestLogWidget;
+	TObjectPtr<UUserWidget> QuestLogWidget;
 
 	UPROPERTY()
 	TObjectPtr<USEETrainMapWidget> TrainMapWidget;

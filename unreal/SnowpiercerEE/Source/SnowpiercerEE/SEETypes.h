@@ -3,6 +3,40 @@
 #include "CoreMinimal.h"
 #include "SEETypes.generated.h"
 
+// ---------------------------------------------------------------------------
+// NPC enums (SnowpiercerEE module mirror of TrainGame ENPCAIState / ENPCClass)
+// ---------------------------------------------------------------------------
+
+/** NPC AI state used by legacy SnowpiercerEE NPC classes */
+UENUM(BlueprintType)
+enum class ESEENPCState : uint8
+{
+    Idle            UMETA(DisplayName="Idle"),
+    Patrolling      UMETA(DisplayName="Patrolling"),
+    Suspicious      UMETA(DisplayName="Suspicious"),
+    Alerted         UMETA(DisplayName="Alerted"),
+    Combat          UMETA(DisplayName="Combat"),
+    Fleeing         UMETA(DisplayName="Fleeing"),
+    Dead            UMETA(DisplayName="Dead")
+};
+
+/** NPC class/caste used by legacy SnowpiercerEE NPC classes */
+UENUM(BlueprintType)
+enum class ESEENPCClass : uint8
+{
+    Tailie          UMETA(DisplayName="Tailie"),
+    ThirdClass      UMETA(DisplayName="Third Class"),
+    SecondClass     UMETA(DisplayName="Second Class"),
+    FirstClass      UMETA(DisplayName="First Class"),
+    Jackboot        UMETA(DisplayName="Jackboot"),
+    Engineer        UMETA(DisplayName="Engineer"),
+    Crowd           UMETA(DisplayName="Crowd")
+};
+
+// ---------------------------------------------------------------------------
+// Train Zone / Faction
+// ---------------------------------------------------------------------------
+
 UENUM(BlueprintType)
 enum class ESEETrainZone : uint8
 {
