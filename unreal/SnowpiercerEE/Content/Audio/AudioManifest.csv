@@ -1,0 +1,10 @@
+FileName,Category,Duration,SampleRate,Channels,Description,Priority
+AMB_TrainEngine_Loop.wav,Ambience,5.0,44100,1,Looping interior train engine bed for carriage ambience,High
+AMB_WindExterior.wav,Ambience,3.0,44100,1,Exterior wind ambience layer for outdoor segments,Medium
+SFX_MeleeHit_01.wav,Combat,0.5,44100,1,Placeholder melee impact sound for enemy/player hits,High
+SFX_MeleeSwing_01.wav,Combat,0.3,44100,1,Placeholder melee swing whoosh for attack startup,High
+SFX_PlayerDamage.wav,Combat,0.5,44100,1,Placeholder player hurt feedback on taking damage,High
+SFX_MenuSelect.wav,UI,0.2,44100,1,UI confirm/select click for menu navigation,Medium
+SFX_MenuBack.wav,UI,0.2,44100,1,UI back/cancel click for menu navigation,Medium
+MUS_Zone1_Explore.wav,Music,10.0,44100,1,Exploration music placeholder for Zone 1,High
+MUS_Zone1_Combat.wav,Music,10.0,44100,1,Combat music placeholder for Zone 1 encounters,High

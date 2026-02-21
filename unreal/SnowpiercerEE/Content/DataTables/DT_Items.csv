@@ -1,0 +1,15 @@
+RowName,DisplayName,Description,ItemType,Damage,Defense,Value,Icon,Mesh
+WPN_PipeWrench,Pipe Wrench,Heavy maintenance tool repurposed as a bludgeon. Slow but devastating.,Weapon,25,0,50,UI_Icon_PipeWrench,SM_PipeWrench
+WPN_ShockBaton,Shock Baton,Electrified security baton. Fast attacks with a chance to stun.,Weapon,18,0,120,UI_Icon_ShockBaton,SM_ShockBaton
+WPN_IceAxe,Ice Axe,Mountaineering axe scavenged from frozen exterior. Armor-piercing.,Weapon,30,0,80,UI_Icon_IceAxe,SM_IceAxe
+WPN_SteamPistol,Steam Pistol,Improvised ranged weapon powered by train boiler pressure.,Weapon,15,0,200,UI_Icon_SteamPistol,SM_SteamPistol
+ARM_ScrapVest,Scrap Vest,Welded scrap metal plates offering basic torso protection.,Armor,0,12,40,UI_Icon_ScrapVest,SM_ScrapVest
+ARM_EngineerSuit,Engineer Suit,Reinforced maintenance suit with cold and impact resistance.,Armor,0,20,150,UI_Icon_EngineerSuit,SM_EngineerSuit
+ARM_TailieRags,Tailie Rags,Threadbare clothing from the tail section. Minimal protection.,Armor,0,5,10,UI_Icon_TailieRags,SM_TailieRags
+CON_RationPack,Ration Pack,Standard-issue protein block. Restores 30 hunger.,Consumable,0,0,15,UI_Icon_RationPack,SM_RationPack
+CON_Stimulant,Stimulant,Adrenaline injection. Temporarily boosts speed and stamina.,Consumable,0,0,75,UI_Icon_Stimulant,SM_Stimulant
+CON_MedKit,Medical Kit,Field surgery supplies. Restores 50 health over 10 seconds.,Consumable,0,0,100,UI_Icon_MedKit,SM_MedKit
+CON_ThermalPaste,Thermal Paste,Industrial heating compound. Reduces cold damage for 60 seconds.,Consumable,0,0,60,UI_Icon_ThermalPaste,SM_ThermalPaste
+KEY_EngineKey,Engine Room Key,Heavy brass key granting access to the Eternal Engine core.,Key,0,0,0,UI_Icon_EngineKey,SM_EngineKey
+MAT_ScrapMetal,Scrap Metal,Salvaged metal fragments useful for repairs and crafting.,Material,0,0,8,UI_Icon_ScrapMetal,SM_ScrapMetal
+MAT_WiringKit,Wiring Kit,Bundle of electrical wires for circuit repair.,Material,0,0,20,UI_Icon_WiringKit,SM_WiringKit
