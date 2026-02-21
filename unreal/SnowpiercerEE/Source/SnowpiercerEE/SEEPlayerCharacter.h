@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "SEECharacter.h"
+#include "SEEHealthComponent.h"
 #include "SEECharacterAnimInstance.h"
 #include "SEEPlayerCharacter.generated.h"
 
@@ -53,7 +54,7 @@ public:
 	void DetachFromWeaponSocket();
 
 protected:
-	void OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* Instigator);
+	void OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* DamageInstigator);
 
 	/** Knockback impulse strength */
 	UPROPERTY(EditDefaultsOnly, Category = "HitReaction")

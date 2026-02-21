@@ -27,6 +27,7 @@ class UInventoryComponent;
 class UCraftingComponent;
 class UKronoleComponent;
 class USEEStatsComponent;
+class UActorComponent;
 class USEEQuestManager;
 class UCompanionRosterSubsystem;
 class USEECarStreamingSubsystem;
@@ -148,7 +149,6 @@ protected:
 	UPROPERTY()
 	TWeakObjectPtr<UKronoleComponent> KronoleComp;
 
-	UPROPERTY()
 	TWeakObjectPtr<USEEStatsComponent> StatsComp;
 
 private:

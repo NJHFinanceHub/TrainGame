@@ -48,10 +48,10 @@ void URumorPropagationSubsystem::TickRumorPropagation(float GameMinutesElapsed)
 {
 	for (FRumorData& Rumor : ActiveRumors)
 	{
-		float NewReach = Rumor.CurrentReach + (Rumor.PropagationRate * GameMinutesElapsed);
-		int32 OldReachInt = FMath::FloorToInt(Rumor.CurrentReach);
+		float NewReach = static_cast<float>(Rumor.CurrentReach) + (Rumor.PropagationRate * GameMinutesElapsed);
+		int32 OldReachInt = Rumor.CurrentReach;
 		int32 NewReachInt = FMath::FloorToInt(NewReach);
-		Rumor.CurrentReach = NewReach;
+		Rumor.CurrentReach = FMath::FloorToInt(NewReach);
 
 		// Deliver to newly reached cars (both directions from origin)
 		if (NewReachInt > OldReachInt)

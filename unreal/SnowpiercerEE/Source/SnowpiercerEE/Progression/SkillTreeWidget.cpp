@@ -152,15 +152,15 @@ void USkillTreeWidget::PopulateTree()
 		NodeWidget->OnNodeClicked.AddDynamic(this, &USkillTreeWidget::OnNodeClicked);
 
 		// Position in canvas based on TreePosition (0-1 normalized coords)
-		UCanvasPanelSlot* Slot = TreeCanvas->AddChildToCanvas(NodeWidget);
-		if (Slot)
+		UCanvasPanelSlot* CanvasSlot = TreeCanvas->AddChildToCanvas(NodeWidget);
+		if (CanvasSlot)
 		{
 			float NodeWidth = 120.0f;
 			float NodeHeight = 60.0f;
 			float X = Node.TreePosition.X * CanvasSize.X - NodeWidth * 0.5f;
 			float Y = Node.TreePosition.Y * CanvasSize.Y;
-			Slot->SetPosition(FVector2D(X, Y));
-			Slot->SetSize(FVector2D(NodeWidth, NodeHeight));
+			CanvasSlot->SetPosition(FVector2D(X, Y));
+			CanvasSlot->SetSize(FVector2D(NodeWidth, NodeHeight));
 		}
 
 		SpawnedNodeWidgets.Add(NodeWidget);

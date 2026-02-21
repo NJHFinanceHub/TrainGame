@@ -25,7 +25,7 @@ void ASEEPlayerCharacter::BeginPlay()
 	}
 }
 
-void ASEEPlayerCharacter::OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* Instigator)
+void ASEEPlayerCharacter::OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* DamageInstigator)
 {
 	if (bInHitReaction) return;
 	if (!HealthComponent || HealthComponent->IsDead()) return;
@@ -36,9 +36,9 @@ void ASEEPlayerCharacter::OnDamageTaken(float Damage, ESEEDamageType DamageType,
 		: 0.0f;
 
 	FVector HitDir = FVector::ZeroVector;
-	if (Instigator)
+	if (DamageInstigator)
 	{
-		HitDir = (GetActorLocation() - Instigator->GetActorLocation()).GetSafeNormal();
+		HitDir = (GetActorLocation() - DamageInstigator->GetActorLocation()).GetSafeNormal();
 	}
 
 	if (DamagePercent >= HeavyStaggerThreshold)

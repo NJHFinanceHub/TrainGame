@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "TrainGame/Stealth/StealthTypes.h"
-#include "AITypes.generated.h"
+#include "TrainGameAITypes.generated.h"
 
 // ============================================================================
 // AI System Type Definitions

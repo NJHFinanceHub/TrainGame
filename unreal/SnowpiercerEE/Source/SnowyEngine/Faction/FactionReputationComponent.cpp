@@ -388,14 +388,14 @@ void UFactionReputationComponent::RefreshPerks(EFaction Faction)
 	for (const FFactionPerk& Perk : Config->Perks)
 	{
 		bool bShouldBeActive = static_cast<uint8>(CurrentLevel) >= static_cast<uint8>(Perk.RequiredLevel);
-		bool bIsActive = ActivePerks.Contains(Perk.PerkTag);
+		bool bIsPerkActive = ActivePerks.Contains(Perk.PerkTag);
 
-		if (bShouldBeActive && !bIsActive)
+		if (bShouldBeActive && !bIsPerkActive)
 		{
 			ActivePerks.Add(Perk.PerkTag);
 			OnPerkUnlocked.Broadcast(Faction, Perk.PerkTag);
 		}
-		else if (!bShouldBeActive && bIsActive)
+		else if (!bShouldBeActive && bIsPerkActive)
 		{
 			ActivePerks.Remove(Perk.PerkTag);
 			OnPerkLost.Broadcast(Faction, Perk.PerkTag);

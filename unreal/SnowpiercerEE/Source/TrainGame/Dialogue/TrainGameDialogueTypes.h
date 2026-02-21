@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "DialogueTypes.generated.h"
+#include "TrainGameDialogueTypes.generated.h"
 
 // ============================================================================
 // Dialogue System Type Definitions

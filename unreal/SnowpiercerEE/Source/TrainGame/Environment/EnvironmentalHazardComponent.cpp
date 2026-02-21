@@ -5,6 +5,7 @@
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Engine/World.h"
+#include "Engine/OverlapResult.h"
 
 UEnvironmentalHazardComponent::UEnvironmentalHazardComponent()
 {
