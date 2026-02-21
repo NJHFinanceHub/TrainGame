@@ -117,12 +117,12 @@ def setup_character():
     else:
         # Create Blueprint from the C++ class
         try:
-            parent_class = unreal.load_class(None, "/Script/SnowpiercerEE.SEECharacter")
+            parent_class = unreal.load_class(None, "/Script/SnowpiercerEE.SEEPlayerCharacter")
             if not parent_class:
-                unreal.log_warning("  SEECharacter C++ class not found, falling back to ACharacter")
+                unreal.log_warning("  SEEPlayerCharacter C++ class not found, falling back to ACharacter")
                 parent_class = unreal.Character.static_class()
         except Exception:
-            unreal.log_warning("  Could not load SEECharacter, falling back to ACharacter")
+            unreal.log_warning("  Could not load SEEPlayerCharacter, falling back to ACharacter")
             parent_class = unreal.Character.static_class()
 
         factory = unreal.BlueprintFactory()

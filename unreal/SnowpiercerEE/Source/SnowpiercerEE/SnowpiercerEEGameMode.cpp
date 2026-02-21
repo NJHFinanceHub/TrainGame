@@ -2,7 +2,7 @@
 
 #include "SnowpiercerEEGameMode.h"
 #include "SEEPlayerController.h"
-#include "SEECharacter.h"
+#include "SEEPlayerCharacter.h"
 #include "SEEHUD.h"
 #include "SEECarStreamingSubsystem.h"
 #include "GameFramework/PlayerStart.h"
@@ -11,7 +11,7 @@
 ASnowpiercerEEGameMode::ASnowpiercerEEGameMode()
 {
 	PlayerControllerClass = ASEEPlayerController::StaticClass();
-	DefaultPawnClass = ASEECharacter::StaticClass();
+	DefaultPawnClass = ASEEPlayerCharacter::StaticClass();
 	HUDClass = ASEEHUD::StaticClass();
 
 	CurrentDifficulty = EDifficultyTier::Survivor;
