@@ -1333,18 +1333,12 @@ def make_persistent_current():
 # ---------------------------------------------------------------------------
 
 def build_single_car(car_idx, mats):
-    """Build all geometry for one car inside its own streaming sublevel."""
+    """Build all geometry for one car in the persistent level."""
     total_span = CAR_LENGTH + CAR_GAP
     car_x = car_idx * total_span
     name = CAR_DEFS[car_idx][0]
 
-    unreal.log(f"--- Building sublevel: Car {car_idx:02d} ({name}) ---")
-
-    # Create/load the sublevel and make it current for editing
-    streaming = create_or_load_sublevel(car_idx)
-    if not streaming:
-        unreal.log_warning(f"  FAILED to create sublevel for car {car_idx}")
-        return None
+    unreal.log(f"--- Building car: Car {car_idx:02d} ({name}) ---")
 
     # Shell (floor, ceiling, walls, doors, connector gangway)
     build_car_shell(car_idx, car_x, mats)
@@ -1364,7 +1358,7 @@ def build_single_car(car_idx, mats):
         builder(car_x, mats)
 
     unreal.log(f"  [{car_idx:02d}/{NUM_CARS - 1}] {name} complete ({_actor_count} actors total)")
-    return streaming
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -1508,7 +1502,7 @@ def run():
     unreal.log("=" * 64)
     unreal.log("  SNOWPIERCER: ETERNAL ENGINE")
     unreal.log("  Zone 1 -- The Tail (15 Cars) [10x SCALE]")
-    unreal.log("  STREAMING SUBLEVEL BUILD")
+    unreal.log("  PERSISTENT LEVEL BUILD")
     unreal.log("=" * 64)
     unreal.log("")
 
@@ -1516,25 +1510,21 @@ def run():
     map_path = create_or_load_map()
     cleanup()
 
-    # 2. Pre-create all materials (shared across sublevels)
+    # 2. Pre-create all materials
     mats = _load_surface_mats()
 
-    # 3. Build each car as its own streaming sublevel
-    unreal.log("=== Building 15 car sublevels ===")
-    streaming_levels = {}
+    # 3. Build each car directly in the persistent level
+    unreal.log("=== Building 15 cars ===")
     for car_idx in range(NUM_CARS):
-        streaming = build_single_car(car_idx, mats)
-        if streaming:
-            streaming_levels[car_idx] = streaming
+        build_single_car(car_idx, mats)
 
-    # 4. Switch back to persistent level for atmosphere/PlayerStart
-    make_persistent_current()
+    # 4. Set up atmosphere and PlayerStart
     setup_atmosphere()
 
     # 5. Generate streaming registry for runtime subsystem
     registry = generate_streaming_registry()
 
-    # 6. Save all levels
+    # 6. Save
     level_subsystem = unreal.get_editor_subsystem(unreal.LevelEditorSubsystem)
     level_subsystem.save_all_dirty_levels()
 
@@ -1543,25 +1533,19 @@ def run():
     total_length_m = (NUM_CARS * (CAR_LENGTH + CAR_GAP)) / 100.0
     unreal.log("")
     unreal.log("=" * 64)
-    unreal.log("  ZONE 1 BUILD COMPLETE (STREAMING SUBLEVELS)")
+    unreal.log("  ZONE 1 BUILD COMPLETE")
     unreal.log("=" * 64)
     unreal.log(f"  Persistent map: {PERSISTENT_MAP}")
-    unreal.log(f"  Sublevel dir:   {SUBLEVEL_DIR}/")
     unreal.log(f"  Cars: {NUM_CARS} ({CAR_LENGTH/100:.0f}m x {CAR_WIDTH/100:.0f}m x {CAR_HEIGHT/100:.0f}m each)")
     unreal.log(f"  Total length: {total_length_m:.0f}m")
     unreal.log(f"  Actors placed: {_actor_count}")
     unreal.log("")
-    unreal.log("  STREAMING SUBLEVELS:")
+    unreal.log("  CAR ROSTER:")
     for idx in range(NUM_CARS):
         name, _, _, desc = CAR_DEFS[idx]
-        unreal.log(f"    [{idx:02d}] {sublevel_name(idx):30s} -- {desc}")
+        unreal.log(f"    [{idx:02d}] {name:30s} -- {desc}")
     unreal.log("")
-    unreal.log("  RUNTIME INTEGRATION:")
-    unreal.log("    USEECarStreamingSubsystem::RegisterCarLevel() bindings")
-    unreal.log("    in Zone1_CarStreamingRegistry.json")
-    unreal.log("")
-    unreal.log("  PlayerStart is in the persistent level (Car 00 position).")
-    unreal.log("  3-car streaming window: current + adjacent cars loaded.")
+    unreal.log("  PlayerStart is at Car 00 position.")
     unreal.log("  Press Play to begin.")
     unreal.log("")
 

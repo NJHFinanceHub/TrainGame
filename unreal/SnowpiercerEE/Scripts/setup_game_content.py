@@ -309,10 +309,8 @@ def gather_texture_sets(content_dir):
     asset_paths = editor_util.list_assets(content_dir, recursive=True, include_folder=False)
 
     for asset_path in asset_paths:
-        # Clean the path (remove class prefix if present)
-        clean_path = str(asset_path).split(".")[-1] if "." in str(asset_path) else str(asset_path)
-        # Use the path as-is from list_assets
-        clean_path = str(asset_path).rstrip(".")
+        # Clean the path (strip UE class suffix e.g. "/Game/Foo.Foo" → "/Game/Foo")
+        clean_path = str(asset_path).split(".")[0]
 
         asset = editor_util.load_asset(clean_path)
         if not asset or not isinstance(asset, unreal.Texture2D):
@@ -849,7 +847,7 @@ def setup_audio():
     if editor_util.does_directory_exist("/Game/Audio"):
         audio_assets = editor_util.list_assets("/Game/Audio", recursive=False, include_folder=False)
         for asset_path in audio_assets:
-            clean = str(asset_path).rstrip(".")
+            clean = str(asset_path).split(".")[0]  # Strip UE class suffix (e.g. "/Game/Audio/Foo.Foo" → "/Game/Audio/Foo")
             name = clean.split("/")[-1]
             cue_name = f"SC_{name}"
             cue_full = f"{cue_path}/{cue_name}"
@@ -947,207 +945,10 @@ def setup_postprocess_and_atmosphere():
 
     created = 0
 
-    # -----------------------------------------------------------------------
-    # 6a. PostProcess Preset Blueprint — Tail Zone (dark, gritty, desaturated)
-    # -----------------------------------------------------------------------
-    pp_bp_path = "/Game/Blueprints/PostProcess"
-    pp_bp_name = "BP_PP_TailZone"
-    pp_full = f"{pp_bp_path}/{pp_bp_name}"
-
-    ensure_directory(pp_bp_path)
-
-    if not editor_util.does_asset_exist(pp_full):
-        try:
-            factory = unreal.BlueprintFactory()
-            factory.set_editor_property("parent_class", unreal.PostProcessVolume.static_class())
-            pp_bp = asset_tools.create_asset(pp_bp_name, pp_bp_path, unreal.Blueprint, factory)
-
-            if pp_bp:
-                try:
-                    cdo = unreal.get_default_object(pp_bp.generated_class())
-                    if cdo:
-                        # Make it an infinite/unbound volume by default
-                        cdo.set_editor_property("unbound", True)
-                        cdo.set_editor_property("priority", 1.0)
-
-                        # Access PostProcessSettings
-                        settings = cdo.get_editor_property("settings")
-                        if settings:
-                            # Desaturation — reduce color saturation
-                            settings.set_editor_property("color_saturation",
-                                                          unreal.Vector4(0.65, 0.65, 0.65, 1.0))
-                            settings.set_editor_property("override_color_saturation", True)
-
-                            # Contrast — slightly boosted for grit
-                            settings.set_editor_property("color_contrast",
-                                                          unreal.Vector4(1.15, 1.15, 1.15, 1.0))
-                            settings.set_editor_property("override_color_contrast", True)
-
-                            # Vignette intensity
-                            settings.set_editor_property("vignette_intensity", 0.6)
-                            settings.set_editor_property("override_vignette_intensity", True)
-
-                            # Film grain
-                            settings.set_editor_property("film_grain_intensity", 0.35)
-                            settings.set_editor_property("override_film_grain_intensity", True)
-
-                            # Bloom — low
-                            settings.set_editor_property("bloom_intensity", 0.3)
-                            settings.set_editor_property("override_bloom_intensity", True)
-
-                            # Auto exposure — dark bias
-                            settings.set_editor_property("auto_exposure_bias", -1.5)
-                            settings.set_editor_property("override_auto_exposure_bias", True)
-
-                            cdo.set_editor_property("settings", settings)
-                            unreal.log("  Configured Tail Zone post-process settings")
-
-                except Exception as e:
-                    unreal.log_warning(f"  Could not configure PP CDO: {e}")
-
-                save_asset(pp_full)
-                created += 1
-                unreal.log(f"  Created PostProcess BP: {pp_full}")
-        except Exception as e:
-            unreal.log_warning(f"  PostProcess BP creation failed: {e}")
-    else:
-        unreal.log(f"  PostProcess BP already exists: {pp_full}")
-
-    # -----------------------------------------------------------------------
-    # 6b. ExponentialHeightFog Blueprint — Interior Atmosphere
-    # -----------------------------------------------------------------------
-    fog_bp_path = "/Game/Blueprints/Atmosphere"
-    fog_bp_name = "BP_Fog_TrainInterior"
-    fog_full = f"{fog_bp_path}/{fog_bp_name}"
-
-    ensure_directory(fog_bp_path)
-
-    if not editor_util.does_asset_exist(fog_full):
-        try:
-            factory = unreal.BlueprintFactory()
-            factory.set_editor_property("parent_class", unreal.ExponentialHeightFog.static_class())
-            fog_bp = asset_tools.create_asset(fog_bp_name, fog_bp_path, unreal.Blueprint, factory)
-
-            if fog_bp:
-                try:
-                    cdo = unreal.get_default_object(fog_bp.generated_class())
-                    if cdo:
-                        fog_comp = cdo.get_component_by_class(unreal.ExponentialHeightFogComponent)
-                        if fog_comp:
-                            # Dense, warm-tinted interior fog
-                            fog_comp.set_editor_property("fog_density", 0.015)
-                            fog_comp.set_editor_property("fog_height_falloff", 0.8)
-                            fog_comp.set_editor_property("fog_inscattering_color",
-                                                          unreal.LinearColor(0.12, 0.09, 0.07, 1.0))
-                            fog_comp.set_editor_property("fog_max_opacity", 0.6)
-                            fog_comp.set_editor_property("start_distance", 50.0)
-
-                            # Volumetric fog for light shafts
-                            fog_comp.set_editor_property("volumetric_fog", True)
-                            fog_comp.set_editor_property("volumetric_fog_scattering_distribution", 0.3)
-                            fog_comp.set_editor_property("volumetric_fog_albedo",
-                                                          unreal.Color(200, 180, 160, 255))
-
-                            unreal.log("  Configured fog component")
-                except Exception as e:
-                    unreal.log_warning(f"  Could not configure fog CDO: {e}")
-
-                save_asset(fog_full)
-                created += 1
-                unreal.log(f"  Created Fog BP: {fog_full}")
-        except Exception as e:
-            unreal.log_warning(f"  Fog BP creation failed: {e}")
-    else:
-        unreal.log(f"  Fog BP already exists: {fog_full}")
-
-    # -----------------------------------------------------------------------
-    # 6c. Additional zone presets
-    # -----------------------------------------------------------------------
-    # Engine Zone — hot, orange tint, high bloom
-    pp_engine_name = "BP_PP_EngineZone"
-    pp_engine_full = f"{pp_bp_path}/{pp_engine_name}"
-
-    if not editor_util.does_asset_exist(pp_engine_full):
-        try:
-            factory = unreal.BlueprintFactory()
-            factory.set_editor_property("parent_class", unreal.PostProcessVolume.static_class())
-            pp_engine = asset_tools.create_asset(pp_engine_name, pp_bp_path, unreal.Blueprint, factory)
-
-            if pp_engine:
-                try:
-                    cdo = unreal.get_default_object(pp_engine.generated_class())
-                    if cdo:
-                        cdo.set_editor_property("unbound", False)
-                        cdo.set_editor_property("priority", 2.0)
-
-                        settings = cdo.get_editor_property("settings")
-                        if settings:
-                            # Warm orange tint
-                            settings.set_editor_property("color_saturation",
-                                                          unreal.Vector4(1.1, 0.9, 0.7, 1.0))
-                            settings.set_editor_property("override_color_saturation", True)
-
-                            settings.set_editor_property("bloom_intensity", 0.8)
-                            settings.set_editor_property("override_bloom_intensity", True)
-
-                            settings.set_editor_property("auto_exposure_bias", 0.5)
-                            settings.set_editor_property("override_auto_exposure_bias", True)
-
-                            settings.set_editor_property("film_grain_intensity", 0.15)
-                            settings.set_editor_property("override_film_grain_intensity", True)
-
-                            cdo.set_editor_property("settings", settings)
-                except Exception as e:
-                    unreal.log_warning(f"  Could not configure Engine Zone PP CDO: {e}")
-
-                save_asset(pp_engine_full)
-                created += 1
-                unreal.log(f"  Created PostProcess BP: {pp_engine_full}")
-        except Exception as e:
-            unreal.log_warning(f"  Engine Zone PP creation failed: {e}")
-
-    # First Class Zone — bright, saturated, cinematic
-    pp_first_name = "BP_PP_FirstClassZone"
-    pp_first_full = f"{pp_bp_path}/{pp_first_name}"
-
-    if not editor_util.does_asset_exist(pp_first_full):
-        try:
-            factory = unreal.BlueprintFactory()
-            factory.set_editor_property("parent_class", unreal.PostProcessVolume.static_class())
-            pp_first = asset_tools.create_asset(pp_first_name, pp_bp_path, unreal.Blueprint, factory)
-
-            if pp_first:
-                try:
-                    cdo = unreal.get_default_object(pp_first.generated_class())
-                    if cdo:
-                        cdo.set_editor_property("unbound", False)
-                        cdo.set_editor_property("priority", 2.0)
-
-                        settings = cdo.get_editor_property("settings")
-                        if settings:
-                            settings.set_editor_property("color_saturation",
-                                                          unreal.Vector4(1.2, 1.1, 1.0, 1.0))
-                            settings.set_editor_property("override_color_saturation", True)
-
-                            settings.set_editor_property("bloom_intensity", 0.5)
-                            settings.set_editor_property("override_bloom_intensity", True)
-
-                            settings.set_editor_property("auto_exposure_bias", 0.8)
-                            settings.set_editor_property("override_auto_exposure_bias", True)
-
-                            settings.set_editor_property("vignette_intensity", 0.2)
-                            settings.set_editor_property("override_vignette_intensity", True)
-
-                            cdo.set_editor_property("settings", settings)
-                except Exception as e:
-                    unreal.log_warning(f"  Could not configure First Class PP CDO: {e}")
-
-                save_asset(pp_first_full)
-                created += 1
-                unreal.log(f"  Created PostProcess BP: {pp_first_full}")
-        except Exception as e:
-            unreal.log_warning(f"  First Class PP creation failed: {e}")
-
+    # PostProcessVolume and ExponentialHeightFog cannot be subclassed as
+    # Blueprints in UE5.  They are spawned directly as level actors by
+    # build_zone1.py instead (see setup_atmosphere()).
+    unreal.log("  PostProcess/Fog actors will be placed by build_zone1.py (not BPs)")
     unreal.log(f"  Atmosphere assets created: {created}")
     return created
 
