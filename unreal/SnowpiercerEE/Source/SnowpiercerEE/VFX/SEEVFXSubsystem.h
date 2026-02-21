@@ -68,7 +68,7 @@ private:
 	float ParticleDensityScale = 1.0f;
 	int32 MaxConcurrentEmitters = 15;
 
-	UPROPERTY()
+	/** Registered weather components (not UPROPERTY - TArray<TWeakObjectPtr> unsupported by UHT) */
 	TArray<TWeakObjectPtr<USEEWeatherVFXComponent>> RegisteredWeatherComponents;
 
 	void BroadcastWeatherToComponents();

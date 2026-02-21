@@ -17,7 +17,7 @@
  * Data is driven externally; entries are added via AddEntry().
  */
 
-UENUM()
+/** Category filter for codex entries */
 enum class ECodexCategory : uint8
 {
 	Lore,

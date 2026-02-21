@@ -136,7 +136,6 @@ private:
 	UPROPERTY()
 	TMap<FName, FMiniRailCartData> Carts;
 
-	UPROPERTY()
 	TMap<int32, TArray<EDeckSecurityType>> DisabledSecurity;
 
 	int32 NextCartIndex = 0;
