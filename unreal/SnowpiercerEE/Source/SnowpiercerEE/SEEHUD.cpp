@@ -173,20 +173,14 @@ UUserWidget* ASEEHUD::GetOrCreateWidget(ESEEUIScreen Screen)
 	APlayerController* PC = GetOwningPlayerController();
 	if (!PC) return nullptr;
 
-	auto CreateIfNeeded = [PC](auto*& WidgetPtr, TSubclassOf<std::remove_pointer_t<decltype(WidgetPtr)>> WidgetClass) -> UUserWidget*
-	{
-		if (!WidgetPtr && WidgetClass)
-		{
-			WidgetPtr = CreateWidget<std::remove_pointer_t<decltype(WidgetPtr)>>(PC, WidgetClass);
-		}
-		return WidgetPtr;
-	};
-
 	switch (Screen)
 	{
 	case ESEEUIScreen::Inventory:
 	{
-		UUserWidget* W = CreateIfNeeded(InventoryWidget, InventoryWidgetClass);
+		if (!InventoryWidget && InventoryWidgetClass)
+		{
+			InventoryWidget = CreateWidget<USEEInventoryWidget>(PC, InventoryWidgetClass);
+		}
 		if (InventoryWidget && PlayerCharacter.IsValid())
 		{
 			USEEInventoryComponent* InvComp = PlayerCharacter->FindComponentByClass<USEEInventoryComponent>();
@@ -195,28 +189,38 @@ UUserWidget* ASEEHUD::GetOrCreateWidget(ESEEUIScreen Screen)
 				InventoryWidget->InitInventory(InvComp);
 			}
 		}
-		return W;
+		return InventoryWidget;
 	}
 	case ESEEUIScreen::Character:
 	{
-		UUserWidget* W = CreateIfNeeded(CharacterWidget, CharacterWidgetClass);
+		if (!CharacterWidget && CharacterWidgetClass)
+		{
+			CharacterWidget = CreateWidget<USEECharacterWidget>(PC, CharacterWidgetClass);
+		}
 		if (CharacterWidget && PlayerCharacter.IsValid())
 		{
 			CharacterWidget->InitCharacter(PlayerCharacter.Get());
 		}
-		return W;
+		return CharacterWidget;
 	}
 	case ESEEUIScreen::QuestLog:
-		return CreateIfNeeded(QuestLogWidget, QuestLogWidgetClass);
+		if (!QuestLogWidget && QuestLogWidgetClass) { QuestLogWidget = CreateWidget<UUserWidget>(PC, QuestLogWidgetClass); }
+		return QuestLogWidget;
 	case ESEEUIScreen::TrainMap:
-		return CreateIfNeeded(TrainMapWidget, TrainMapWidgetClass);
+		if (!TrainMapWidget && TrainMapWidgetClass) { TrainMapWidget = CreateWidget<USEETrainMapWidget>(PC, TrainMapWidgetClass); }
+		return TrainMapWidget;
 	case ESEEUIScreen::Factions:
-		return CreateIfNeeded(FactionWidget, FactionWidgetClass);
+		if (!FactionWidget && FactionWidgetClass) { FactionWidget = CreateWidget<USEEFactionWidget>(PC, FactionWidgetClass); }
+		return FactionWidget;
 	case ESEEUIScreen::Companions:
-		return CreateIfNeeded(CompanionWidget, CompanionWidgetClass);
+		if (!CompanionWidget && CompanionWidgetClass) { CompanionWidget = CreateWidget<USEECompanionWidget>(PC, CompanionWidgetClass); }
+		return CompanionWidget;
 	case ESEEUIScreen::Crafting:
 	{
-		UUserWidget* W = CreateIfNeeded(CraftingWidget, CraftingWidgetClass);
+		if (!CraftingWidget && CraftingWidgetClass)
+		{
+			CraftingWidget = CreateWidget<USEECraftingWidget>(PC, CraftingWidgetClass);
+		}
 		if (CraftingWidget && PlayerCharacter.IsValid())
 		{
 			UCraftingComponent* CraftComp = PlayerCharacter->FindComponentByClass<UCraftingComponent>();
@@ -226,14 +230,17 @@ UUserWidget* ASEEHUD::GetOrCreateWidget(ESEEUIScreen Screen)
 				CraftingWidget->InitCrafting(CraftComp, InvComp);
 			}
 		}
-		return W;
+		return CraftingWidget;
 	}
 	case ESEEUIScreen::Codex:
-		return CreateIfNeeded(CodexWidget, CodexWidgetClass);
+		if (!CodexWidget && CodexWidgetClass) { CodexWidget = CreateWidget<USEECodexWidget>(PC, CodexWidgetClass); }
+		return CodexWidget;
 	case ESEEUIScreen::PauseMenu:
-		return CreateIfNeeded(PauseMenuWidget, PauseMenuWidgetClass);
+		if (!PauseMenuWidget && PauseMenuWidgetClass) { PauseMenuWidget = CreateWidget<USEEPauseMenuWidget>(PC, PauseMenuWidgetClass); }
+		return PauseMenuWidget;
 	case ESEEUIScreen::DeathScreen:
-		return CreateIfNeeded(DeathScreenWidget, DeathScreenWidgetClass);
+		if (!DeathScreenWidget && DeathScreenWidgetClass) { DeathScreenWidget = CreateWidget<USEEDeathScreenWidget>(PC, DeathScreenWidgetClass); }
+		return DeathScreenWidget;
 	default:
 		return nullptr;
 	}
