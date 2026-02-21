@@ -31,9 +31,9 @@ void UKronoleComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 bool UKronoleComponent::TakeDose(bool bRefined)
 {
 	// Can't stack doses while already buffed (prevents abuse)
-	if (bIsActive) return false;
+	if (bIsKronoleActive) return false;
 
-	bIsActive = true;
+	bIsKronoleActive = true;
 	bLastDoseWasRefined = bRefined;
 	ActiveBuffTimer = bRefined ? RefinedBuffDuration : RawBuffDuration;
 	TimeSinceLastDose = 0.0f;
@@ -72,19 +72,19 @@ EWithdrawalSeverity UKronoleComponent::GetWithdrawalSeverity() const
 
 float UKronoleComponent::GetDamageMultiplier() const
 {
-	if (!bIsActive) return 1.0f;
+	if (!bIsKronoleActive) return 1.0f;
 	return bLastDoseWasRefined ? 1.5f : 1.25f;
 }
 
 float UKronoleComponent::GetTimeDilationFactor() const
 {
-	if (!bIsActive) return 1.0f;
+	if (!bIsKronoleActive) return 1.0f;
 	return bLastDoseWasRefined ? 0.5f : 0.7f;
 }
 
 float UKronoleComponent::GetDamageResistance() const
 {
-	if (!bIsActive) return 0.0f;
+	if (!bIsKronoleActive) return 0.0f;
 	return bLastDoseWasRefined ? 0.4f : 0.25f;
 }
 
@@ -139,12 +139,12 @@ void UKronoleComponent::SetAddictionState(float InAddictionLevel, float InTimeSi
 
 void UKronoleComponent::TickBuff(float DeltaTime)
 {
-	if (!bIsActive) return;
+	if (!bIsKronoleActive) return;
 
 	ActiveBuffTimer -= DeltaTime;
 	if (ActiveBuffTimer <= 0.0f)
 	{
-		bIsActive = false;
+		bIsKronoleActive = false;
 		ActiveBuffTimer = 0.0f;
 	}
 }
@@ -154,7 +154,7 @@ void UKronoleComponent::TickAddiction(float DeltaTime)
 	if (AddictionLevel <= 0.0f) return;
 
 	// Track time since last dose
-	if (!bIsActive)
+	if (!bIsKronoleActive)
 	{
 		TimeSinceLastDose += DeltaTime;
 	}
@@ -169,7 +169,7 @@ void UKronoleComponent::TickAddiction(float DeltaTime)
 
 void UKronoleComponent::TickWithdrawal(float DeltaTime)
 {
-	if (bIsActive || AddictionLevel <= 0.0f)
+	if (bIsKronoleActive || AddictionLevel <= 0.0f)
 	{
 		bInWithdrawal = false;
 		return;

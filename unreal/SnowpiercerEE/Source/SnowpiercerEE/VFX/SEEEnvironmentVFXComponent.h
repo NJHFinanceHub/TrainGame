@@ -107,7 +107,7 @@ public:
 	void SetEffectIntensity(float Intensity);
 
 	UFUNCTION(BlueprintPure, Category = "VFX|Environment")
-	bool IsEffectActive() const { return bIsActive; }
+	bool IsEffectActive() const { return bIsVFXActive; }
 
 	UFUNCTION(BlueprintCallable, Category = "VFX|Environment")
 	void TriggerBurst();
@@ -117,7 +117,7 @@ protected:
 	TObjectPtr<UNiagaraComponent> ActiveNiagara;
 
 private:
-	bool bIsActive = false;
+	bool bIsVFXActive = false;
 	float CycleTimer = 0.0f;
 	float CurrentIntensity = 1.0f;
 

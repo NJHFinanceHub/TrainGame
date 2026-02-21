@@ -73,15 +73,15 @@ void USEEEnvironmentVFXComponent::TickComponent(float DeltaTime, ELevelTick Tick
 
 void USEEEnvironmentVFXComponent::ActivateEffect()
 {
-	if (bIsActive) return;
-	bIsActive = true;
+	if (bIsVFXActive) return;
+	bIsVFXActive = true;
 	SpawnNiagaraEffect();
 }
 
 void USEEEnvironmentVFXComponent::DeactivateEffect()
 {
-	if (!bIsActive) return;
-	bIsActive = false;
+	if (!bIsVFXActive) return;
+	bIsVFXActive = false;
 	DestroyNiagaraEffect();
 }
 
@@ -158,11 +158,11 @@ void USEEEnvironmentVFXComponent::UpdateCyclic(float DeltaTime)
 
 	bool bShouldBeActive = (PhaseTime < ActiveDuration);
 
-	if (bShouldBeActive && !bIsActive)
+	if (bShouldBeActive && !bIsVFXActive)
 	{
 		ActivateEffect();
 	}
-	else if (!bShouldBeActive && bIsActive)
+	else if (!bShouldBeActive && bIsVFXActive)
 	{
 		DeactivateEffect();
 	}

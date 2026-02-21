@@ -27,7 +27,7 @@ void UEnvironmentalHazardComponent::TickComponent(float DeltaTime, ELevelTick Ti
 	}
 
 	// Active hazard applies damage over time
-	if (bIsActive)
+	if (bIsHazardActive)
 	{
 		ActiveTimer -= DeltaTime;
 
@@ -47,7 +47,7 @@ void UEnvironmentalHazardComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 		if (ActiveTimer <= 0.f)
 		{
-			bIsActive = false;
+			bIsHazardActive = false;
 			if (!bOneShot)
 			{
 				CooldownTimer = Cooldown;
@@ -60,7 +60,7 @@ void UEnvironmentalHazardComponent::TriggerHazard(AActor* Instigator)
 {
 	if (!CanTrigger()) return;
 
-	bIsActive = true;
+	bIsHazardActive = true;
 	bHasBeenTriggered = true;
 	ActiveTimer = ActiveDuration;
 
@@ -87,7 +87,7 @@ bool UEnvironmentalHazardComponent::IsActorInHazardZone(AActor* Actor) const
 bool UEnvironmentalHazardComponent::CanTrigger() const
 {
 	if (bOneShot && bHasBeenTriggered) return false;
-	if (bIsActive) return false;
+	if (bIsHazardActive) return false;
 	if (CooldownTimer > 0.f) return false;
 	return true;
 }

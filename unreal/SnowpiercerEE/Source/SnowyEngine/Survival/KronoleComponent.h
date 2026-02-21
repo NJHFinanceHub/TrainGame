@@ -38,7 +38,7 @@ public:
 
 	/** Returns true if the character is currently under the effects of Kronole. */
 	UFUNCTION(BlueprintPure, Category = "Kronole")
-	bool IsUnderEffect() const { return bIsActive; }
+	bool IsUnderEffect() const { return bIsKronoleActive; }
 
 	/** Returns remaining buff duration in seconds. */
 	UFUNCTION(BlueprintPure, Category = "Kronole")
@@ -137,7 +137,7 @@ protected:
 	float ActiveBuffTimer = 0.0f;
 
 	UPROPERTY(VisibleAnywhere, Category = "Kronole|Runtime")
-	bool bIsActive = false;
+	bool bIsKronoleActive = false;
 
 	UPROPERTY(VisibleAnywhere, Category = "Kronole|Runtime")
 	bool bInWithdrawal = false;

@@ -135,7 +135,7 @@ public:
 
 	/** Is this zone audio currently active? */
 	UFUNCTION(BlueprintPure, Category = "Tail Audio")
-	bool IsActive() const { return bIsActive; }
+	bool IsZoneAudioActive() const { return bIsZoneAudioActive; }
 
 protected:
 	virtual void BeginPlay() override;
@@ -143,7 +143,7 @@ protected:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	bool bIsActive = false;
+	bool bIsZoneAudioActive = false;
 
 	/** Active ambient loop audio components */
 	UPROPERTY()

@@ -25,7 +25,7 @@ void UTailZoneAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (!bIsActive)
+	if (!bIsZoneAudioActive)
 	{
 		return;
 	}
@@ -53,12 +53,12 @@ void UTailZoneAudioComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UTailZoneAudioComponent::ActivateZoneAudio()
 {
-	if (bIsActive)
+	if (bIsZoneAudioActive)
 	{
 		return;
 	}
 
-	bIsActive = true;
+	bIsZoneAudioActive = true;
 
 	// Start ambient loops
 	if (MetalRattleLoop)
@@ -89,7 +89,7 @@ void UTailZoneAudioComponent::ActivateZoneAudio()
 
 void UTailZoneAudioComponent::DeactivateZoneAudio(float FadeOutDuration)
 {
-	bIsActive = false;
+	bIsZoneAudioActive = false;
 
 	for (UAudioComponent* Loop : ActiveLoops)
 	{

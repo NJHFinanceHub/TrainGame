@@ -107,7 +107,7 @@ private:
 	EDamageType GetDamageTypeForHazard() const;
 	TArray<AActor*> GetActorsInHazardZone() const;
 
-	bool bIsActive = false;
+	bool bIsHazardActive = false;
 	float ActiveTimer = 0.f;
 	float CooldownTimer = 0.f;
 	bool bHasBeenTriggered = false;
