@@ -60,11 +60,11 @@ public:
 
 	/** Get all carts in the system */
 	UFUNCTION(BlueprintPure, Category = "MiniRail|Cart")
-	TArray<FMiniRailCart> GetAllCarts() const;
+	TArray<FMiniRailCartData> GetAllCarts() const;
 
 	/** Get a specific cart by ID */
 	UFUNCTION(BlueprintPure, Category = "MiniRail|Cart")
-	FMiniRailCart GetCart(FName CartID) const;
+	FMiniRailCartData GetCart(FName CartID) const;
 
 	/** Start cart moving forward */
 	UFUNCTION(BlueprintCallable, Category = "MiniRail|Cart")
@@ -127,14 +127,14 @@ public:
 
 private:
 	void UpdateCarts(float DeltaTime);
-	void AdvanceCart(FMiniRailCart& Cart, float DeltaTime);
+	void AdvanceCart(FMiniRailCartData& Cart, float DeltaTime);
 	FName GenerateCartID();
 
 	UPROPERTY()
 	TMap<int32, FTransportDeckSegment> Segments;
 
 	UPROPERTY()
-	TMap<FName, FMiniRailCart> Carts;
+	TMap<FName, FMiniRailCartData> Carts;
 
 	UPROPERTY()
 	TMap<int32, TArray<EDeckSecurityType>> DisabledSecurity;

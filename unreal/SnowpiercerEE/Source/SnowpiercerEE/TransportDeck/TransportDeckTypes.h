@@ -329,7 +329,7 @@ struct FTransportDeckSegment
 
 /** Mini-rail cart definition */
 USTRUCT(BlueprintType)
-struct FMiniRailCart
+struct FMiniRailCartData
 {
 	GENERATED_BODY()
 

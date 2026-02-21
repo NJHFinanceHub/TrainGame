@@ -106,9 +106,9 @@ bool UTransportDeckComponent::SwitchJunction(ERailJunction NewDirection)
 	return true;
 }
 
-FMiniRailCart UTransportDeckComponent::GetCurrentCart() const
+FMiniRailCartData UTransportDeckComponent::GetCurrentCart() const
 {
-	FMiniRailCart Cart;
+	FMiniRailCartData Cart;
 	Cart.CartID = CurrentCartID;
 	Cart.CurrentCarIndex = CurrentCarIndex;
 	Cart.bPlayerRiding = bRidingCart;

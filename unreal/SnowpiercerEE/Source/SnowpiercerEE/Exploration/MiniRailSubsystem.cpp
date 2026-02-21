@@ -52,7 +52,7 @@ FName UMiniRailSubsystem::SpawnCart(int32 CarIndex)
 {
 	FName CartID = GenerateCartID();
 
-	FMiniRailCart Cart;
+	FMiniRailCartData Cart;
 	Cart.CartID = CartID;
 	Cart.CurrentCarIndex = CarIndex;
 	Cart.State = ECartState::Stationary;
@@ -62,9 +62,9 @@ FName UMiniRailSubsystem::SpawnCart(int32 CarIndex)
 	return CartID;
 }
 
-TArray<FMiniRailCart> UMiniRailSubsystem::GetAllCarts() const
+TArray<FMiniRailCartData> UMiniRailSubsystem::GetAllCarts() const
 {
-	TArray<FMiniRailCart> Result;
+	TArray<FMiniRailCartData> Result;
 	for (const auto& Pair : Carts)
 	{
 		Result.Add(Pair.Value);
@@ -72,18 +72,18 @@ TArray<FMiniRailCart> UMiniRailSubsystem::GetAllCarts() const
 	return Result;
 }
 
-FMiniRailCart UMiniRailSubsystem::GetCart(FName CartID) const
+FMiniRailCartData UMiniRailSubsystem::GetCart(FName CartID) const
 {
-	if (const FMiniRailCart* Cart = Carts.Find(CartID))
+	if (const FMiniRailCartData* Cart = Carts.Find(CartID))
 	{
 		return *Cart;
 	}
-	return FMiniRailCart();
+	return FMiniRailCartData();
 }
 
 void UMiniRailSubsystem::StartCart(FName CartID, float Speed)
 {
-	if (FMiniRailCart* Cart = Carts.Find(CartID))
+	if (FMiniRailCartData* Cart = Carts.Find(CartID))
 	{
 		Cart->Speed = FMath::Clamp(Speed, -Cart->MaxSpeed, Cart->MaxSpeed);
 		Cart->State = ECartState::Moving;
@@ -92,7 +92,7 @@ void UMiniRailSubsystem::StartCart(FName CartID, float Speed)
 
 void UMiniRailSubsystem::StopCart(FName CartID)
 {
-	if (FMiniRailCart* Cart = Carts.Find(CartID))
+	if (FMiniRailCartData* Cart = Carts.Find(CartID))
 	{
 		Cart->Speed = 0.0f;
 		Cart->State = ECartState::Stationary;
@@ -101,7 +101,7 @@ void UMiniRailSubsystem::StopCart(FName CartID)
 
 bool UMiniRailSubsystem::LoadCargo(FName CartID, const FCargoManifest& Cargo)
 {
-	FMiniRailCart* Cart = Carts.Find(CartID);
+	FMiniRailCartData* Cart = Carts.Find(CartID);
 	if (!Cart || Cart->State == ECartState::Moving)
 	{
 		return false;
@@ -114,7 +114,7 @@ bool UMiniRailSubsystem::LoadCargo(FName CartID, const FCargoManifest& Cargo)
 
 bool UMiniRailSubsystem::UnloadCargo(FName CartID, FName CargoID)
 {
-	FMiniRailCart* Cart = Carts.Find(CartID);
+	FMiniRailCartData* Cart = Carts.Find(CartID);
 	if (!Cart)
 	{
 		return false;
@@ -213,7 +213,7 @@ void UMiniRailSubsystem::UpdateCarts(float DeltaTime)
 	}
 }
 
-void UMiniRailSubsystem::AdvanceCart(FMiniRailCart& Cart, float DeltaTime)
+void UMiniRailSubsystem::AdvanceCart(FMiniRailCartData& Cart, float DeltaTime)
 {
 	// Move cart along track. Car index changes when crossing segment boundaries.
 	// Speed is in m/s, convert to car-index delta based on car span (130m at 10x).

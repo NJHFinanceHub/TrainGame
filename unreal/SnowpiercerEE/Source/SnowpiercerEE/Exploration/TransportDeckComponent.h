@@ -124,7 +124,7 @@ public:
 
 	/** Get the current cart data */
 	UFUNCTION(BlueprintPure, Category = "TransportDeck|MiniRail")
-	FMiniRailCart GetCurrentCart() const;
+	FMiniRailCartData GetCurrentCart() const;
 
 	/** Check if near a boardable cart */
 	UFUNCTION(BlueprintPure, Category = "TransportDeck|MiniRail")
