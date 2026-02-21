@@ -1,6 +1,6 @@
 // Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
 
-#include "Actors/SEEPickupActor.h"
+#include "SEEPickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "SEEInventoryComponent.h"

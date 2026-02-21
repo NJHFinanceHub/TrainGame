@@ -1,5 +1,5 @@
 #include "SEENPCAnimInstance.h"
-#include "AI/SEENPCCharacter.h"
+#include "TrainGame/AI/SEENPCCharacter.h"
 
 void USEENPCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 {

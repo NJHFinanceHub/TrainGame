@@ -3,8 +3,8 @@
 #include "SEEEndingCalculator.h"
 #include "SEELedgerSubsystem.h"
 #include "../SEEFactionManager.h"
-#include "../Companions/CompanionRosterSubsystem.h"
-#include "../Companions/CompanionComponent.h"
+#include "TrainGame/Companions/CompanionRosterSubsystem.h"
+#include "TrainGame/Companions/CompanionComponent.h"
 #include "../SEEQuestManager.h"
 
 void USEEEndingCalculator::Initialize(FSubsystemCollectionBase& Collection)

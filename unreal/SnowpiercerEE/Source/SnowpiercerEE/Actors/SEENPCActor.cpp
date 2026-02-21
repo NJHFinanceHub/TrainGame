@@ -1,6 +1,6 @@
 // Copyright Snowpiercer: Eternal Engine. All Rights Reserved.
 
-#include "Actors/SEENPCActor.h"
+#include "SEENPCActor.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SphereComponent.h"
 

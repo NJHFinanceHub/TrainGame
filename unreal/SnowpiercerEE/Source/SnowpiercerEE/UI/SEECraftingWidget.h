@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Crafting/CraftingTypes.h"
+#include "SnowyEngine/Crafting/CraftingTypes.h"
 #include "SEECraftingWidget.generated.h"
 
 class UCraftingComponent;

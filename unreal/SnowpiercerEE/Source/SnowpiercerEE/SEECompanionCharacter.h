@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AI/SEENPCCharacter.h"
+#include "TrainGame/AI/SEENPCCharacter.h"
 #include "SEECharacterAnimInstance.h"
 #include "SEECompanionCharacter.generated.h"
 

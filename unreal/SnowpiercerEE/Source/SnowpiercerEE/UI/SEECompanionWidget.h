@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Companions/CompanionTypes.h"
+#include "TrainGame/Companions/CompanionTypes.h"
 #include "SEECompanionWidget.generated.h"
 
 class UCompanionComponent;

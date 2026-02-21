@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "SEECharacterAnimInstance.h"
 #include "SEETypes.h"
-#include "AI/SEENPCCharacter.h"
+#include "TrainGame/AI/SEENPCCharacter.h"
 #include "SEENPCAnimInstance.generated.h"
 
 /**
