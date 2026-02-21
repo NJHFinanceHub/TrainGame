@@ -67,6 +67,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boss")
 	EBossZone BossZone = EBossZone::Zone1_Tail;
 
+	void AddPhaseConfig(EBossPhase Phase, float HealthThreshold, float DamageMult, float SpeedMult, float Resistance);
+	void AddSpecialAttack(FName Name, EBossAttackType Type, float Damage, float Range,
+		float Cooldown, float WindUp, bool bBlockable, bool bDodgeable,
+		TArray<EBossPhase> Phases);
+
 private:
 	void SetupTailWarden();
 	void SetupThirdClassOverseer();
@@ -75,9 +80,4 @@ private:
 	void SetupHospitalityDirector();
 	void SetupFirstClassMarshal();
 	void SetupEngineGuardian();
-
-	void AddPhaseConfig(EBossPhase Phase, float HealthThreshold, float DamageMult, float SpeedMult, float Resistance);
-	void AddSpecialAttack(FName Name, EBossAttackType Type, float Damage, float Range,
-		float Cooldown, float WindUp, bool bBlockable, bool bDodgeable,
-		TArray<EBossPhase> Phases);
 };
