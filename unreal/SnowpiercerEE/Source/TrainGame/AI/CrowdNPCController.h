@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "AITypes.h"
+#include "TrainGameAITypes.h"
 #include "CrowdNPCController.generated.h"
 
 // ============================================================================

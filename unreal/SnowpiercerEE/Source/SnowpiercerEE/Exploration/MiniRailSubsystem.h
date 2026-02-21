@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "TransportDeckTypes.h"
+#include "TransportDeck/TransportDeckTypes.h"
 #include "MiniRailSubsystem.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCartArrived, FName, CartID, int32, CarIndex);

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "AITypes.h"
+#include "TrainGameAITypes.h"
 #include "TrainGame/Stealth/StealthTypes.h"
 #include "SEENPCCharacter.generated.h"
 

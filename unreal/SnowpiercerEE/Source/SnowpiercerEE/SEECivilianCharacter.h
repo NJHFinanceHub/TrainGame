@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SEENPCCharacter.h"
+#include "AI/SEENPCCharacter.h"
 #include "SEECivilianCharacter.generated.h"
 
 UENUM(BlueprintType)

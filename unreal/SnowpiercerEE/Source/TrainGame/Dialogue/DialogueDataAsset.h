@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
-#include "DialogueTypes.h"
+#include "TrainGameDialogueTypes.h"
 #include "DialogueDataAsset.generated.h"
 
 /**

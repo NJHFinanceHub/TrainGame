@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "DialogueTypes.h"
+#include "TrainGameDialogueTypes.h"
 #include "RumorPropagationSubsystem.generated.h"
 
 class UNPCMemoryComponent;

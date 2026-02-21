@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/WorldSubsystem.h"
-#include "AITypes.h"
+#include "TrainGameAITypes.h"
 #include "AlertPropagationSubsystem.generated.h"
 
 // ============================================================================

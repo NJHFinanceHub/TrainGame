@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
-#include "AITypes.h"
+#include "TrainGameAITypes.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "NPCAIController.generated.h"
 

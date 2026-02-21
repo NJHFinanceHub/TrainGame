@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "AITypes.h"
+#include "TrainGameAITypes.h"
 #include "NPCSpawnerComponent.generated.h"
 
 class ANPCAIController;

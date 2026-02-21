@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SEENPCCharacter.h"
+#include "AI/SEENPCCharacter.h"
 #include "SEECharacterAnimInstance.h"
 #include "SEEJackbootCharacter.generated.h"
 

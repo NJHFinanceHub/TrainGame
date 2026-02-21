@@ -5,7 +5,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "TransportDeckTypes.h"
+#include "TransportDeck/TransportDeckTypes.h"
 #include "TransportDeckComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeckEntered, int32, CarIndex);

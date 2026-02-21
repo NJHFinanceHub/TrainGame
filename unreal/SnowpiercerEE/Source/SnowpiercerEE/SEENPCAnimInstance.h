@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "SEECharacterAnimInstance.h"
-#include "SEENPCCharacter.h"
+#include "AI/SEENPCCharacter.h"
 #include "SEENPCAnimInstance.generated.h"
 
 /**

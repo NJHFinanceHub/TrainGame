@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "DialogueTypes.h"
+#include "TrainGameDialogueTypes.h"
 #include "NPCMemoryComponent.generated.h"
 
 /**
