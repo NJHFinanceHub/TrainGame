@@ -3,7 +3,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "SEEHUDTypes.h"
+#include "TrainGame/UI/SEEHUDTypes.h"
 #include "SEEGameHUD.generated.h"
 
 class SSEESurvivalBars;
@@ -44,7 +44,7 @@ class USEECarStreamingSubsystem;
  * overlay are always visible during gameplay.
  */
 UCLASS()
-class TRAINGAME_API ASEEGameHUD : public AHUD
+class SNOWPIERCEREE_API ASEEGameHUD : public AHUD
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,7 @@
 #include "CoreMinimal.h"
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
-#include "SnowpiercerEE/SEEQuestManager.h"
+#include "../SEEQuestManager.h"
 
 class USEEQuestManager;
 

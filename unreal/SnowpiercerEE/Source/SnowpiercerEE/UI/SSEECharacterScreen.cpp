@@ -1,7 +1,7 @@
 // SSEECharacterScreen.cpp - Character screen implementation
 #include "SSEECharacterScreen.h"
 
-#include "SnowpiercerEE/SEEStatsComponent.h"
+#include "../SEEStatsComponent.h"
 #include "SnowyEngine/Inventory/InventoryComponent.h"
 
 #include "Widgets/SBoxPanel.h"
