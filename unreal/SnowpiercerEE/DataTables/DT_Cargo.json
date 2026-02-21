@@ -1,0 +1,182 @@
+[
+  {
+    "Name": "Cargo_FoodRation_A",
+    "Type": "FoodCrates",
+    "DisplayName": "Standard Ration Crates",
+    "Description": "Processed protein blocks and vitamin supplements. Third Class weekly allocation.",
+    "SourceCar": 15,
+    "DestinationCar": 20,
+    "Value": 50,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_FoodRation_B",
+    "Type": "FoodCrates",
+    "DisplayName": "Fresh Produce Crate",
+    "Description": "Hydroponically grown vegetables from the greenhouse cars. Destined for Second Class dining.",
+    "SourceCar": 16,
+    "DestinationCar": 40,
+    "Value": 150,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_FoodRation_C",
+    "Type": "FoodCrates",
+    "DisplayName": "Premium Meat Selection",
+    "Description": "Cuts from the cattle cars. First Class exclusive — intercepting this is highly illegal.",
+    "SourceCar": 25,
+    "DestinationCar": 50,
+    "Value": 400,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Med_A",
+    "Type": "MedicalSupplies",
+    "DisplayName": "Basic Medical Kit",
+    "Description": "Bandages, antiseptic, painkillers. Third Class clinic resupply.",
+    "SourceCar": 28,
+    "DestinationCar": 18,
+    "Value": 80,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Med_B",
+    "Type": "MedicalSupplies",
+    "DisplayName": "Surgical Supplies",
+    "Description": "Sterile instruments, anesthetics, suture kits. High-priority medical cargo.",
+    "SourceCar": 28,
+    "DestinationCar": 38,
+    "Value": 300,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Med_C",
+    "Type": "MedicalSupplies",
+    "DisplayName": "Experimental Compounds",
+    "Description": "Unlabeled vials from the First Class clinic. Contents classified. Handle with care.",
+    "SourceCar": 69,
+    "DestinationCar": 28,
+    "Value": 600,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Luxury_A",
+    "Type": "LuxuryGoods",
+    "DisplayName": "Wine Cases",
+    "Description": "Vintage reserves from the wine cellar. First Class social events.",
+    "SourceCar": 60,
+    "DestinationCar": 50,
+    "Value": 500,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Luxury_B",
+    "Type": "LuxuryGoods",
+    "DisplayName": "Perfume Shipment",
+    "Description": "Artisan fragrances from the perfumery. Exclusively for Hospitality zone.",
+    "SourceCar": 68,
+    "DestinationCar": 75,
+    "Value": 350,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Luxury_C",
+    "Type": "LuxuryGoods",
+    "DisplayName": "Art Collection Crate",
+    "Description": "Paintings and sculptures rotating between gallery and ballroom. Fragile.",
+    "SourceCar": 66,
+    "DestinationCar": 88,
+    "Value": 800,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Kronole_A",
+    "Type": "Contraband",
+    "DisplayName": "Unmarked Chemical Drums",
+    "Description": "Raw Kronole precursors. The chemical smell is unmistakable. Kronole Network shipment.",
+    "SourceCar": 42,
+    "DestinationCar": 30,
+    "Value": 1000,
+    "bContraband": true
+  },
+  {
+    "Name": "Cargo_Kronole_B",
+    "Type": "Contraband",
+    "DisplayName": "Sealed Medical Containers",
+    "Description": "Labeled as medical waste but contents don't match. Refined Kronole hidden inside.",
+    "SourceCar": 30,
+    "DestinationCar": 59,
+    "Value": 2000,
+    "bContraband": true
+  },
+  {
+    "Name": "Cargo_Kronole_C",
+    "Type": "Contraband",
+    "DisplayName": "Personal Effects Crate",
+    "Description": "Supposed unclaimed belongings from the Drawers. Actually weapons for the resistance.",
+    "SourceCar": 31,
+    "DestinationCar": 20,
+    "Value": 1500,
+    "bContraband": true
+  },
+  {
+    "Name": "Cargo_Kronole_D",
+    "Type": "Contraband",
+    "DisplayName": "Luxury Gift Basket",
+    "Description": "Ostensibly a gift for First Class patrons. Hidden compartment contains forged passes.",
+    "SourceCar": 45,
+    "DestinationCar": 64,
+    "Value": 800,
+    "bContraband": true
+  },
+  {
+    "Name": "Cargo_Industrial_A",
+    "Type": "IndustrialParts",
+    "DisplayName": "Replacement Gears",
+    "Description": "Machine parts for the Working Spine. Essential for train maintenance.",
+    "SourceCar": 42,
+    "DestinationCar": 29,
+    "Value": 200,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Industrial_B",
+    "Type": "IndustrialParts",
+    "DisplayName": "Electrical Components",
+    "Description": "Wiring, capacitors, circuit boards. Distributed across multiple utility cars.",
+    "SourceCar": 27,
+    "DestinationCar": 49,
+    "Value": 250,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Industrial_C",
+    "Type": "IndustrialParts",
+    "DisplayName": "Engine Parts (Classified)",
+    "Description": "Sealed containers marked WILFORD INDUSTRIES. Destination: Engine Support only.",
+    "SourceCar": 29,
+    "DestinationCar": 95,
+    "Value": 1200,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Water_A",
+    "Type": "WaterBarrels",
+    "DisplayName": "Purified Water Barrels",
+    "Description": "Clean drinking water from the treatment plant. Third Class allocation.",
+    "SourceCar": 28,
+    "DestinationCar": 18,
+    "Value": 100,
+    "bContraband": false
+  },
+  {
+    "Name": "Cargo_Water_B",
+    "Type": "WaterBarrels",
+    "DisplayName": "Spa-Grade Mineral Water",
+    "Description": "Specially filtered and mineralized. Hospitality zone exclusive.",
+    "SourceCar": 28,
+    "DestinationCar": 76,
+    "Value": 300,
+    "bContraband": false
+  }
+]

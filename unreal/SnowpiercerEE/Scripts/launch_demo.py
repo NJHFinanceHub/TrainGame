@@ -65,7 +65,16 @@ def zone1_exists():
 # Main
 # ---------------------------------------------------------------------------
 
-TOTAL_STEPS = 5
+TOTAL_STEPS = 6
+
+def materials_persisted():
+    """Check if persisted zone materials exist."""
+    checks = [
+        "/Game/Materials/Zones/Tail/M_Tail_Floor",
+        "/Game/Blueprints/PostProcess/BP_PP_TailZone",
+        "/Game/Blueprints/Atmosphere/BP_Fog_TailZone",
+    ]
+    return all(editor_util.does_asset_exist(p) for p in checks)
 
 def run():
     unreal.log("")
@@ -109,10 +118,22 @@ def run():
     else:
         unreal.log(f">>> STEP 3/{TOTAL_STEPS}: Game content already exists — skipping")
 
-    # Step 4: Build Zone 1 (15 cars)
+    # Step 4: Persist materials & lighting (all 6 zones)
+    if not materials_persisted():
+        unreal.log("")
+        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Persisting materials & lighting for all zones...")
+        try:
+            import persist_materials_lighting
+            # persist_materials_lighting auto-runs on import via run() call
+        except Exception as e:
+            unreal.log_warning(f"  Material persistence had issues: {e}")
+    else:
+        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Zone materials already persisted — skipping")
+
+    # Step 5: Build Zone 1 (15 cars)
     if not zone1_exists():
         unreal.log("")
-        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Building Zone 1: The Tail (15 unique cars)...")
+        unreal.log(f">>> STEP 5/{TOTAL_STEPS}: Building Zone 1: The Tail (15 unique cars)...")
         try:
             import build_zone1
             # build_zone1 auto-runs on import via run() call at module level
@@ -120,11 +141,11 @@ def run():
             unreal.log_warning(f"  Zone 1 build had issues: {e}")
             unreal.log_warning("  The level may be partially built — check the editor")
     else:
-        unreal.log(f">>> STEP 4/{TOTAL_STEPS}: Zone 1 map already exists — skipping")
+        unreal.log(f">>> STEP 5/{TOTAL_STEPS}: Zone 1 map already exists — skipping")
 
-    # Step 5: Verify everything
+    # Step 6: Verify everything
     unreal.log("")
-    unreal.log(f">>> STEP 5/{TOTAL_STEPS}: Verifying demo setup...")
+    unreal.log(f">>> STEP 6/{TOTAL_STEPS}: Verifying demo setup...")
 
     checks = {
         "Zone1_Tail map":       "/Game/Maps/Zone1_Tail",
@@ -136,6 +157,11 @@ def run():
         "NPC BP (civilian)":    "/Game/Blueprints/NPCs/BP_NPC_Civilian",
         "NPC BP (jackboot)":    "/Game/Blueprints/NPCs/BP_NPC_Jackboot",
         "Tail post-process":    "/Game/Blueprints/PostProcess/BP_PP_TailZone",
+        "First post-process":   "/Game/Blueprints/PostProcess/BP_PP_FirstZone",
+        "Engine post-process":  "/Game/Blueprints/PostProcess/BP_PP_EngineZone",
+        "Tail fog":             "/Game/Blueprints/Atmosphere/BP_Fog_TailZone",
+        "Tail zone materials":  "/Game/Materials/Zones/Tail/M_Tail_Floor",
+        "First zone materials": "/Game/Materials/Zones/First/M_First_Floor",
         "Metal material":       "/Game/Materials/ModularPipes/M_BareMetal",
     }
 

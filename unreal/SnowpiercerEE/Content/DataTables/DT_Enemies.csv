@@ -1,0 +1,8 @@
+RowName,EnemyName,Health,Damage,Speed,XPReward,LootTable
+ENM_FrostGhoul,Frost Ghoul,80,15,400,75,LT_FrostGhoul
+ENM_RogueGuard,Rogue Guard,120,20,350,100,LT_RogueGuard
+ENM_FrostbiteRat,Frostbite Rat,30,8,600,25,LT_FrostbiteRat
+ENM_CorruptEngineer,Corrupt Engineer,100,18,300,120,LT_CorruptEngineer
+ENM_IceWraith,Ice Wraith,60,25,500,90,LT_IceWraith
+ENM_Saboteur,Saboteur,150,22,350,200,LT_Saboteur
+ENM_AutomatedTurret,Automated Turret,200,30,0,150,LT_AutomatedTurret

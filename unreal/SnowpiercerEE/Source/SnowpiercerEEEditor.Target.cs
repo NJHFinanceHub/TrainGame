@@ -8,6 +8,6 @@ public class SnowpiercerEEEditorTarget : TargetRules
         Type = TargetType.Editor;
         DefaultBuildSettings = BuildSettingsVersion.V6;
         IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
-        ExtraModuleNames.Add("SnowpiercerEE");
+        ExtraModuleNames.AddRange(new string[] { "SnowpiercerEE", "TrainGame", "SnowyEngine" });
     }
 }

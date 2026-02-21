@@ -1,0 +1,11 @@
+RowName,NPCName,DialogueText,NextNode,Choices
+DLG_Kael_01,Chief Engineer Kael,The engine's been screaming all night. Something is wrong deep inside.,DLG_Kael_02,I'll investigate|What do you think is wrong?|Not my problem
+DLG_Kael_02a,Chief Engineer Kael,Good. Take this key — it opens the lower maintenance hatch. Be careful down there.,DLG_Kael_End,
+DLG_Kael_02b,Chief Engineer Kael,Could be ice in the fuel lines or sabotage. Either way we freeze if it isn't fixed.,DLG_Kael_02a,I'll handle it|Who would sabotage us?
+DLG_Kael_02c,Chief Engineer Kael,Then we all freeze. Think about that.,DLG_Kael_End,
+DLG_Voss_01,Security Officer Voss,We've had three fuel line breaches this week. That's not wear and tear — that's intent.,DLG_Voss_02,Who do you suspect?|I found evidence|Let me look into it
+DLG_Voss_02a,Security Officer Voss,Could be tailies. Could be someone higher up. I need proof either way.,DLG_Voss_End,
+DLG_Mira_01,Tailie Elder Mira,The children haven't eaten in two days. The engine section hoards while we starve.,DLG_Mira_02,I'll find rations|Why don't you go to them?|That's how it's always been
+DLG_Mira_02a,Tailie Elder Mira,Bless you. There should be emergency stores near the engine room.,DLG_Mira_End,
+DLG_Rho_01,Maintenance Tech Rho,Three conduits are frozen solid. Pressure's dropping fast — we lose those we lose heat to half the train.,DLG_Rho_02,Where are they?|I'll clear them|How did they freeze?
+DLG_Rho_02a,Maintenance Tech Rho,Two in the lower deck and one topside near the exhaust vents. Take thermal paste — you'll need it.,DLG_Rho_End,

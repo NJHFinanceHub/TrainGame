@@ -1,0 +1,6 @@
+RowName,QuestName,Description,QuestGiver,ObjectiveType,ObjectiveTarget,ObjectiveCount,RewardXP,RewardItems
+Q_Z1_MainLine,Engine Whispers,The Eternal Engine is losing power. Investigate the cause before the train freezes.,Chief Engineer Kael,Interact,EngineCore,1,500,KEY_EngineKey
+Q_Z1_Saboteur,Saboteur Hunt,Someone has been tampering with the fuel lines. Find and confront them.,Security Officer Voss,Kill,Saboteur,1,350,WPN_ShockBaton
+Q_Z1_Rations,Ration Run,The tail section is starving. Redistribute ration packs from the engine stores.,Tailie Elder Mira,Collect,CON_RationPack,5,200,CON_MedKit
+Q_Z1_ColdPipes,Frozen Conduits,Ice has blocked three critical steam conduits. Clear them before pressure drops.,Maintenance Tech Rho,Interact,FrozenConduit,3,250,CON_ThermalPaste
+Q_Z1_LostCrew,Missing Engineers,Two engineers went into the lower deck and haven't returned. Find them.,Chief Engineer Kael,Escort,MissingEngineer,2,400,ARM_EngineerSuit

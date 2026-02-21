@@ -8,6 +8,16 @@
             "Name": "SnowpiercerEE",
             "Type": "Runtime",
             "LoadingPhase": "Default"
+        },
+        {
+            "Name": "TrainGame",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
+        },
+        {
+            "Name": "SnowyEngine",
+            "Type": "Runtime",
+            "LoadingPhase": "Default"
         }
     ],
     "Plugins": [

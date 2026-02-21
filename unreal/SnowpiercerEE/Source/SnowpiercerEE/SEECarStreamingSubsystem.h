@@ -16,6 +16,11 @@ public:
     UFUNCTION(BlueprintCallable, Category="Streaming")
     void RegisterCarLevel(int32 CarIndex, FName LevelName);
 
+    /** Register all Zone 1 car sublevels from the built-in registry.
+     *  Call once at level startup (e.g. from a Level Blueprint or GameMode). */
+    UFUNCTION(BlueprintCallable, Category="Streaming")
+    void RegisterZone1Cars();
+
     UFUNCTION(BlueprintCallable, Category="Streaming")
     void EnterCar(int32 CarIndex);
 
@@ -24,6 +29,9 @@ public:
 
     UFUNCTION(BlueprintPure, Category="Streaming")
     int32 GetCurrentCarIndex() const { return CurrentCarIndex; }
+
+    UFUNCTION(BlueprintPure, Category="Streaming")
+    int32 GetNumRegisteredCars() const { return CarLevelByIndex.Num(); }
 
 private:
     void RefreshStreamingSet();
