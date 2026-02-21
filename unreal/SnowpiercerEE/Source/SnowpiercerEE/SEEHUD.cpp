@@ -19,7 +19,7 @@
 #include "UI/SEEPauseMenuWidget.h"
 #include "UI/SEEDeathScreenWidget.h"
 #include "UI/SEEUISubsystem.h"
-#include "Crafting/CraftingComponent.h"
+#include "SnowyEngine/Crafting/CraftingComponent.h"
 #include "Engine/Canvas.h"
 #include "GameFramework/PlayerController.h"
 #include "Blueprint/UserWidget.h"

@@ -27,6 +27,12 @@ public class TrainGame : ModuleRules
 			"NavigationSystem"
 		});
 
+		// Include paths only (no link dep) — allows Slate widgets to include SnowpiercerEE headers
+		PrivateIncludePathModuleNames.AddRange(new string[]
+		{
+			"SnowpiercerEE"
+		});
+
 		PrivateDependencyModuleNames.AddRange(new string[]
 		{
 			"Slate",

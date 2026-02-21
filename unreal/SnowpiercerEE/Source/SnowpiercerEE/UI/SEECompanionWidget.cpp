@@ -1,7 +1,7 @@
 // SEECompanionWidget.cpp
 #include "SEECompanionWidget.h"
-#include "Companions/CompanionComponent.h"
-#include "Companions/CompanionRosterSubsystem.h"
+#include "TrainGame/Companions/CompanionComponent.h"
+#include "TrainGame/Companions/CompanionRosterSubsystem.h"
 #include "Components/TextBlock.h"
 
 void USEECompanionWidget::NativeConstruct()

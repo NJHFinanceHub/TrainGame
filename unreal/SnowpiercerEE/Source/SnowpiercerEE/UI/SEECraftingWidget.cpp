@@ -1,6 +1,6 @@
 // SEECraftingWidget.cpp
 #include "SEECraftingWidget.h"
-#include "Crafting/CraftingComponent.h"
+#include "SnowyEngine/Crafting/CraftingComponent.h"
 #include "SEEInventoryComponent.h"
 #include "Components/TextBlock.h"
 
