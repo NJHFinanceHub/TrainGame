@@ -9,10 +9,10 @@ void USEENPCAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	if (!NPC) return;
 
 	NPCState = NPC->GetCurrentState();
-	NPCClass = NPC->GetNPCClass();
+	NPCClassType = NPC->GetNPCClass();
 	DetectionLevel = NPC->GetDetectionLevel();
 
-	bIsPatrolling = (NPCState == ESEENPCState::Patrolling);
-	bIsInCombat = (NPCState == ESEENPCState::Combat);
-	bIsAlerted = (NPCState == ESEENPCState::Alerted || NPCState == ESEENPCState::Suspicious);
+	bIsPatrolling = (NPCState == ENPCAIState::Patrolling);
+	bIsInCombat = (NPCState == ENPCAIState::Combat);
+	bIsAlerted = (NPCState == ENPCAIState::Chasing || NPCState == ENPCAIState::Investigating);
 }

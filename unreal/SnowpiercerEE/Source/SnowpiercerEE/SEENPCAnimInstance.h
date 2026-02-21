@@ -21,10 +21,10 @@ public:
 	// --- NPC State ---
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC")
-	ESEENPCState NPCState = ESEENPCState::Idle;
+	ENPCAIState NPCState = ENPCAIState::Idle;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC")
-	ESEENPCClass NPCClass = ESEENPCClass::Tailie;
+	ENPCClass NPCClassType = ENPCClass::Tailie;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "NPC")
 	bool bIsPatrolling = false;

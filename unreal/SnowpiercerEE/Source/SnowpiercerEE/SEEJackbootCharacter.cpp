@@ -9,7 +9,7 @@
 ASEEJackbootCharacter::ASEEJackbootCharacter()
 {
 	// Jackboot combat defaults — tougher than standard NPCs
-	NPCClass = ESEENPCClass::Jackboot;
+	NPCRole = ENPCClass::Jackboot;
 	MaxHealth = 150.0f;
 	CurrentHealth = 150.0f;
 	MeleeDamage = 25.0f;
@@ -42,14 +42,14 @@ void ASEEJackbootCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Alert reinforcements when entering combat for the first time
-	if (CurrentState == ESEENPCState::Combat && bCanCallReinforcements && !bHasAlertedReinforcements)
+	if (CurrentState == ENPCAIState::Combat && bCanCallReinforcements && !bHasAlertedReinforcements)
 	{
 		AlertNearbyJackboots();
 		bHasAlertedReinforcements = true;
 	}
 
 	// Reset alert flag when leaving combat
-	if (CurrentState != ESEENPCState::Combat)
+	if (CurrentState != ENPCAIState::Combat)
 	{
 		bHasAlertedReinforcements = false;
 	}
@@ -78,7 +78,7 @@ void ASEEJackbootCharacter::ApplyHitReaction(ESEEHitReactionType ReactionType, F
 
 void ASEEJackbootCharacter::ActivateDeathRagdoll()
 {
-	SetState(ESEENPCState::Dead);
+	SetState(ENPCAIState::Dead);
 
 	USEECharacterAnimInstance* AnimInst = Cast<USEECharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInst)
@@ -110,9 +110,9 @@ void ASEEJackbootCharacter::AlertNearbyJackboots()
 		if (OtherJackboot && OtherJackboot != this)
 		{
 			float Distance = FVector::Dist(GetActorLocation(), OtherJackboot->GetActorLocation());
-			if (Distance <= ReinforcementAlertRadius && OtherJackboot->GetCurrentState() != ESEENPCState::Dead)
+			if (Distance <= ReinforcementAlertRadius && OtherJackboot->GetCurrentState() != ENPCAIState::Dead)
 			{
-				OtherJackboot->SetState(ESEENPCState::Alerted);
+				OtherJackboot->SetState(ENPCAIState::Chasing);
 			}
 		}
 	}

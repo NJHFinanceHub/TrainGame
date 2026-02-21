@@ -77,6 +77,14 @@ void ASEENPCCharacter::Incapacitate(EBodyState State)
 	OnNPCIncapacitated.Broadcast(State);
 }
 
+void ASEENPCCharacter::SetState(ENPCAIState NewState)
+{
+	if (CurrentState == NewState) return;
+	ENPCAIState OldState = CurrentState;
+	CurrentState = NewState;
+	OnNPCStateChanged.Broadcast(OldState, NewState);
+}
+
 void ASEENPCCharacter::Revive()
 {
 	if (!bIsIncapacitated) return;

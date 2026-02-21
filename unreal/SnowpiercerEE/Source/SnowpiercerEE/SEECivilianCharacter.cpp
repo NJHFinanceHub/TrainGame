@@ -8,7 +8,7 @@
 ASEECivilianCharacter::ASEECivilianCharacter()
 {
 	// Civilians are non-combatants with lower stats
-	NPCClass = ESEENPCClass::Tailie;
+	NPCRole = ENPCClass::Tailie;
 	MaxHealth = 60.0f;
 	CurrentHealth = 60.0f;
 	MeleeDamage = 5.0f;
@@ -35,12 +35,12 @@ void ASEECivilianCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Civilians flee when alerted instead of fighting
-	if (CurrentState == ESEENPCState::Combat || CurrentState == ESEENPCState::Alerted)
+	if (CurrentState == ENPCAIState::Combat || CurrentState == ENPCAIState::Chasing)
 	{
-		SetState(ESEENPCState::Fleeing);
+		SetState(ENPCAIState::Fleeing);
 	}
 
-	if (CurrentState == ESEENPCState::Fleeing)
+	if (CurrentState == ENPCAIState::Fleeing)
 	{
 		FleeFromThreat(DeltaTime);
 	}
@@ -58,7 +58,7 @@ void ASEECivilianCharacter::FleeFromThreat(float DeltaTime)
 	float Distance = FVector::Dist(GetActorLocation(), PlayerPawn->GetActorLocation());
 	if (Distance > SightRange * 1.5f)
 	{
-		SetState(ESEENPCState::Idle);
+		SetState(ENPCAIState::Idle);
 	}
 }
 
@@ -66,7 +66,7 @@ void ASEECivilianCharacter::ActivateDeathRagdoll()
 {
 	if (bIsEssential) return;
 
-	SetState(ESEENPCState::Dead);
+	SetState(ENPCAIState::Dead);
 
 	USEECharacterAnimInstance* AnimInst = Cast<USEECharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInst)

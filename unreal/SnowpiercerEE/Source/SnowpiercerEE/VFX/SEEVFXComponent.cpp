@@ -13,7 +13,7 @@
 #include "SEEHealthComponent.h"
 #include "SEEColdComponent.h"
 #include "SEECombatComponent.h"
-#include "Survival/KronoleComponent.h"
+#include "SnowyEngine/Survival/KronoleComponent.h"
 
 USEEVFXComponent::USEEVFXComponent()
 {

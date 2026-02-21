@@ -82,6 +82,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "NPC")
 	void Revive();
 
+	// --- AI State ---
+
+	/** Get the current NPC AI state */
+	UFUNCTION(BlueprintPure, Category = "NPC")
+	ENPCAIState GetCurrentState() const { return CurrentState; }
+
+	/** Set the NPC AI state */
+	UFUNCTION(BlueprintCallable, Category = "NPC")
+	void SetState(ENPCAIState NewState);
+
+	/** Get the current detection level (0.0-1.0) */
+	UFUNCTION(BlueprintPure, Category = "NPC")
+	float GetDetectionLevel() const { return DetectionLevel; }
+
 	// --- Component Access ---
 
 	UFUNCTION(BlueprintPure, Category = "NPC")
@@ -125,6 +139,52 @@ protected:
 	/** Whether this NPC is a unique named character (vs generic) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Identity")
 	bool bIsUnique = false;
+
+	// --- Combat Stats ---
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Stats")
+	float MaxHealth = 100.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "NPC|Stats")
+	float CurrentHealth = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Stats")
+	float MeleeDamage = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Stats")
+	float AttackRange = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Stats")
+	float AttackCooldown = 1.5f;
+
+	// --- Detection ---
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Detection")
+	float SightRange = 1500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Detection")
+	float SightAngle = 60.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Detection")
+	float HearingRange = 800.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Detection")
+	float DetectionRate = 1.0f;
+
+	// --- Movement ---
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Movement")
+	float WalkSpeed = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Movement")
+	float RunSpeed = 500.0f;
+
+	// --- Runtime State ---
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "NPC|Runtime")
+	ENPCAIState CurrentState = ENPCAIState::Idle;
+
+	float DetectionLevel = 0.0f;
 
 	// --- Components ---
 

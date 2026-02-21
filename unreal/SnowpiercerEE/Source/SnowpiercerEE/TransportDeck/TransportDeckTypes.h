@@ -77,6 +77,7 @@ UENUM(BlueprintType)
 enum class EDeckAlertLevel : uint8
 {
 	Clear			UMETA(DisplayName = "Clear"),
+	Suspicious		UMETA(DisplayName = "Suspicious"),
 	Caution			UMETA(DisplayName = "Caution"),
 	Alert			UMETA(DisplayName = "Alert"),
 	Lockdown		UMETA(DisplayName = "Lockdown")

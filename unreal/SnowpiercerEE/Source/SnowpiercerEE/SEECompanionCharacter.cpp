@@ -9,7 +9,7 @@
 ASEECompanionCharacter::ASEECompanionCharacter()
 {
 	// Companion defaults — capable fighter, loyal ally
-	NPCClass = ESEENPCClass::Tailie;
+	NPCRole = ENPCClass::Tailie;
 	MaxHealth = 120.0f;
 	CurrentHealth = 120.0f;
 	MeleeDamage = 18.0f;
@@ -41,18 +41,18 @@ void ASEECompanionCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (CurrentState == ESEENPCState::Dead) return;
+	if (CurrentState == ENPCAIState::Dead) return;
 
 	switch (CurrentBehavior)
 	{
 	case ESEECompanionBehavior::Follow:
-		if (CurrentState != ESEENPCState::Combat)
+		if (CurrentState != ENPCAIState::Combat)
 		{
 			UpdateFollow(DeltaTime);
 		}
 		break;
 	case ESEECompanionBehavior::Aggressive:
-		if (CurrentState != ESEENPCState::Combat)
+		if (CurrentState != ENPCAIState::Combat)
 		{
 			UpdateFollow(DeltaTime);
 		}
@@ -68,9 +68,9 @@ void ASEECompanionCharacter::Tick(float DeltaTime)
 	case ESEECompanionBehavior::Passive:
 		UpdateFollow(DeltaTime);
 		// Never enter combat
-		if (CurrentState == ESEENPCState::Combat)
+		if (CurrentState == ENPCAIState::Combat)
 		{
-			SetState(ESEENPCState::Idle);
+			SetState(ENPCAIState::Idle);
 		}
 		break;
 	}
@@ -84,14 +84,14 @@ void ASEECompanionCharacter::SetBehavior(ESEECompanionBehavior NewBehavior)
 void ASEECompanionCharacter::CommandFollow()
 {
 	SetBehavior(ESEECompanionBehavior::Follow);
-	SetState(ESEENPCState::Idle);
+	SetState(ENPCAIState::Idle);
 	CommandedTarget = nullptr;
 }
 
 void ASEECompanionCharacter::CommandHold()
 {
 	SetBehavior(ESEECompanionBehavior::Hold);
-	SetState(ESEENPCState::Idle);
+	SetState(ENPCAIState::Idle);
 	CommandedTarget = nullptr;
 }
 
@@ -100,7 +100,7 @@ void ASEECompanionCharacter::CommandAttack(AActor* Target)
 	if (!Target) return;
 	CommandedTarget = Target;
 	SetBehavior(ESEECompanionBehavior::Aggressive);
-	SetState(ESEENPCState::Combat);
+	SetState(ENPCAIState::Combat);
 }
 
 void ASEECompanionCharacter::UpdateFollow(float DeltaTime)
@@ -145,7 +145,7 @@ void ASEECompanionCharacter::UpdateCompanionCombat(float DeltaTime)
 		float DistToTarget = FVector::Dist(GetActorLocation(), CommandedTarget->GetActorLocation());
 		if (DistToTarget <= AggressiveEngageRange)
 		{
-			SetState(ESEENPCState::Combat);
+			SetState(ENPCAIState::Combat);
 		}
 		return;
 	}
@@ -163,13 +163,13 @@ void ASEECompanionCharacter::UpdateCompanionCombat(float DeltaTime)
 		for (AActor* Actor : NearbyActors)
 		{
 			ASEENPCCharacter* OtherNPC = Cast<ASEENPCCharacter>(Actor);
-			if (OtherNPC && OtherNPC != this && OtherNPC->GetCurrentState() == ESEENPCState::Combat)
+			if (OtherNPC && OtherNPC != this && OtherNPC->GetCurrentState() == ENPCAIState::Combat)
 			{
 				float DistToNPC = FVector::Dist(GetActorLocation(), OtherNPC->GetActorLocation());
 				if (DistToNPC <= AggressiveEngageRange)
 				{
 					CommandedTarget = OtherNPC;
-					SetState(ESEENPCState::Combat);
+					SetState(ENPCAIState::Combat);
 					return;
 				}
 			}
@@ -200,7 +200,7 @@ void ASEECompanionCharacter::ApplyHitReaction(ESEEHitReactionType ReactionType, 
 
 void ASEECompanionCharacter::ActivateDeathRagdoll()
 {
-	SetState(ESEENPCState::Dead);
+	SetState(ENPCAIState::Dead);
 
 	USEECharacterAnimInstance* AnimInst = Cast<USEECharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInst)
