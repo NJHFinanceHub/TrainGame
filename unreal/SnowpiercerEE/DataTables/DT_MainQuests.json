@@ -1,0 +1,544 @@
+[
+  {
+    "Name": "MQ_Z1_LongWalkForward",
+    "QuestID": "MQ_Z1_LongWalkForward",
+    "QuestName": "The Long Walk Forward",
+    "Description": "Reach Car 14 to establish contact with the Third Class Union. The revolution begins with a single step through a hundred metres of hostile territory.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z1_01",
+        "Description": "Speak to Old Man Pike in the Elders' Car",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "NPC_Pike",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z1_02",
+        "Description": "Collect 3 Revolution Map fragments",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_RevolutionMap",
+        "RequiredCount": 3,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z1_03",
+        "Description": "Obtain the Gate Key from the Blockade",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_GateKey",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z1_04",
+        "Description": "Survive the Dark Car (Car 10)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car10_DarkCar",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z1_05",
+        "Description": "Defeat Commander Volkov at the Threshold",
+        "Type": "ESEEObjectiveType::Kill",
+        "TargetID": "Boss_Volkov",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z1_06",
+        "Description": "Pass through the Tail Gate to Third Class",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "TailGate",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 750,
+    "ItemRewards": ["Item_Machete", "Item_JackbootArmor"],
+    "FactionRepRewards": {
+      "Tailies": 50,
+      "ThirdClassUnion": 25,
+      "Jackboots": -30
+    },
+    "PrerequisiteQuests": []
+  },
+  {
+    "Name": "MQ_Z2_UnionRising",
+    "QuestID": "MQ_Z2_UnionRising",
+    "QuestName": "Union Rising",
+    "Description": "Unite the Third Class workers with the Tail revolution. Navigate the industrial spine, forge alliances with Petra Kovic's Union, and confront Dietrich at the Checkpoint.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z2_01",
+        "Description": "Reach the Third Class Market (Car 19)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car19_Market",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z2_02",
+        "Description": "Meet Petra Kovic at the Union Hall (Car 22)",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "NPC_PetraKovic",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z2_03",
+        "Description": "Complete 2 of 3 Union support tasks",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "UnionSupportTasks",
+        "RequiredCount": 2,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z2_04",
+        "Description": "Investigate the worker death in the Industrial Car",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Car22_AccidentSite",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z2_05",
+        "Description": "Resolve the Chapel Divide (Car 23)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "MoralChoice_ChapelDivide",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": true
+      },
+      {
+        "ObjectiveID": "MQ_Z2_06",
+        "Description": "Confront Dietrich at the Checkpoint (Car 30)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "Boss_Dietrich",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 1000,
+    "ItemRewards": ["Item_WorkerOveralls", "Item_IndustrialWraps"],
+    "FactionRepRewards": {
+      "ThirdClassUnion": 50,
+      "Tailies": 15,
+      "Jackboots": -20
+    },
+    "PrerequisiteQuests": ["MQ_Z1_LongWalkForward"]
+  },
+  {
+    "Name": "MQ_Z3_TheTrialOfSnowpiercer",
+    "QuestID": "MQ_Z3_TheTrialOfSnowpiercer",
+    "QuestName": "The Trial of Snowpiercer",
+    "Description": "Navigate Second Class society, gather evidence of Wilford's crimes, and face Magistrate Okonkwo's court. The revolution must prove its legitimacy — or seize passage by force.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z3_01",
+        "Description": "Enter Second Class through the border checkpoint",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car31_Border",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z3_02",
+        "Description": "Visit the Archive and meet Konstantin Volkov (Car 39)",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "NPC_KonstantinVolkov",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z3_03",
+        "Description": "Collect evidence for the trial (3 pieces required)",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_TrialEvidence",
+        "RequiredCount": 3,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z3_04",
+        "Description": "Discover the Elevation Program records (Car 42)",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Car42_ElevationRecords",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z3_05",
+        "Description": "Access the Surveillance Hub (Car 44)",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Car44_SurveillanceHub",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": true
+      },
+      {
+        "ObjectiveID": "MQ_Z3_06",
+        "Description": "Face Magistrate Okonkwo in the Judicial Chamber (Car 48)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "Boss_Okonkwo",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 1250,
+    "ItemRewards": ["Item_BureaucratSeal", "Item_ArchiveKey"],
+    "FactionRepRewards": {
+      "Bureaucracy": 30,
+      "Tailies": 10,
+      "ThirdClassUnion": 10
+    },
+    "PrerequisiteQuests": ["MQ_Z2_UnionRising"]
+  },
+  {
+    "Name": "MQ_Z4_TheEnginesChildren",
+    "QuestID": "MQ_Z4_TheEnginesChildren",
+    "QuestName": "The Engine's Children",
+    "Description": "The Working Spine reveals the train's darkest secret — children maintaining the Engine. Navigate the Cold Lab, uncover population data, and convince or defeat Kazakov at the Drawbridge.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z4_01",
+        "Description": "Enter the Working Spine (Car 49)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car49_SpineEntrance",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z4_02",
+        "Description": "Investigate the Cold Lab (Car 56)",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Car56_ColdLab",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z4_03",
+        "Description": "Discover the child labor program evidence",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_ChildLaborEvidence",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z4_04",
+        "Description": "Review Dr. Holst's population projections",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "NPC_DrHolst",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z4_05",
+        "Description": "Resolve the Saboteur situation (Car 57)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "MoralChoice_Saboteur",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": true
+      },
+      {
+        "ObjectiveID": "MQ_Z4_06",
+        "Description": "Confront Kazakov at the Drawbridge (Car 62)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "Boss_Kazakov",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 1500,
+    "ItemRewards": ["Item_EngineersToolkit", "Item_ColdSuit"],
+    "FactionRepRewards": {
+      "TheThaw": 25,
+      "Tailies": 15,
+      "OrderOfTheEngine": -20
+    },
+    "PrerequisiteQuests": ["MQ_Z3_TheTrialOfSnowpiercer"]
+  },
+  {
+    "Name": "MQ_Z5_TheGildedCage",
+    "QuestID": "MQ_Z5_TheGildedCage",
+    "QuestName": "The Gilded Cage",
+    "Description": "Infiltrate First Class society, expose the Drawers, and face Genevieve Beaumont. The revolution meets luxury — and luxury fights back with elegance and poison.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z5_01",
+        "Description": "Enter First Class territory (Car 63)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car63_FirstClassEntry",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z5_02",
+        "Description": "Navigate the social scene — acquire a disguise or invitation",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "FirstClass_SocialEntry",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z5_03",
+        "Description": "Discover the Drawers (Car 66 lower level)",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Car66_Drawers",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z5_04",
+        "Description": "Decide the fate of the Drawer prisoners",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "MoralChoice_Drawers",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z5_05",
+        "Description": "Gather leverage against Beaumont (3 pieces of evidence)",
+        "Type": "ESEEObjectiveType::Collect",
+        "TargetID": "Item_BeaumontEvidence",
+        "RequiredCount": 3,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": true
+      },
+      {
+        "ObjectiveID": "MQ_Z5_06",
+        "Description": "Confront Genevieve Beaumont at the Penthouse (Car 82)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "Boss_Beaumont",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 1750,
+    "ItemRewards": ["Item_FirstClassPass", "Item_BeaumontSigil"],
+    "FactionRepRewards": {
+      "FirstClassElite": -15,
+      "Tailies": 20,
+      "Bureaucracy": 10
+    },
+    "PrerequisiteQuests": ["MQ_Z4_TheEnginesChildren"]
+  },
+  {
+    "Name": "MQ_Z6_TheGauntlet",
+    "QuestID": "MQ_Z6_TheGauntlet",
+    "QuestName": "The Gauntlet",
+    "Description": "Breach the Sanctum, confront the Order of the Engine, and face High Priest Ezra. The last organized defense between you and Wilford. Faith and fanaticism guard the final gate.",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z6_01",
+        "Description": "Enter the Sanctum (Car 83)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car83_SanctumEntry",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z6_02",
+        "Description": "Navigate the Acolyte patrols in the Confession Halls",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car87_ConfessionHalls",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z6_03",
+        "Description": "Discover the Eugenics Lab (Car 93)",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Car93_EugenicsLab",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z6_04",
+        "Description": "Decide the fate of the eugenics records",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "MoralChoice_Eugenics",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z6_05",
+        "Description": "Confront High Priest Ezra at the Gauntlet (Car 95)",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "Boss_Ezra",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z6_06",
+        "Description": "Reach the Engine access corridor (Car 100)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car100_EngineAccess",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 2000,
+    "ItemRewards": ["Item_EngineKey", "Item_AcolyteShroud"],
+    "FactionRepRewards": {
+      "OrderOfTheEngine": -40,
+      "Tailies": 25,
+      "TheThaw": 15
+    },
+    "PrerequisiteQuests": ["MQ_Z5_TheGildedCage"]
+  },
+  {
+    "Name": "MQ_Z7_WilfordsQuestion",
+    "QuestID": "MQ_Z7_WilfordsQuestion",
+    "QuestName": "Wilford's Question",
+    "Description": "Enter the Engine. Confront Wilford. Answer the question that defines the future of 2,800 souls: 'Now that you've seen everything, what would you do differently?'",
+    "State": "ESEEQuestState::Available",
+    "bIsMainQuest": true,
+    "Objectives": [
+      {
+        "ObjectiveID": "MQ_Z7_01",
+        "Description": "Enter the Engine Room (Car 101)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car101_EngineRoom",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z7_02",
+        "Description": "Witness the Engine and its child workers",
+        "Type": "ESEEObjectiveType::Interact",
+        "TargetID": "Engine_ChildrenReveal",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z7_03",
+        "Description": "Decide the Engine's fate",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "MoralChoice_Engine",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z7_04",
+        "Description": "Enter the Conductor's Cabin (Car 103)",
+        "Type": "ESEEObjectiveType::GoTo",
+        "TargetID": "Car103_ConductorCabin",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z7_05",
+        "Description": "Confront Wilford",
+        "Type": "ESEEObjectiveType::Dialogue",
+        "TargetID": "NPC_Wilford",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      },
+      {
+        "ObjectiveID": "MQ_Z7_06",
+        "Description": "Answer Wilford's Question",
+        "Type": "ESEEObjectiveType::Custom",
+        "TargetID": "MoralChoice_WilfordsQuestion",
+        "RequiredCount": 1,
+        "CurrentCount": 0,
+        "bCompleted": false,
+        "bOptional": false
+      }
+    ],
+    "XPReward": 3000,
+    "ItemRewards": [],
+    "FactionRepRewards": {},
+    "PrerequisiteQuests": ["MQ_Z6_TheGauntlet"]
+  }
+]
