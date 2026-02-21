@@ -47,7 +47,7 @@ public:
 
 	/** Get all collected items in a given zone */
 	UFUNCTION(BlueprintPure, Category = "Journal")
-	TArray<FCollectibleState> GetCollectedByZone(ETrainZone Zone) const;
+	TArray<FCollectibleState> GetCollectedByZone(ECollectibleZone Zone) const;
 
 	/** Get collection percentage for a given type (0.0-1.0) */
 	UFUNCTION(BlueprintPure, Category = "Journal")

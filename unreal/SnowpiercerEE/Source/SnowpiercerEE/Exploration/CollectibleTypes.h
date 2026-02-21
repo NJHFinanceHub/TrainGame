@@ -33,7 +33,7 @@ enum class ECollectibleRarity : uint8
 
 /** Train zone where the collectible is located */
 UENUM(BlueprintType)
-enum class ETrainZone : uint8
+enum class ECollectibleZone : uint8
 {
 	Zone1_Tail          UMETA(DisplayName = "Zone 1 - The Tail"),
 	Zone2_ThirdClass    UMETA(DisplayName = "Zone 2 - Third Class"),
@@ -91,7 +91,7 @@ struct FCollectibleData : public FTableRowBase
 	ECollectibleRarity Rarity;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ETrainZone Zone;
+	ECollectibleZone Zone;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	ECollectibleAccessType AccessType;

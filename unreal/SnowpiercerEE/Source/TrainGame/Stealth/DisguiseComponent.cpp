@@ -97,7 +97,7 @@ bool UDisguiseComponent::ResolveChallenge(AActor* Challenger)
 	return false;
 }
 
-float UDisguiseComponent::GetDetectionModifier(ETrainZone CurrentZone) const
+float UDisguiseComponent::GetDetectionModifier(EStealthZone CurrentZone) const
 {
 	if (!HasDisguise())
 	{
@@ -125,7 +125,7 @@ float UDisguiseComponent::GetDetectionModifier(ETrainZone CurrentZone) const
 	}
 }
 
-bool UDisguiseComponent::MatchesZone(ETrainZone Zone) const
+bool UDisguiseComponent::MatchesZone(EStealthZone Zone) const
 {
 	return HasDisguise() && CurrentDisguise.TargetZone == Zone;
 }

@@ -11,7 +11,7 @@
  * Positive values lean toward the first pole, negative toward the second.
  */
 UENUM(BlueprintType)
-enum class ESEELedgerAxis : uint8
+enum class ESEEChoiceLedgerAxis : uint8
 {
 	MercyVsPragmatism		UMETA(DisplayName = "Mercy vs Pragmatism"),
 	IndividualVsCollective	UMETA(DisplayName = "Individual vs Collective"),
@@ -48,7 +48,7 @@ struct FSEEChoiceRecord
  * Snapshot of the Hidden Ledger for save/load.
  */
 USTRUCT(BlueprintType)
-struct FSEELedgerSnapshot
+struct FSEEChoiceLedgerSnapshot
 {
 	GENERATED_BODY()
 
@@ -82,7 +82,7 @@ struct FSEEChoiceTrackingSaveData
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
-	FSEELedgerSnapshot Ledger;
+	FSEEChoiceLedgerSnapshot Ledger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	TArray<FSEEChoiceRecord> ChoiceHistory;
@@ -95,7 +95,7 @@ struct FSEEChoiceTrackingSaveData
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChoiceMade, FName, ChoiceID, FName, OptionID);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLedgerChanged, ESEELedgerAxis, Axis, int32, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLedgerChanged, ESEEChoiceLedgerAxis, Axis, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFlagSet, FName, FlagName);
 
 /**
@@ -132,15 +132,15 @@ public:
 
 	/** Modify a ledger axis by delta. Clamped to [-100, 100]. */
 	UFUNCTION(BlueprintCallable, Category = "Choices|Ledger")
-	void ModifyLedger(ESEELedgerAxis Axis, int32 Delta);
+	void ModifyLedger(ESEEChoiceLedgerAxis Axis, int32 Delta);
 
 	/** Get current value of a ledger axis. */
 	UFUNCTION(BlueprintPure, Category = "Choices|Ledger")
-	int32 GetLedgerValue(ESEELedgerAxis Axis) const;
+	int32 GetLedgerValue(ESEEChoiceLedgerAxis Axis) const;
 
 	/** Get the full ledger snapshot. */
 	UFUNCTION(BlueprintPure, Category = "Choices|Ledger")
-	FSEELedgerSnapshot GetLedgerSnapshot() const { return SaveData.Ledger; }
+	FSEEChoiceLedgerSnapshot GetLedgerSnapshot() const { return SaveData.Ledger; }
 
 	/** Check if a specific ending path is available based on Ledger scores. */
 	UFUNCTION(BlueprintPure, Category = "Choices|Ledger")
@@ -198,6 +198,6 @@ public:
 private:
 	FSEEChoiceTrackingSaveData SaveData;
 
-	int32& GetLedgerRef(ESEELedgerAxis Axis);
+	int32& GetLedgerRef(ESEEChoiceLedgerAxis Axis);
 	int32 ClampLedger(int32 Value) const { return FMath::Clamp(Value, -100, 100); }
 };

@@ -48,30 +48,30 @@ FName USEEChoiceTrackingSubsystem::GetChosenOption(FName ChoiceID) const
 	return NAME_None;
 }
 
-void USEEChoiceTrackingSubsystem::ModifyLedger(ESEELedgerAxis Axis, int32 Delta)
+void USEEChoiceTrackingSubsystem::ModifyLedger(ESEEChoiceLedgerAxis Axis, int32 Delta)
 {
 	int32& Ref = GetLedgerRef(Axis);
 	Ref = ClampLedger(Ref + Delta);
 	OnLedgerChanged.Broadcast(Axis, Ref);
 }
 
-int32 USEEChoiceTrackingSubsystem::GetLedgerValue(ESEELedgerAxis Axis) const
+int32 USEEChoiceTrackingSubsystem::GetLedgerValue(ESEEChoiceLedgerAxis Axis) const
 {
-	const FSEELedgerSnapshot& L = SaveData.Ledger;
+	const FSEEChoiceLedgerSnapshot& L = SaveData.Ledger;
 	switch (Axis)
 	{
-	case ESEELedgerAxis::MercyVsPragmatism:		return L.MercyPragmatism;
-	case ESEELedgerAxis::IndividualVsCollective:	return L.IndividualCollective;
-	case ESEELedgerAxis::TruthVsStability:		return L.TruthStability;
-	case ESEELedgerAxis::ForceVsCunning:			return L.ForceCunning;
-	case ESEELedgerAxis::PresentVsFuture:			return L.PresentFuture;
+	case ESEEChoiceLedgerAxis::MercyVsPragmatism:		return L.MercyPragmatism;
+	case ESEEChoiceLedgerAxis::IndividualVsCollective:	return L.IndividualCollective;
+	case ESEEChoiceLedgerAxis::TruthVsStability:		return L.TruthStability;
+	case ESEEChoiceLedgerAxis::ForceVsCunning:			return L.ForceCunning;
+	case ESEEChoiceLedgerAxis::PresentVsFuture:			return L.PresentFuture;
 	default: return 0;
 	}
 }
 
 bool USEEChoiceTrackingSubsystem::IsEndingAvailable(FName EndingID) const
 {
-	const FSEELedgerSnapshot& L = SaveData.Ledger;
+	const FSEEChoiceLedgerSnapshot& L = SaveData.Ledger;
 
 	if (EndingID == FName("Ending_Revolution"))
 	{
@@ -150,15 +150,15 @@ void USEEChoiceTrackingSubsystem::RestoreFromSaveData(const FSEEChoiceTrackingSa
 	SaveData = Data;
 }
 
-int32& USEEChoiceTrackingSubsystem::GetLedgerRef(ESEELedgerAxis Axis)
+int32& USEEChoiceTrackingSubsystem::GetLedgerRef(ESEEChoiceLedgerAxis Axis)
 {
 	switch (Axis)
 	{
-	case ESEELedgerAxis::MercyVsPragmatism:		return SaveData.Ledger.MercyPragmatism;
-	case ESEELedgerAxis::IndividualVsCollective:	return SaveData.Ledger.IndividualCollective;
-	case ESEELedgerAxis::TruthVsStability:		return SaveData.Ledger.TruthStability;
-	case ESEELedgerAxis::ForceVsCunning:			return SaveData.Ledger.ForceCunning;
-	case ESEELedgerAxis::PresentVsFuture:			return SaveData.Ledger.PresentFuture;
+	case ESEEChoiceLedgerAxis::MercyVsPragmatism:		return SaveData.Ledger.MercyPragmatism;
+	case ESEEChoiceLedgerAxis::IndividualVsCollective:	return SaveData.Ledger.IndividualCollective;
+	case ESEEChoiceLedgerAxis::TruthVsStability:		return SaveData.Ledger.TruthStability;
+	case ESEEChoiceLedgerAxis::ForceVsCunning:			return SaveData.Ledger.ForceCunning;
+	case ESEEChoiceLedgerAxis::PresentVsFuture:			return SaveData.Ledger.PresentFuture;
 	default:
 		// Fallback — shouldn't happen
 		return SaveData.Ledger.MercyPragmatism;

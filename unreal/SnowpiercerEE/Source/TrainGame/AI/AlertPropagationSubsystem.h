@@ -16,7 +16,7 @@
 // ============================================================================
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnZoneAlertChanged,
-	ETrainZone, Zone,
+	EStealthZone, Zone,
 	EAlertLevel, NewLevel);
 
 UCLASS()
@@ -33,15 +33,15 @@ public:
 
 	/** Get the alert level for a specific zone */
 	UFUNCTION(BlueprintPure, Category = "Alert System")
-	EAlertLevel GetZoneAlertLevel(ETrainZone Zone) const;
+	EAlertLevel GetZoneAlertLevel(EStealthZone Zone) const;
 
 	/** Set the alert level for a zone (will not de-escalate below current) */
 	UFUNCTION(BlueprintCallable, Category = "Alert System")
-	void EscalateZoneAlert(ETrainZone Zone, EAlertLevel Level, FVector ThreatLocation);
+	void EscalateZoneAlert(EStealthZone Zone, EAlertLevel Level, FVector ThreatLocation);
 
 	/** Force-set alert level (can de-escalate) */
 	UFUNCTION(BlueprintCallable, Category = "Alert System")
-	void SetZoneAlertLevel(ETrainZone Zone, EAlertLevel Level);
+	void SetZoneAlertLevel(EStealthZone Zone, EAlertLevel Level);
 
 	/** Reset all zones to Green */
 	UFUNCTION(BlueprintCallable, Category = "Alert System")
@@ -49,19 +49,19 @@ public:
 
 	/** Get the last known threat location for a zone */
 	UFUNCTION(BlueprintPure, Category = "Alert System")
-	FVector GetZoneThreatLocation(ETrainZone Zone) const;
+	FVector GetZoneThreatLocation(EStealthZone Zone) const;
 
 	// --- Alert Propagation ---
 
 	/** Propagate alert from one zone to adjacent zones (with reduced intensity) */
 	UFUNCTION(BlueprintCallable, Category = "Alert System")
-	void PropagateToAdjacentZones(ETrainZone SourceZone);
+	void PropagateToAdjacentZones(EStealthZone SourceZone);
 
 	// --- De-escalation ---
 
 	/** Start de-escalation timer for a zone (alert will gradually decrease) */
 	UFUNCTION(BlueprintCallable, Category = "Alert System")
-	void BeginDeescalation(ETrainZone Zone);
+	void BeginDeescalation(EStealthZone Zone);
 
 	UPROPERTY(BlueprintAssignable, Category = "Alert System")
 	FOnZoneAlertChanged OnZoneAlertChanged;
@@ -79,10 +79,10 @@ private:
 		float DeescalationTimer = -1.f; // Negative = not de-escalating
 	};
 
-	TMap<ETrainZone, FZoneAlertState> ZoneAlerts;
+	TMap<EStealthZone, FZoneAlertState> ZoneAlerts;
 
 	/** Get adjacent zones for propagation */
-	TArray<ETrainZone> GetAdjacentZones(ETrainZone Zone) const;
+	TArray<EStealthZone> GetAdjacentZones(EStealthZone Zone) const;
 
 	/** Reduce alert level by one step */
 	EAlertLevel ReduceAlertLevel(EAlertLevel Level) const;

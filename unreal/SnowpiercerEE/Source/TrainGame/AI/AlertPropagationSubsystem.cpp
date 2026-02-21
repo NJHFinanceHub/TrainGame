@@ -7,13 +7,13 @@ void UAlertPropagationSubsystem::Initialize(FSubsystemCollectionBase& Collection
 	Super::Initialize(Collection);
 
 	// Initialize all zones to Green
-	ZoneAlerts.Add(ETrainZone::Tail, FZoneAlertState());
-	ZoneAlerts.Add(ETrainZone::ThirdClass, FZoneAlertState());
-	ZoneAlerts.Add(ETrainZone::SecondClass, FZoneAlertState());
-	ZoneAlerts.Add(ETrainZone::FirstClass, FZoneAlertState());
-	ZoneAlerts.Add(ETrainZone::EngineSection, FZoneAlertState());
-	ZoneAlerts.Add(ETrainZone::Security, FZoneAlertState());
-	ZoneAlerts.Add(ETrainZone::Medical, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::Tail, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::ThirdClass, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::SecondClass, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::FirstClass, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::EngineSection, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::Security, FZoneAlertState());
+	ZoneAlerts.Add(EStealthZone::Medical, FZoneAlertState());
 }
 
 void UAlertPropagationSubsystem::Deinitialize()
@@ -22,7 +22,7 @@ void UAlertPropagationSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-EAlertLevel UAlertPropagationSubsystem::GetZoneAlertLevel(ETrainZone Zone) const
+EAlertLevel UAlertPropagationSubsystem::GetZoneAlertLevel(EStealthZone Zone) const
 {
 	if (const FZoneAlertState* State = ZoneAlerts.Find(Zone))
 	{
@@ -31,7 +31,7 @@ EAlertLevel UAlertPropagationSubsystem::GetZoneAlertLevel(ETrainZone Zone) const
 	return EAlertLevel::Green;
 }
 
-void UAlertPropagationSubsystem::EscalateZoneAlert(ETrainZone Zone, EAlertLevel Level, FVector ThreatLocation)
+void UAlertPropagationSubsystem::EscalateZoneAlert(EStealthZone Zone, EAlertLevel Level, FVector ThreatLocation)
 {
 	FZoneAlertState& State = ZoneAlerts.FindOrAdd(Zone);
 
@@ -51,7 +51,7 @@ void UAlertPropagationSubsystem::EscalateZoneAlert(ETrainZone Zone, EAlertLevel 
 	}
 }
 
-void UAlertPropagationSubsystem::SetZoneAlertLevel(ETrainZone Zone, EAlertLevel Level)
+void UAlertPropagationSubsystem::SetZoneAlertLevel(EStealthZone Zone, EAlertLevel Level)
 {
 	FZoneAlertState& State = ZoneAlerts.FindOrAdd(Zone);
 
@@ -79,7 +79,7 @@ void UAlertPropagationSubsystem::ResetAllAlerts()
 	}
 }
 
-FVector UAlertPropagationSubsystem::GetZoneThreatLocation(ETrainZone Zone) const
+FVector UAlertPropagationSubsystem::GetZoneThreatLocation(EStealthZone Zone) const
 {
 	if (const FZoneAlertState* State = ZoneAlerts.Find(Zone))
 	{
@@ -88,7 +88,7 @@ FVector UAlertPropagationSubsystem::GetZoneThreatLocation(ETrainZone Zone) const
 	return FVector::ZeroVector;
 }
 
-void UAlertPropagationSubsystem::PropagateToAdjacentZones(ETrainZone SourceZone)
+void UAlertPropagationSubsystem::PropagateToAdjacentZones(EStealthZone SourceZone)
 {
 	const FZoneAlertState* SourceState = ZoneAlerts.Find(SourceZone);
 	if (!SourceState || SourceState->Level == EAlertLevel::Green) return;
@@ -96,14 +96,14 @@ void UAlertPropagationSubsystem::PropagateToAdjacentZones(ETrainZone SourceZone)
 	EAlertLevel ReducedLevel = ReduceAlertLevel(SourceState->Level);
 	if (ReducedLevel == EAlertLevel::Green) return;
 
-	TArray<ETrainZone> Adjacent = GetAdjacentZones(SourceZone);
-	for (ETrainZone AdjacentZone : Adjacent)
+	TArray<EStealthZone> Adjacent = GetAdjacentZones(SourceZone);
+	for (EStealthZone AdjacentZone : Adjacent)
 	{
 		EscalateZoneAlert(AdjacentZone, ReducedLevel, SourceState->ThreatLocation);
 	}
 }
 
-void UAlertPropagationSubsystem::BeginDeescalation(ETrainZone Zone)
+void UAlertPropagationSubsystem::BeginDeescalation(EStealthZone Zone)
 {
 	if (FZoneAlertState* State = ZoneAlerts.Find(Zone))
 	{
@@ -111,40 +111,40 @@ void UAlertPropagationSubsystem::BeginDeescalation(ETrainZone Zone)
 	}
 }
 
-TArray<ETrainZone> UAlertPropagationSubsystem::GetAdjacentZones(ETrainZone Zone) const
+TArray<EStealthZone> UAlertPropagationSubsystem::GetAdjacentZones(EStealthZone Zone) const
 {
-	TArray<ETrainZone> Adjacent;
+	TArray<EStealthZone> Adjacent;
 
 	// Train car adjacency — linear layout with some branches
 	switch (Zone)
 	{
-	case ETrainZone::Tail:
-		Adjacent.Add(ETrainZone::ThirdClass);
+	case EStealthZone::Tail:
+		Adjacent.Add(EStealthZone::ThirdClass);
 		break;
-	case ETrainZone::ThirdClass:
-		Adjacent.Add(ETrainZone::Tail);
-		Adjacent.Add(ETrainZone::SecondClass);
+	case EStealthZone::ThirdClass:
+		Adjacent.Add(EStealthZone::Tail);
+		Adjacent.Add(EStealthZone::SecondClass);
 		break;
-	case ETrainZone::SecondClass:
-		Adjacent.Add(ETrainZone::ThirdClass);
-		Adjacent.Add(ETrainZone::FirstClass);
-		Adjacent.Add(ETrainZone::Medical);
+	case EStealthZone::SecondClass:
+		Adjacent.Add(EStealthZone::ThirdClass);
+		Adjacent.Add(EStealthZone::FirstClass);
+		Adjacent.Add(EStealthZone::Medical);
 		break;
-	case ETrainZone::FirstClass:
-		Adjacent.Add(ETrainZone::SecondClass);
-		Adjacent.Add(ETrainZone::EngineSection);
+	case EStealthZone::FirstClass:
+		Adjacent.Add(EStealthZone::SecondClass);
+		Adjacent.Add(EStealthZone::EngineSection);
 		break;
-	case ETrainZone::EngineSection:
-		Adjacent.Add(ETrainZone::FirstClass);
+	case EStealthZone::EngineSection:
+		Adjacent.Add(EStealthZone::FirstClass);
 		break;
-	case ETrainZone::Security:
+	case EStealthZone::Security:
 		// Security has posts throughout, adjacent to most zones
-		Adjacent.Add(ETrainZone::ThirdClass);
-		Adjacent.Add(ETrainZone::SecondClass);
-		Adjacent.Add(ETrainZone::FirstClass);
+		Adjacent.Add(EStealthZone::ThirdClass);
+		Adjacent.Add(EStealthZone::SecondClass);
+		Adjacent.Add(EStealthZone::FirstClass);
 		break;
-	case ETrainZone::Medical:
-		Adjacent.Add(ETrainZone::SecondClass);
+	case EStealthZone::Medical:
+		Adjacent.Add(EStealthZone::SecondClass);
 		break;
 	}
 

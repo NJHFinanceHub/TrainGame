@@ -58,7 +58,7 @@ public:
 
 	/** Get the zone this NPC belongs to */
 	UFUNCTION(BlueprintPure, Category = "NPC")
-	ETrainZone GetHomeZone() const { return HomeZone; }
+	EStealthZone GetHomeZone() const { return HomeZone; }
 
 	// --- Health/State ---
 
@@ -120,7 +120,7 @@ protected:
 	FText NPCName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Identity")
-	ETrainZone HomeZone = ETrainZone::ThirdClass;
+	EStealthZone HomeZone = EStealthZone::ThirdClass;
 
 	/** Whether this NPC is a unique named character (vs generic) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC|Identity")

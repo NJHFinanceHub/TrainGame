@@ -91,7 +91,7 @@ protected:
 
 	/** The zone this NPC considers home (better at detecting wrong disguises) */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "StealthAI|Challenge")
-	ETrainZone HomeZone = ETrainZone::ThirdClass;
+	EStealthZone HomeZone = EStealthZone::ThirdClass;
 
 private:
 	void TickPatrol(float DeltaTime);

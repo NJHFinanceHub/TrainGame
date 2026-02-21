@@ -93,7 +93,7 @@ protected:
 
 	/** Zone this NPC belongs to */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC AI")
-	ETrainZone HomeZone = ETrainZone::ThirdClass;
+	EStealthZone HomeZone = EStealthZone::ThirdClass;
 
 	/** Whether this NPC follows a time-of-day schedule */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPC AI|Schedule")

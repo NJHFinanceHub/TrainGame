@@ -32,9 +32,9 @@ enum class EItemRarity : uint8
 	Legendary	UMETA(DisplayName = "Legendary")
 };
 
-// Weapon damage types for combat calculations
+// Weapon damage types for inventory combat calculations
 UENUM(BlueprintType)
-enum class EDamageType : uint8
+enum class EInventoryDamageType : uint8
 {
 	Blunt		UMETA(DisplayName = "Blunt"),
 	Bladed		UMETA(DisplayName = "Bladed"),
@@ -80,7 +80,7 @@ struct FItemDefinition : public FTableRowBase
 	float BaseDamage = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="Category==EItemCategory::Weapon"))
-	EDamageType PrimaryDamageType = EDamageType::Blunt;
+	EInventoryDamageType PrimaryDamageType = EInventoryDamageType::Blunt;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition="Category==EItemCategory::Weapon"))
 	float MaxDurability = 100.0f;

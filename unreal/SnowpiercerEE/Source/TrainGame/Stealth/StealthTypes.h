@@ -68,7 +68,7 @@ enum class EStealthMovement : uint8
 
 /** Train zone for disguise system */
 UENUM(BlueprintType)
-enum class ETrainZone : uint8
+enum class EStealthZone : uint8
 {
 	Tail			UMETA(DisplayName = "Tail"),
 	ThirdClass		UMETA(DisplayName = "Third Class"),
@@ -183,7 +183,7 @@ struct FDisguiseData
 	FName DisguiseName = NAME_None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ETrainZone TargetZone = ETrainZone::Tail;
+	EStealthZone TargetZone = EStealthZone::Tail;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EDisguiseQuality Quality = EDisguiseQuality::None;

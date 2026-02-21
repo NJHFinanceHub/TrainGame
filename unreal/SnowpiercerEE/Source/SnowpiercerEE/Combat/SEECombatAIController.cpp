@@ -64,7 +64,7 @@ void ASEECombatAIController::MakeDecision()
 	}
 	else
 	{
-		if (Profile == ECombatAIProfile::Cunning || Profile == ECombatAIProfile::Disciplined)
+		if (Profile == ESEECombatAIProfile::Cunning || Profile == ESEECombatAIProfile::Disciplined)
 		{
 			FVector PerpOffset = ControlledPawn->GetActorRightVector() * 100.f;
 			FVector FlankPos = CurrentTarget->GetActorLocation() + PerpOffset;
@@ -104,14 +104,14 @@ void ASEECombatAIController::ApplyProfileModifiers()
 {
 	switch (Profile)
 	{
-		case ECombatAIProfile::Desperate:
+		case ESEECombatAIProfile::Desperate:
 			BlockChance = 0.15f;
 			DodgeChance = 0.2f;
 			DecisionInterval = 0.8f;
 			EnvironmentalUseChance = 0.05f;
 			break;
 
-		case ECombatAIProfile::Disciplined:
+		case ESEECombatAIProfile::Disciplined:
 			BlockChance = 0.5f;
 			DodgeChance = 0.2f;
 			DecisionInterval = 0.4f;
@@ -119,14 +119,14 @@ void ASEECombatAIController::ApplyProfileModifiers()
 			MaxSimultaneousAttackers = 3;
 			break;
 
-		case ECombatAIProfile::Cunning:
+		case ESEECombatAIProfile::Cunning:
 			BlockChance = 0.3f;
 			DodgeChance = 0.35f;
 			DecisionInterval = 0.5f;
 			EnvironmentalUseChance = 0.4f;
 			break;
 
-		case ECombatAIProfile::Brute:
+		case ESEECombatAIProfile::Brute:
 			BlockChance = 0.1f;
 			DodgeChance = 0.05f;
 			DecisionInterval = 1.0f;

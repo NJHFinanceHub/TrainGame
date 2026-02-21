@@ -71,11 +71,11 @@ public:
 
 	/** Get the detection rate modifier based on current disguise vs zone */
 	UFUNCTION(BlueprintPure, Category = "Stealth|Disguise")
-	float GetDetectionModifier(ETrainZone CurrentZone) const;
+	float GetDetectionModifier(EStealthZone CurrentZone) const;
 
 	/** Check if the current disguise matches a zone */
 	UFUNCTION(BlueprintPure, Category = "Stealth|Disguise")
-	bool MatchesZone(ETrainZone Zone) const;
+	bool MatchesZone(EStealthZone Zone) const;
 
 	// --- Delegates ---
 

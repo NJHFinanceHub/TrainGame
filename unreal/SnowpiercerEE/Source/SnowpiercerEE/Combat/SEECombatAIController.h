@@ -22,7 +22,7 @@ class USEECombatComponent;
 
 /** Combat AI behavior profile */
 UENUM(BlueprintType)
-enum class ECombatAIProfile : uint8
+enum class ESEECombatAIProfile : uint8
 {
 	/** Desperate, aggressive, low skill - Tail fighters */
 	Desperate	UMETA(DisplayName = "Desperate"),
@@ -51,7 +51,7 @@ public:
 protected:
 	/** AI behavior profile */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")
-	ECombatAIProfile Profile = ECombatAIProfile::Desperate;
+	ESEECombatAIProfile Profile = ESEECombatAIProfile::Desperate;
 
 	/** How close the AI tries to get before attacking */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "CombatAI")

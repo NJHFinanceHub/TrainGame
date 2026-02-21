@@ -31,7 +31,7 @@ struct FSecretCarRequirement
 
 	/** Minimum zone the player must have reached */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ETrainZone MinimumZone = ETrainZone::Zone1_Tail;
+	ECollectibleZone MinimumZone = ECollectibleZone::Zone1_Tail;
 
 	/** Required stat checks (stat name -> minimum value) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

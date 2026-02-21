@@ -45,7 +45,7 @@ TArray<FCollectibleState> UCollectibleJournalSubsystem::GetCollectedByType(EColl
     return Result;
 }
 
-TArray<FCollectibleState> UCollectibleJournalSubsystem::GetCollectedByZone(ETrainZone Zone) const
+TArray<FCollectibleState> UCollectibleJournalSubsystem::GetCollectedByZone(ECollectibleZone Zone) const
 {
     TArray<FCollectibleState> Result;
     for (const auto& Pair : CollectibleStates)

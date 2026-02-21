@@ -153,7 +153,7 @@ struct FNPCSpawnRow : public FTableRowBase
 
 	/** Which zone this car belongs to */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawner")
-	ETrainZone Zone = ETrainZone::ThirdClass;
+	EStealthZone Zone = EStealthZone::ThirdClass;
 };
 
 /** Blackboard key names — centralized to avoid typos */
