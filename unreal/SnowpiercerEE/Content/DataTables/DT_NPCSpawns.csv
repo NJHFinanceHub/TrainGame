@@ -1,0 +1,16 @@
+RowName,NPCName,NPCClass,CarIndex,IsUnique,Faction,PatrolRoute,DialogueTable
+NPC_OldPike,Old Pike,Tailie,0,true,Tailies,PatrolCar0,DLG_Pike
+NPC_Marta,Marta,Tailie,1,true,Tailies,PatrolCar1,DLG_Marta
+NPC_Kez,Kez,Tailie,2,true,Tailies,PatrolCar2,DLG_Kez
+NPC_Nani,Nani,Tailie,3,true,Tailies,PatrolCar3,DLG_Nani
+NPC_Gilliam,Gilliam,Tailie,4,true,Tailies,PatrolCar4,DLG_Gilliam
+NPC_DrAsha,Dr Asha,Tailie,5,true,Tailies,PatrolCar5,DLG_Asha
+NPC_Forge,Forge,Engineer,6,true,Tailies,PatrolCar6,DLG_Forge
+NPC_Whisper,Whisper,Tailie,7,true,Tailies,PatrolCar7,DLG_Whisper
+NPC_CmdrGrey,Commander Grey,Jackboot,8,true,Jackboots,PatrolCar8_15,DLG_Grey
+NPC_KronoleKim,Kronole Kim,Tailie,11,true,KronoleNetwork,PatrolCar11,DLG_Kim
+NPC_TheTrader,The Trader,ThirdClass,12,true,Neutral,PatrolCar12,DLG_Trader
+NPC_Guard01,Jackboot Patrol 1,Jackboot,8,false,Jackboots,PatrolCar8,
+NPC_Guard02,Jackboot Patrol 2,Jackboot,8,false,Jackboots,PatrolCar8,
+NPC_Guard03,Jackboot Blockade 1,Jackboot,9,false,Jackboots,PatrolCar9,
+NPC_Guard04,Jackboot Blockade 2,Jackboot,9,false,Jackboots,PatrolCar9,

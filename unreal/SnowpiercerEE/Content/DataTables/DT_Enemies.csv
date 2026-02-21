@@ -6,3 +6,9 @@ ENM_CorruptEngineer,Corrupt Engineer,100,18,300,120,LT_CorruptEngineer
 ENM_IceWraith,Ice Wraith,60,25,500,90,LT_IceWraith
 ENM_Saboteur,Saboteur,150,22,350,200,LT_Saboteur
 ENM_AutomatedTurret,Automated Turret,200,30,0,150,LT_AutomatedTurret
+ENM_JackbootGrunt,Jackboot Grunt,100,15,400,80,LT_JackbootGrunt
+ENM_JackbootCaptain,Jackboot Captain,150,20,380,120,LT_JackbootCaptain
+ENM_JackbootElite,Jackboot Elite,180,25,350,150,LT_JackbootElite
+ENM_JackbootShield,Jackboot Shield Wall,200,12,300,130,LT_JackbootShield
+ENM_JackbootCrossbow,Jackboot Crossbow,80,22,250,100,LT_JackbootCrossbow
+ENM_CmdrGrey,Commander Grey,300,28,400,500,LT_CmdrGrey

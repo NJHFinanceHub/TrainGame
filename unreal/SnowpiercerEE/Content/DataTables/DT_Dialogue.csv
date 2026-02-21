@@ -9,3 +9,43 @@ DLG_Mira_01,Tailie Elder Mira,The children haven't eaten in two days. The engine
 DLG_Mira_02a,Tailie Elder Mira,Bless you. There should be emergency stores near the engine room.,DLG_Mira_End,
 DLG_Rho_01,Maintenance Tech Rho,Three conduits are frozen solid. Pressure's dropping fast — we lose those we lose heat to half the train.,DLG_Rho_02,Where are they?|I'll clear them|How did they freeze?
 DLG_Rho_02a,Maintenance Tech Rho,Two in the lower deck and one topside near the exhaust vents. Take thermal paste — you'll need it.,DLG_Rho_End,
+DLG_Pike_01,Old Pike,Listen close kid. The Blockade ahead is not a wall. It is a slaughter line.,DLG_Pike_02,How do we get through?|Who commands it?|I can handle myself
+DLG_Pike_02a,Old Pike,Find shadows and timing. Never charge a Jackboot front line.,DLG_Pike_End,
+DLG_Pike_02b,Old Pike,Commander Grey runs the line and enjoys making examples.,DLG_Pike_End,
+DLG_Pike_02c,Old Pike,Confidence is loud. Survival is quiet. Remember that.,DLG_Pike_End,
+DLG_Gilliam_01,Gilliam,Every revolt writes a lesson in blood. Most are forgotten on purpose.,DLG_Gilliam_02,What lesson matters now?|What are you asking me to do?|How many revolts were there?
+DLG_Gilliam_02a,Gilliam,Carry this letter forward and do not open it. Some truths must arrive intact.,DLG_Gilliam_End,
+DLG_Gilliam_02b,Gilliam,I need a path through the Blockade and eyes on Grey's command car.,DLG_Gilliam_End,
+DLG_Gilliam_02c,Gilliam,More than one. Seven years of marks and names no one speaks.,DLG_Gilliam_End,
+DLG_Kez_01,Kez,If you want me beside you then keep up and do not hesitate.,DLG_Kez_02,Join me for the Blockade push|What do you need from me?|I work alone
+DLG_Kez_02a,Kez,Good. I hit hard and move first. You call targets and I break them.,DLG_Kez_End,
+DLG_Kez_02b,Kez,Armor and medicine. Bring both and I am yours for the fight.,DLG_Kez_End,
+DLG_Kez_02c,Kez,Then stay out of my lane when steel starts swinging.,DLG_Kez_End,
+DLG_Nani_01,Nani,The children can hear the gunfire now. They ask if tomorrow is safe.,DLG_Nani_02,I'll secure the nursery|Did someone take a child?|I cannot promise anything
+DLG_Nani_02a,Nani,Thank you. The nursery cabinet key is missing and supplies are low.,DLG_Nani_End,
+DLG_Nani_02b,Nani,One child vanished in the night. No tracks. No witnesses. Only fear.,DLG_Nani_End,
+DLG_Nani_02c,Nani,Then give me honesty and bring back medicine if you find any.,DLG_Nani_End,
+DLG_Asha_01,Dr Asha,You are breathing so you are lucky. Sit still if you want treatment.,DLG_Asha_02,Trade medicine|Any news about missing children?|Patch me up
+DLG_Asha_02a,Dr Asha,I can spare bandages and stimulants but not for free.,DLG_Asha_End,
+DLG_Asha_02b,Dr Asha,Two children gone this month. Both last seen near the service vents.,DLG_Asha_End,
+DLG_Asha_02c,Dr Asha,Hold still. Pain means you are still fighting.,DLG_Asha_End,
+DLG_Forge_01,Forge,You swing scrap like a tourist. Let me show you real balance.,DLG_Forge_02,Teach me crafting|Can you upgrade my weapon?|Why help Tailies?
+DLG_Forge_02a,Forge,Workbench first then heat then pressure. Rush any step and it snaps.,DLG_Forge_End,
+DLG_Forge_02b,Forge,Bring scrap and I can harden that pipe into something worth carrying.,DLG_Forge_End,
+DLG_Forge_02c,Forge,I was Third Class once. Hunger taught me where loyalty belongs.,DLG_Forge_End,
+DLG_Whisper_01,Whisper,Keep your voice down. Walls here report to men with badges.,DLG_Whisper_02,What do you know about Grey?|Any safe route past patrols?|You seem paranoid
+DLG_Whisper_02a,Whisper,Grey favors his right side after old shrapnel. Force him to turn and he slows.,DLG_Whisper_End,
+DLG_Whisper_02b,Whisper,Use the maintenance ladder between Cars 7 and 8. Patrols miss the upper grate.,DLG_Whisper_End,
+DLG_Whisper_02c,Whisper,Paranoid people stay alive longer than brave fools.,DLG_Whisper_End,
+DLG_Kim_01,Kronole Kim,You look tired friend. Kronole makes seconds stretch into opportunities.,DLG_Kim_02,Show me your stock|Got work besides dealing?|I do not touch that poison
+DLG_Kim_02a,Kronole Kim,Clean dose or cut dose. Price decides how steady your hands stay.,DLG_Kim_End,
+DLG_Kim_02b,Kronole Kim,Bring me chemical compound from the still and I pay in rare tools.,DLG_Kim_End,
+DLG_Kim_02c,Kronole Kim,Your choice. But everyone needs an edge before the Blockade.,DLG_Kim_End,
+DLG_Trader_01,The Trader,Everything has a price. Secrets just cost more than bullets.,DLG_Trader_02,Let me see your goods|What secrets are you selling?|Why are you helping us?
+DLG_Trader_02a,The Trader,Armor plates keys medicine. I sell survival and collect favors.,DLG_Trader_End,
+DLG_Trader_02b,The Trader,Grey rotates captains every dawn bell. Strike during the handoff.,DLG_Trader_End,
+DLG_Trader_02c,The Trader,Helping is not the word. I invest in likely outcomes.,DLG_Trader_End,
+DLG_Grey_01,Commander Grey,Another Tail rat crawls to my gate. I was hoping for sport today.,DLG_Grey_02,Stand down Grey|I am ending this blockade|Keep talking while I get closer
+DLG_Grey_02a,Commander Grey,This blockade stands until your section remembers obedience.,DLG_Grey_End,
+DLG_Grey_02b,Commander Grey,Then come prove it at my command car. I will carve the lesson myself.,DLG_Grey_End,
+DLG_Grey_02c,Commander Grey,Good. Rage makes you predictable and predictable things die first.,DLG_Grey_End,

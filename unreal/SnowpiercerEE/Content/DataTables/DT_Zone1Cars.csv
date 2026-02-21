@@ -1,0 +1,16 @@
+RowName,CarID,DisplayName,CarIndex,Zone,PrimaryFaction,SubLevelName,ThreatLevel,MaxEnemies,bIsBossEncounter,ShortDescription
+Z1_Car00,Z1_Car00,Caboose,0,Tail,Tailies,Z1_Car00_Caboose,0,0,false,Dead end of the train. Tutorial: movement and interaction.
+Z1_Car01,Z1_Car01,Tail Quarters A,1,Tail,Tailies,Z1_Car01_Tail_Quarters_A,0,0,false,Communal sleeping car. Tutorial: crafting basics.
+Z1_Car02,Z1_Car02,Tail Quarters B,2,Tail,Tailies,Z1_Car02_Tail_Quarters_B,0,0,false,Second residential car. Tutorial: combat fundamentals.
+Z1_Car03,Z1_Car03,The Pit,3,Tail,Tailies,Z1_Car03_The_Pit,1,0,false,Fighting arena. First moral choice encounter.
+Z1_Car04,Z1_Car04,Nursery,4,Tail,Tailies,Z1_Car04_Nursery,1,0,false,Children's car. Main quest begins here.
+Z1_Car05,Z1_Car05,Elders Car,5,Tail,Tailies,Z1_Car05_Elders_Car,1,0,false,Leadership hub. Gilliam's headquarters.
+Z1_Car06,Z1_Car06,Sickbay,6,Tail,Tailies,Z1_Car06_Sickbay,2,0,false,Medical car. Resource management introduction.
+Z1_Car07,Z1_Car07,Workshop,7,Tail,Tailies,Z1_Car07_Workshop,2,0,false,Forge's smithy. Weapon crafting unlock.
+Z1_Car08,Z1_Car08,Listening Post,8,Tail,Tailies,Z1_Car08_Listening_Post,2,2,false,Intelligence car. Lore and intel gathering.
+Z1_Car09,Z1_Car09,Blockade,9,Tail,Jackboots,Z1_Car09_Blockade,3,6,false,Jackboot checkpoint. First real combat encounter.
+Z1_Car10,Z1_Car10,Dark Car,10,Tail,Tailies,Z1_Car10_Dark_Car,2,2,false,Lightless car. Horror and stealth section.
+Z1_Car11,Z1_Car11,Freezer Breach,11,Tail,Tailies,Z1_Car11_Freezer_Breach,2,0,false,Breached hull. Environmental cold hazard.
+Z1_Car12,Z1_Car12,Kronole Den,12,Tail,KronoleNetwork,Z1_Car12_Kronole_Den,1,0,false,Drug lab. Kronole choice encounter.
+Z1_Car13,Z1_Car13,Smugglers Cache,13,Tail,Neutral,Z1_Car13_Smugglers_Cache,1,0,false,Black market. Trading system unlock.
+Z1_Car14,Z1_Car14,Martyrs Gate,14,Tail,Jackboots,Z1_Car14_Martyrs_Gate,5,6,true,The Threshold. Commander Grey boss fight.

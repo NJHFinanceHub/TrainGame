@@ -13,3 +13,26 @@ CON_ThermalPaste,Thermal Paste,Industrial heating compound. Reduces cold damage 
 KEY_EngineKey,Engine Room Key,Heavy brass key granting access to the Eternal Engine core.,Key,0,0,0,UI_Icon_EngineKey,SM_EngineKey
 MAT_ScrapMetal,Scrap Metal,Salvaged metal fragments useful for repairs and crafting.,Material,0,0,8,UI_Icon_ScrapMetal,SM_ScrapMetal
 MAT_WiringKit,Wiring Kit,Bundle of electrical wires for circuit repair.,Material,0,0,20,UI_Icon_WiringKit,SM_WiringKit
+CON_Kronole,Kronole,Illicit psychoactive drug. Triggers time-perception ability but causes dependency.,Consumable,0,0,200,UI_Icon_Kronole,SM_Kronole
+CON_ProteinBlock,Protein Block,Dense nutrition paste. The Tail's staple food. Restores 20 hunger.,Consumable,0,0,5,UI_Icon_ProteinBlock,SM_ProteinBlock
+CON_CleanWater,Clean Water,Filtered condensation water. Restores 10 hunger.,Consumable,0,0,3,UI_Icon_CleanWater,SM_CleanWater
+CON_Bandage,Improvised Bandage,Cloth strips tied tight. Restores 15 health.,Consumable,0,0,8,UI_Icon_Bandage,SM_Bandage
+TOL_Lockpick,Improvised Lockpick,Bent wire picks. Required for locked containers.,Tool,0,0,15,UI_Icon_Lockpick,SM_Lockpick
+TOL_WireKit,Wire Cutter Kit,Basic electrical tools for disabling traps and alarms.,Tool,0,0,25,UI_Icon_WireKit,SM_WireKit
+WPN_ScrewdriverShiv,Screwdriver Shiv,Sharpened screwdriver. Fast weak stabbing weapon.,Weapon,8,0,10,UI_Icon_ScrewdriverShiv,SM_ScrewdriverShiv
+WPN_PipeCudgel,Pipe Cudgel,Short pipe section. Reliable if crude.,Weapon,12,0,15,UI_Icon_PipeCudgel,SM_PipeCudgel
+WPN_ReinforcedPipe,Reinforced Pipe,Steel pipe with welded grip. Better weight distribution.,Weapon,18,0,35,UI_Icon_ReinforcedPipe,SM_ReinforcedPipe
+WPN_OfficersSword,Officers Sword,Commander Greys personal blade. Best melee weapon in Zone 1.,Weapon,35,0,500,UI_Icon_OfficersSword,SM_OfficersSword
+WPN_JackbootCrossbow,Jackboot Crossbow,Standard-issue Jackboot ranged weapon. Reliable at distance.,Weapon,22,0,180,UI_Icon_JackbootCrossbow,SM_JackbootCrossbow
+WPN_QualityBaton,Quality Baton,Military-grade baton. Well balanced and durable.,Weapon,20,0,90,UI_Icon_QualityBaton,SM_QualityBaton
+WPN_Molotov,Molotov Cocktail,Improvised incendiary. Thrown area damage.,Weapon,30,0,20,UI_Icon_Molotov,SM_Molotov
+ARM_JackbootArmor,Heavy Jackboot Armor,Full Jackboot combat kit. Excellent protection.,Armor,0,28,300,UI_Icon_JackbootArmor,SM_JackbootArmor
+ARM_ScrapShield,Scrap Shield,Welded metal plate with arm straps. Blocks frontal damage.,Armor,0,15,40,UI_Icon_ScrapShield,SM_ScrapShield
+KEY_ThirdClassKeycard,Third Class Keycard,Access card for Third Class section. Found on Commander Grey.,Key,0,0,0,UI_Icon_ThirdClassKeycard,SM_ThirdClassKeycard
+KEY_NurseryKey,Nursery Storage Key,Opens the locked nursery cabinet in Car 4.,Key,0,0,0,UI_Icon_NurseryKey,SM_NurseryKey
+MAT_Cloth,Cloth Scraps,Torn fabric useful for bandages and wraps.,Material,0,0,3,UI_Icon_Cloth,SM_Cloth
+MAT_ChemicalCompound,Chemical Compound,Volatile chemical from Kronole processing. Crafting material.,Material,0,0,30,UI_Icon_ChemicalCompound,SM_ChemicalCompound
+QST_GilliamLetter,Gilliams Letter,Sealed message from Gilliam to the front. Must not be opened.,Quest,0,0,0,UI_Icon_GilliamLetter,SM_GilliamLetter
+QST_WhisperIntel,Whispers Intel Report,Detailed report on Commander Greys left-side weakness.,Quest,0,0,0,UI_Icon_WhisperIntel,SM_WhisperIntel
+QST_GreyOrders,Greys Orders,Official orders found at Greys command post. Mentions Wilfords directive.,Quest,0,0,0,UI_Icon_GreyOrders,SM_GreyOrders
+LOR_TallyMarks,Tally Mark Sheet,Scratched metal counting days since last revolt. Seven years.,Lore,0,0,0,UI_Icon_TallyMarks,SM_TallyMarks

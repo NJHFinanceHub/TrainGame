@@ -1,0 +1,12 @@
+RowName,DisplayName,Description,RequiredStation,OutputItemID,OutputCount,ScrapCost,bRequiresBlueprint,CategoryTag
+RCP_Bandage,Improvised Bandage,Cloth wrap that restores 15 HP.,FieldCrafting,CON_Bandage,1,0,false,Medical
+RCP_ScrewdriverShiv,Screwdriver Shiv,Sharpened screwdriver. Fast but fragile.,ImprovisedWorkbench,WPN_ScrewdriverShiv,1,5,false,Weapon
+RCP_PipeCudgel,Pipe Cudgel,Short pipe section weapon.,ImprovisedWorkbench,WPN_PipeCudgel,1,8,false,Weapon
+RCP_ReinforcedPipe,Reinforced Pipe,Welded grip pipe. Better balance.,ImprovisedWorkbench,WPN_ReinforcedPipe,1,15,false,Weapon
+RCP_ScrapVest,Scrap Vest,Welded armor plates for torso.,ImprovisedWorkbench,ARM_ScrapVest,1,20,false,Armor
+RCP_ScrapShield,Scrap Shield,Welded metal shield for blocking.,ImprovisedWorkbench,ARM_ScrapShield,1,25,false,Armor
+RCP_Lockpick,Lockpick Set,Bent wire picks for locked containers.,FieldCrafting,TOL_Lockpick,3,3,false,Tool
+RCP_ThermalPaste,Thermal Paste,Heating compound. Reduces cold damage.,ChemistryStation,CON_ThermalPaste,1,10,true,Consumable
+RCP_Molotov,Molotov Cocktail,Improvised fire bomb. Area damage.,FieldCrafting,WPN_Molotov,1,5,false,Weapon
+RCP_Stimulant,Field Stimulant,Adrenaline mix. Boosts speed.,ChemistryStation,CON_Stimulant,1,15,true,Medical
+RCP_WireKit,Wire Cutter Kit,Electrical tools for traps.,ImprovisedWorkbench,TOL_WireKit,1,12,false,Tool

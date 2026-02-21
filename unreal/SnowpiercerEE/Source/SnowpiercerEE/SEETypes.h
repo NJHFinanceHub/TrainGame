@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "SEETypes.generated.h"
 
 // ---------------------------------------------------------------------------
@@ -97,4 +98,47 @@ struct SNOWPIERCEREE_API FSEECarState
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame, Category="State")
     TMap<FName, int32> IntFlags;
+};
+
+/** DataTable row defining a car's properties for level setup */
+USTRUCT(BlueprintType)
+struct SNOWPIERCEREE_API FSEECarDefinition : public FTableRowBase
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    FName CarID = NAME_None;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    FText DisplayName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    int32 CarIndex = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    ESEETrainZone Zone = ESEETrainZone::Tail;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    ESEEFaction PrimaryFaction = ESEEFaction::Neutral;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    FName SubLevelName = NAME_None;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    int32 ThreatLevel = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    int32 MaxEnemies = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    TArray<FName> NPCIds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    TArray<FName> ItemIds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    bool bIsBossEncounter = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Car")
+    FText ShortDescription;
 };
