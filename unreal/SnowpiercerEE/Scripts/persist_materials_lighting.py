@@ -706,7 +706,7 @@ def create_fog_blueprint(zone_name):
                 )
                 ins = fog_config["inscattering"]
                 fc.set_editor_property(
-                    "fog_inscattering_color",
+                    "fog_inscattering_luminance",
                     unreal.LinearColor(ins[0], ins[1], ins[2], 1.0),
                 )
                 fc.set_editor_property(

@@ -1,3 +1,9 @@
 .runtime/
 .claude/commands/
 .logs/
+# UE transient/generated
+unreal/**/Binaries/
+unreal/**/Intermediate/
+unreal/**/Saved/
+unreal/**/DerivedDataCache/
+__pycache__/

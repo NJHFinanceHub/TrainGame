@@ -68,11 +68,10 @@ def zone1_exists():
 TOTAL_STEPS = 6
 
 def materials_persisted():
-    """Check if persisted zone materials exist."""
+    """Check if persisted zone materials exist.
+    (PostProcess/Fog are placed as level actors by build_zone1.py, not BPs.)"""
     checks = [
         "/Game/Materials/Zones/Tail/M_Tail_Floor",
-        "/Game/Blueprints/PostProcess/BP_PP_TailZone",
-        "/Game/Blueprints/Atmosphere/BP_Fog_TailZone",
     ]
     return all(editor_util.does_asset_exist(p) for p in checks)
 
@@ -156,10 +155,6 @@ def run():
         "Pickup BP (food)":     "/Game/Blueprints/Pickups/BP_Pickup_ProteinBlock",
         "NPC BP (civilian)":    "/Game/Blueprints/NPCs/BP_NPC_Civilian",
         "NPC BP (jackboot)":    "/Game/Blueprints/NPCs/BP_NPC_Jackboot",
-        "Tail post-process":    "/Game/Blueprints/PostProcess/BP_PP_TailZone",
-        "First post-process":   "/Game/Blueprints/PostProcess/BP_PP_FirstZone",
-        "Engine post-process":  "/Game/Blueprints/PostProcess/BP_PP_EngineZone",
-        "Tail fog":             "/Game/Blueprints/Atmosphere/BP_Fog_TailZone",
         "Tail zone materials":  "/Game/Materials/Zones/Tail/M_Tail_Floor",
         "First zone materials": "/Game/Materials/Zones/First/M_First_Floor",
         "Metal material":       "/Game/Materials/ModularPipes/M_BareMetal",

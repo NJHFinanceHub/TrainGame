@@ -123,7 +123,7 @@ def run():
         fog_comp = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
         if fog_comp:
             fog_comp.set_editor_property("fog_density", 0.002)
-            fog_comp.set_editor_property("fog_inscattering_color", unreal.LinearColor(0.4, 0.45, 0.55, 1.0))
+            fog_comp.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.4, 0.45, 0.55, 1.0))
         unreal.log("  Placed Exponential Height Fog")
 
     # --- Post Process Volume (cold color grade) ---

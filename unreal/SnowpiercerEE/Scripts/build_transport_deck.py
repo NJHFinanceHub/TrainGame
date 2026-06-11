@@ -892,7 +892,7 @@ def setup_atmosphere():
         fc = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
         if fc:
             fc.set_editor_property("fog_density", 0.008)
-            fc.set_editor_property("fog_inscattering_color",
+            fc.set_editor_property("fog_inscattering_luminance",
                                    unreal.LinearColor(0.04, 0.03, 0.03, 1.0))
 
     # Post-process — dark, contrasty

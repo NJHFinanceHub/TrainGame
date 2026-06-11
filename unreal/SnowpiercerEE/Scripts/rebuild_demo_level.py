@@ -423,7 +423,7 @@ def setup_atmosphere():
         fc = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
         if fc:
             fc.set_editor_property("fog_density", 0.002)
-            fc.set_editor_property("fog_inscattering_color", unreal.LinearColor(0.25, 0.28, 0.35, 1.0))
+            fc.set_editor_property("fog_inscattering_luminance", unreal.LinearColor(0.25, 0.28, 0.35, 1.0))
 
     # Post-process — cold industrial
     ppv = level_lib.spawn_actor_from_class(

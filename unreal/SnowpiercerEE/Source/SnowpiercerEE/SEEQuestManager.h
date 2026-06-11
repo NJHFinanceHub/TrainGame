@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Engine/DataTable.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SEEQuestManager.generated.h"
 
@@ -56,7 +57,7 @@ struct FSEEQuestObjective
 };
 
 USTRUCT(BlueprintType)
-struct FSEEQuest
+struct FSEEQuest : public FTableRowBase
 {
 	GENERATED_BODY()
 

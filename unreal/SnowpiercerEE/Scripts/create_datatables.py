@@ -1094,18 +1094,28 @@ def create_datatable_via_json_import(asset_name, struct_name, rows_json, asset_d
 
         # Create the DataTable asset first
         factory = unreal.DataTableFactory()
-        # Set the row struct — this requires the struct to be registered
-        # We use unreal.find_struct() or the factory's Struct property
-        try:
-            factory.struct = unreal.ScriptStruct.find(struct_name)
-        except Exception:
-            # Fallback: Try setting by path
-            log.warning("Could not find struct '%s' directly; trying path-based lookup.", struct_name)
+        # Resolve the row struct. UScriptStruct objects are registered WITHOUT
+        # the C++ 'F' prefix (FSEEItemData -> /Script/SnowpiercerEE.SEEItemData),
+        # so try both spellings across the lookup methods.
+        bare_name = struct_name[1:] if struct_name.startswith("F") else struct_name
+        resolved = None
+        for candidate in (bare_name, struct_name):
             try:
-                factory.struct = unreal.load_object(None, f"/Script/SnowpiercerEE.{struct_name}")
-            except Exception as e2:
-                log.error("Could not resolve struct %s: %s", struct_name, e2)
-                raise
+                resolved = unreal.find_object(None, f"/Script/SnowpiercerEE.{candidate}")
+            except Exception:
+                resolved = None
+            if resolved:
+                break
+            try:
+                resolved = unreal.load_object(None, f"/Script/SnowpiercerEE.{candidate}")
+            except Exception:
+                resolved = None
+            if resolved:
+                break
+        if not resolved:
+            log.error("Could not resolve struct %s", struct_name)
+            raise RuntimeError(f"Row struct {struct_name} not found in /Script/SnowpiercerEE")
+        factory.struct = resolved
 
         # Create the asset
         dt = asset_tools.create_asset(

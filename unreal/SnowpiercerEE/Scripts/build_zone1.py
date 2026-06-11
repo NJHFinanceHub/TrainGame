@@ -1000,7 +1000,7 @@ def build_car10_dark_car(car_x, mats):
         fc = fog.get_component_by_class(unreal.ExponentialHeightFogComponent)
         if fc:
             fc.set_editor_property("fog_density", 0.005)
-            fc.set_editor_property("fog_inscattering_color",
+            fc.set_editor_property("fog_inscattering_luminance",
                                    unreal.LinearColor(0.03, 0.03, 0.05, 1.0))
         _inc()
 
