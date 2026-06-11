@@ -1,6 +1,7 @@
 // SSEEDialoguePanel.cpp - Dialogue panel implementation
 #include "SSEEDialoguePanel.h"
 
+#include "Input/Events.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/Layout/SBox.h"
@@ -80,6 +81,50 @@ void SSEEDialoguePanel::Tick(const FGeometry& AllottedGeometry, const double InC
 		int32 TargetChars = FMath::FloorToInt(RevealTimer * CharsPerSecond);
 		RevealedCharCount = FMath::Min(TargetChars, CurrentLine.DialogueText.ToString().Len());
 	}
+}
+
+FReply SSEEDialoguePanel::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	const FKey Key = InKeyEvent.GetKey();
+
+	// Esc ends the conversation outright.
+	if (Key == EKeys::Escape)
+	{
+		OnCloseRequested.ExecuteIfBound();
+		return FReply::Handled();
+	}
+
+	// Number keys pick choices (1-4).
+	if (Key == EKeys::One)   { return SelectChoiceByIndex(0) ? FReply::Handled() : FReply::Unhandled(); }
+	if (Key == EKeys::Two)   { return SelectChoiceByIndex(1) ? FReply::Handled() : FReply::Unhandled(); }
+	if (Key == EKeys::Three) { return SelectChoiceByIndex(2) ? FReply::Handled() : FReply::Unhandled(); }
+	if (Key == EKeys::Four)  { return SelectChoiceByIndex(3) ? FReply::Handled() : FReply::Unhandled(); }
+
+	// E / Enter / Space: first press finishes the typewriter, second continues.
+	if (Key == EKeys::E || Key == EKeys::Enter || Key == EKeys::SpaceBar)
+	{
+		if (!IsFullyRevealed())
+		{
+			RevealedCharCount = CurrentLine.DialogueText.ToString().Len();
+			return FReply::Handled();
+		}
+		if (CurrentLine.Choices.Num() == 0)
+		{
+			OnDismissed.ExecuteIfBound();
+		}
+		return FReply::Handled();
+	}
+
+	return SCompoundWidget::OnKeyDown(MyGeometry, InKeyEvent);
+}
+
+bool SSEEDialoguePanel::SelectChoiceByIndex(int32 ChoiceIndex)
+{
+	if (!CurrentLine.Choices.IsValidIndex(ChoiceIndex)) return false;
+	if (!CurrentLine.Choices[ChoiceIndex].bIsAvailable) return false;
+
+	OnChoiceSelected.ExecuteIfBound(CurrentLine.Choices[ChoiceIndex].ChoiceID);
+	return true;
 }
 
 void SSEEDialoguePanel::SetDialogueLine(const FDialogueLine& Line)

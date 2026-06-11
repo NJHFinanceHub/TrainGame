@@ -5,9 +5,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "SEECharacterAnimInstance.h"
+#include "SnowpiercerEE/AI/SEENPCAIController.h"
 
 ASEEJackbootCharacter::ASEEJackbootCharacter()
 {
+	// Give every placed/spawned jackboot the hostile corridor NPC brain.
+	AIControllerClass = ASEENPCAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	// Jackboot combat defaults — tougher than standard NPCs
 	NPCRole = ENPCClass::Jackboot;
 	MaxHealth = 150.0f;

@@ -4,9 +4,14 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SEECharacterAnimInstance.h"
+#include "SnowpiercerEE/AI/SEENPCAIController.h"
 
 ASEECivilianCharacter::ASEECivilianCharacter()
 {
+	// Give every placed/spawned civilian the corridor NPC brain.
+	AIControllerClass = ASEENPCAIController::StaticClass();
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
 	// Civilians are non-combatants with lower stats
 	NPCRole = ENPCClass::Tailie;
 	MaxHealth = 60.0f;

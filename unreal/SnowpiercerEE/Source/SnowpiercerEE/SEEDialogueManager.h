@@ -97,6 +97,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void StartConversation(FName ConversationID, UDataTable* DialogueTable);
 
+	/**
+	 * Start a conversation directly at a node row in the Zone 1 dialogue table
+	 * (lazily loaded from /Game/DataTables/DT_Dialogue_Zone1). Used by NPC
+	 * interaction, where each NPC stores its entry row (Pike_01, Dealer_01, ...).
+	 * Returns true if the conversation is running after processing the node.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	bool StartConversationAtNode(FName EntryNodeID);
+
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void AdvanceDialogue();
 
@@ -135,8 +144,14 @@ private:
 	void ProcessNode(FName NodeID);
 	const FSEEDialogueNode* FindNode(FName NodeID) const;
 
+	/** Lazy-loads the Zone 1 dialogue DataTable asset. */
+	UDataTable* GetZone1DialogueTable();
+
 	UPROPERTY()
 	TObjectPtr<UDataTable> ActiveDialogueTable;
+
+	UPROPERTY()
+	TObjectPtr<UDataTable> Zone1DialogueTable;
 
 	TMap<FName, bool> ConversationFlags;
 	FSEEDialogueNode CurrentNode;

@@ -30,12 +30,19 @@ public:
 	void Construct(const FArguments& InArgs);
 	virtual void Tick(const FGeometry& AllottedGeometry, const double InCurrentTime, const float InDeltaTime) override;
 
+	// Keyboard driving: 1-4 select choices, E/Enter/Space continue, Esc closes
+	virtual bool SupportsKeyboardFocus() const override { return true; }
+	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+
 	// Set a new dialogue line to display
 	void SetDialogueLine(const FDialogueLine& Line);
 
 	// Callbacks for HUD to connect
 	void SetOnChoiceSelected(FOnDialogueChoiceSelectedSlate InDelegate) { OnChoiceSelected = InDelegate; }
 	void SetOnDismissed(FSimpleDelegate InDelegate) { OnDismissed = InDelegate; }
+
+	// Fired when the player wants out of the whole conversation (Esc)
+	void SetOnCloseRequested(FSimpleDelegate InDelegate) { OnCloseRequested = InDelegate; }
 
 private:
 	TSharedRef<SWidget> MakeSpeakerName();
@@ -49,9 +56,13 @@ private:
 	// Is the typewriter reveal complete?
 	bool IsFullyRevealed() const;
 
+	// Select an available choice by display index (0-based); true if handled
+	bool SelectChoiceByIndex(int32 ChoiceIndex);
+
 	FDialogueLine CurrentLine;
 	FOnDialogueChoiceSelectedSlate OnChoiceSelected;
 	FSimpleDelegate OnDismissed;
+	FSimpleDelegate OnCloseRequested;
 
 	// Typewriter state
 	int32 RevealedCharCount = 0;

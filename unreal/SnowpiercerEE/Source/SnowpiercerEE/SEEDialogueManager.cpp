@@ -20,6 +20,25 @@ void USEEDialogueManager::StartConversation(FName ConversationID, UDataTable* Di
 	ProcessNode(StartNode);
 }
 
+bool USEEDialogueManager::StartConversationAtNode(FName EntryNodeID)
+{
+	if (bInConversation || EntryNodeID.IsNone()) return false;
+
+	UDataTable* Table = GetZone1DialogueTable();
+	if (!Table) return false;
+	if (!Table->FindRow<FSEEDialogueNode>(EntryNodeID, TEXT("StartConversationAtNode"), false)) return false;
+
+	ActiveDialogueTable = Table;
+	ActiveConversationID = EntryNodeID;
+	bInConversation = true;
+
+	OnDialogueStarted.Broadcast(EntryNodeID);
+	ProcessNode(EntryNodeID);
+
+	// SetFlag/Branch/End chains can finish the conversation immediately.
+	return bInConversation;
+}
+
 void USEEDialogueManager::AdvanceDialogue()
 {
 	if (!bInConversation) return;
@@ -130,4 +149,14 @@ const FSEEDialogueNode* USEEDialogueManager::FindNode(FName NodeID) const
 {
 	if (!ActiveDialogueTable) return nullptr;
 	return ActiveDialogueTable->FindRow<FSEEDialogueNode>(NodeID, TEXT(""));
+}
+
+UDataTable* USEEDialogueManager::GetZone1DialogueTable()
+{
+	if (!Zone1DialogueTable)
+	{
+		Zone1DialogueTable = LoadObject<UDataTable>(nullptr,
+			TEXT("/Game/DataTables/DT_Dialogue_Zone1.DT_Dialogue_Zone1"));
+	}
+	return Zone1DialogueTable;
 }

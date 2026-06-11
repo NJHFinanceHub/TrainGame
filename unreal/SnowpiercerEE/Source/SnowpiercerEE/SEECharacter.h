@@ -235,4 +235,7 @@ private:
 	void UpdateStamina(float DeltaTime);
 	void UpdateCameraFOV(float DeltaTime);
 	void EndLandingRecovery();
+
+	/** Interact helper: sweep for a talkable NPC ahead and open dialogue. */
+	bool TryStartNPCDialogue();
 };

@@ -12,6 +12,7 @@
 #include "Framework/Application/SlateApplication.h"
 
 // Game data sources
+#include "SnowpiercerEE/AI/SEENPCAIController.h"
 #include "SnowpiercerEE/SEEInventoryComponent.h"
 #include "SnowpiercerEE/SEEHealthComponent.h"
 #include "SnowpiercerEE/SEEStatsComponent.h"
@@ -37,6 +38,7 @@
 #include "SSEEPauseMenu.h"
 #include "SSEEMainMenu.h"
 #include "SSEEDeathScreen.h"
+#include "SSEEDialoguePanel.h"
 #include "Widgets/SSEESettingsPanel.h"
 
 namespace
@@ -153,6 +155,31 @@ void USEEUISubsystem::NotifyPlayerDeath(const FText& Cause)
 
 	PendingDeathCause = Cause;
 	OpenScreen(ESEEUIScreen::DeathScreen);
+}
+
+void USEEUISubsystem::OpenDialogue(APawn* NPCPawn)
+{
+	if (!NPCPawn || CurrentScreen != ESEEUIScreen::None) return;
+
+	USEEDialogueManager* Dialogue = GetDialogueManager();
+	if (!Dialogue || Dialogue->IsInConversation()) return;
+
+	ASEENPCAIController* Brain = Cast<ASEENPCAIController>(NPCPawn->GetController());
+	if (!Brain || !Brain->CanStartDialogue()) return;
+
+	// Start the conversation first: BuildScreenWidget pulls the current node.
+	if (!Dialogue->StartConversationAtNode(Brain->DialogueEntryNode)) return;
+
+	DialogueNPCPawn = NPCPawn;
+	Brain->SetInDialogue(true);
+
+	OpenScreen(ESEEUIScreen::Dialogue);
+
+	// Panel failed to come up (no viewport?) — don't leave a headless conversation.
+	if (CurrentScreen != ESEEUIScreen::Dialogue)
+	{
+		CleanupDialogueState();
+	}
 }
 
 // --- Widget factory ---
@@ -362,6 +389,30 @@ TSharedPtr<SWidget> USEEUISubsystem::BuildScreenWidget(ESEEUIScreen Screen)
 		return Death;
 	}
 
+	case ESEEUIScreen::Dialogue:
+	{
+		USEEDialogueManager* Dialogue = GetDialogueManager();
+		if (!Dialogue || !Dialogue->IsInConversation()) return nullptr;
+
+		TSharedRef<SSEEDialoguePanel> Panel = SNew(SSEEDialoguePanel);
+		Panel->SetOnChoiceSelected(FOnDialogueChoiceSelectedSlate::CreateUObject(
+			this, &USEEUISubsystem::HandleDialogueChoiceSelected));
+		Panel->SetOnDismissed(FSimpleDelegate::CreateUObject(
+			this, &USEEUISubsystem::HandleDialogueContinue));
+		Panel->SetOnCloseRequested(FSimpleDelegate::CreateUObject(
+			this, &USEEUISubsystem::HandleDialogueCloseRequested));
+
+		Dialogue->OnDialogueNodeChanged.AddDynamic(this, &USEEUISubsystem::HandleDialogueNodeChanged);
+		Dialogue->OnDialogueEnded.AddDynamic(this, &USEEUISubsystem::HandleDialogueEnded);
+		bDialogueDelegatesBound = true;
+
+		DialoguePanelWidget = Panel;
+		LastDialogueSpeaker = FText::GetEmpty();
+		LastDialogueText = FText::GetEmpty();
+		PushNodeToDialoguePanel(Dialogue->GetCurrentNode());
+		return Panel;
+	}
+
 	default:
 		return nullptr;
 	}
@@ -375,6 +426,8 @@ void USEEUISubsystem::RemoveActiveScreenWidget()
 	}
 	BoundInventoryComp.Reset();
 	InventoryScreenWidget.Reset();
+
+	CleanupDialogueState();
 
 	if (ActiveScreenWidget.IsValid())
 	{
@@ -546,6 +599,130 @@ void USEEUISubsystem::HandlePlayerInventoryChanged()
 	{
 		InventoryScreenWidget->Refresh();
 	}
+}
+
+// --- Dialogue plumbing ---
+
+void USEEUISubsystem::HandleDialogueNodeChanged(const FSEEDialogueNode& CurrentNode)
+{
+	PushNodeToDialoguePanel(CurrentNode);
+}
+
+void USEEUISubsystem::HandleDialogueEnded()
+{
+	if (CurrentScreen == ESEEUIScreen::Dialogue)
+	{
+		CloseCurrentScreen(); // RemoveActiveScreenWidget cleans up the bindings
+	}
+}
+
+void USEEUISubsystem::HandleDialogueChoiceSelected(FName ChoiceID)
+{
+	// ChoiceID carries the display index of the available choice ("0".."3").
+	const int32 ChoiceIndex = FCString::Atoi(*ChoiceID.ToString());
+	if (USEEDialogueManager* Dialogue = GetDialogueManager())
+	{
+		Dialogue->SelectChoice(ChoiceIndex);
+	}
+}
+
+void USEEUISubsystem::HandleDialogueContinue()
+{
+	if (USEEDialogueManager* Dialogue = GetDialogueManager())
+	{
+		Dialogue->AdvanceDialogue();
+	}
+}
+
+void USEEUISubsystem::HandleDialogueCloseRequested()
+{
+	if (USEEDialogueManager* Dialogue = GetDialogueManager())
+	{
+		Dialogue->EndConversation(); // OnDialogueEnded closes the panel
+	}
+}
+
+void USEEUISubsystem::PushNodeToDialoguePanel(const FSEEDialogueNode& Node)
+{
+	if (!DialoguePanelWidget.IsValid()) return;
+
+	FDialogueLine Line;
+
+	// Choice nodes in DT_Dialogue_Zone1 have empty speaker/text — keep the
+	// preceding NPC line on screen as context behind the choices.
+	if (Node.NodeType == ESEEDialogueNodeType::PlayerChoice && Node.DialogueText.IsEmpty())
+	{
+		Line.SpeakerName = LastDialogueSpeaker;
+		Line.DialogueText = LastDialogueText;
+	}
+	else
+	{
+		Line.SpeakerName = Node.SpeakerName;
+		Line.DialogueText = Node.DialogueText;
+		LastDialogueSpeaker = Node.SpeakerName;
+		LastDialogueText = Node.DialogueText;
+	}
+
+	if (Node.NodeType == ESEEDialogueNodeType::PlayerChoice)
+	{
+		if (USEEDialogueManager* Dialogue = GetDialogueManager())
+		{
+			const TArray<FSEEDialogueChoice> Available = Dialogue->GetAvailableChoices();
+			for (int32 i = 0; i < Available.Num(); ++i)
+			{
+				FDialogueChoice Choice;
+				Choice.ChoiceText = FText::Format(NSLOCTEXT("HUD", "DialogueChoiceFmt", "{0}. {1}"),
+					FText::AsNumber(i + 1), Available[i].ChoiceText);
+				Choice.ChoiceID = FName(*FString::FromInt(i));
+				Choice.bIsAvailable = true;
+				Line.Choices.Add(MoveTemp(Choice));
+			}
+		}
+	}
+
+	DialoguePanelWidget->SetDialogueLine(Line);
+
+	// Keep keyboard focus on the panel (clicking a choice button steals it),
+	// so 1-4 / E / Esc keep working for the whole conversation.
+	if (FSlateApplication::IsInitialized())
+	{
+		FSlateApplication::Get().SetKeyboardFocus(DialoguePanelWidget, EFocusCause::SetDirectly);
+	}
+}
+
+void USEEUISubsystem::CleanupDialogueState()
+{
+	if (bDialogueDelegatesBound)
+	{
+		if (USEEDialogueManager* Dialogue = GetDialogueManager())
+		{
+			Dialogue->OnDialogueNodeChanged.RemoveDynamic(this, &USEEUISubsystem::HandleDialogueNodeChanged);
+			Dialogue->OnDialogueEnded.RemoveDynamic(this, &USEEUISubsystem::HandleDialogueEnded);
+
+			// Screen torn down mid-conversation (e.g. another screen opened
+			// over it) — end the talk; delegates are already unbound.
+			if (Dialogue->IsInConversation())
+			{
+				Dialogue->EndConversation();
+			}
+		}
+		bDialogueDelegatesBound = false;
+	}
+
+	if (DialogueNPCPawn.IsValid())
+	{
+		if (ASEENPCAIController* Brain = Cast<ASEENPCAIController>(DialogueNPCPawn->GetController()))
+		{
+			Brain->SetInDialogue(false);
+		}
+	}
+	DialogueNPCPawn.Reset();
+	DialoguePanelWidget.Reset();
+}
+
+USEEDialogueManager* USEEUISubsystem::GetDialogueManager() const
+{
+	return GetGameInstance() ? GetGameInstance()->GetSubsystem<USEEDialogueManager>() : nullptr;
 }
 
 void USEEUISubsystem::HandleWorldTearDown(UWorld* World)

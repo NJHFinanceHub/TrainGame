@@ -297,7 +297,7 @@ def build_textured_material(mat_name, set_entry, tiling=1.0, metallic=0.5):
         if rough_tex:
             node = _add_sample(
                 mat, rough_tex, -450, 250,
-                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR,
+                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_MASKS,
                 texcoord_node=texcoord)
             if node:
                 try:
@@ -312,7 +312,7 @@ def build_textured_material(mat_name, set_entry, tiling=1.0, metallic=0.5):
         if spec_tex:
             node = _add_sample(
                 mat, spec_tex, -450, 250,
-                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR,
+                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_MASKS,
                 texcoord_node=texcoord)
             if node:
                 try:
@@ -333,7 +333,7 @@ def build_textured_material(mat_name, set_entry, tiling=1.0, metallic=0.5):
         if metal_tex:
             node = _add_sample(
                 mat, metal_tex, -450, 500,
-                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR,
+                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_MASKS,
                 texcoord_node=texcoord)
             if node:
                 try:
@@ -359,7 +359,7 @@ def build_textured_material(mat_name, set_entry, tiling=1.0, metallic=0.5):
         if ao_tex:
             node = _add_sample(
                 mat, ao_tex, -450, 750,
-                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_LINEAR_COLOR,
+                sampler_type=unreal.MaterialSamplerType.SAMPLERTYPE_MASKS,
                 texcoord_node=texcoord)
             if node:
                 try:
@@ -618,6 +618,53 @@ def load_zone1():
         return False
 
 
+def fix_modularpipes_texture_compression():
+    """M_RustyMetal (built by setup_game_content.py) samples its Metallic and
+    Roughness maps with Linear Color samplers, but the textures were imported
+    as TC_Masks -- the mismatch fails the whole material compile. Switching
+    the textures to TC_Default (sRGB off) makes the existing samplers valid."""
+    unreal.log("=" * 64)
+    unreal.log("3b. MODULARPIPES TEXTURE COMPRESSION FIX")
+    unreal.log("=" * 64)
+    fixed = 0
+    try:
+        paths = editor_util.list_assets("/Game/Textures/ModularPipes",
+                                        recursive=True, include_folder=False)
+    except Exception:
+        paths = []
+    for p in paths:
+        name = p.split("/")[-1].split(".")[0]
+        if not (name.endswith("_Metallic") or name.endswith("_Roughness")):
+            continue
+        try:
+            tex = unreal.load_asset(p.split(".")[0])
+            if not tex:
+                continue
+            tex.modify()
+            tex.set_editor_property("compression_settings",
+                                    unreal.TextureCompressionSettings.TC_DEFAULT)
+            tex.set_editor_property("srgb", False)
+            editor_util.save_loaded_asset(tex)
+            fixed += 1
+        except Exception as e:
+            unreal.log_warning(f"  Compression fix failed for {name}: {e}")
+    unreal.log(f"  ModularPipes mask textures re-flagged: {fixed}")
+    # Recompile the affected pipe materials so the fix takes effect
+    try:
+        mats = editor_util.list_assets("/Game/Materials/ModularPipes",
+                                       recursive=True, include_folder=False)
+        for mp in mats:
+            try:
+                m = unreal.load_asset(mp.split(".")[0])
+                if isinstance(m, unreal.Material):
+                    mat_lib.recompile_material(m)
+                    editor_util.save_loaded_asset(m)
+            except Exception:
+                pass
+    except Exception:
+        pass
+
+
 def save_everything():
     unreal.log("=" * 64)
     unreal.log("4. SAVE")
@@ -674,6 +721,9 @@ def run():
 
     # 3. Retexture the level
     retexture_level(role_mats)
+
+    # 3b. Fix ModularPipes mask-texture compression (M_RustyMetal compile)
+    fix_modularpipes_texture_compression()
 
     # 4. Save
     save_everything()

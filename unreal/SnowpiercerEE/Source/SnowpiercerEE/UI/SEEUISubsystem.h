@@ -3,11 +3,13 @@
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
+#include "SnowpiercerEE/SEEDialogueManager.h"
 #include "SEEUISubsystem.generated.h"
 
 class APlayerController;
 class APawn;
 class SWidget;
+class SSEEDialoguePanel;
 class SSEEInventoryScreen;
 class USEEInventoryComponent;
 
@@ -25,7 +27,8 @@ enum class ESEEUIScreen : uint8
 	Codex		UMETA(DisplayName = "Codex"),
 	PauseMenu	UMETA(DisplayName = "Pause Menu"),
 	MainMenu	UMETA(DisplayName = "Main Menu"),
-	DeathScreen	UMETA(DisplayName = "Death Screen")
+	DeathScreen	UMETA(DisplayName = "Death Screen"),
+	Dialogue	UMETA(DisplayName = "Dialogue")
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScreenChanged, ESEEUIScreen, NewScreen);
@@ -76,6 +79,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void NotifyPlayerDeath(const FText& Cause);
 
+	/** Start a conversation with an NPC pawn (uses the entry node stored on its
+	 *  ASEENPCAIController brain) and open the dialogue panel over gameplay. */
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void OpenDialogue(APawn* NPCPawn);
+
 	UPROPERTY(BlueprintAssignable, Category = "UI")
 	FOnScreenChanged OnScreenChanged;
 
@@ -105,6 +113,23 @@ private:
 	UFUNCTION()
 	void HandlePlayerInventoryChanged();
 
+	// --- Dialogue plumbing ---
+
+	/** Dynamic-delegate target for USEEDialogueManager::OnDialogueNodeChanged. */
+	UFUNCTION()
+	void HandleDialogueNodeChanged(const FSEEDialogueNode& CurrentNode);
+
+	/** Dynamic-delegate target for USEEDialogueManager::OnDialogueEnded. */
+	UFUNCTION()
+	void HandleDialogueEnded();
+
+	void HandleDialogueChoiceSelected(FName ChoiceID);
+	void HandleDialogueContinue();
+	void HandleDialogueCloseRequested();
+	void PushNodeToDialoguePanel(const FSEEDialogueNode& Node);
+	void CleanupDialogueState();
+	USEEDialogueManager* GetDialogueManager() const;
+
 	void HandleWorldTearDown(UWorld* World);
 
 	// --- Helpers ---
@@ -120,6 +145,15 @@ private:
 	TSharedPtr<SWidget> ActiveScreenWidget;
 	TSharedPtr<SSEEInventoryScreen> InventoryScreenWidget;
 	TSharedPtr<SWidget> SettingsOverlayWidget;
+	TSharedPtr<SSEEDialoguePanel> DialoguePanelWidget;
+
+	/** NPC the open dialogue is bound to (its brain pauses while talking). */
+	TWeakObjectPtr<APawn> DialogueNPCPawn;
+
+	/** Last NPC speaker/text shown, re-used as context behind choice nodes. */
+	FText LastDialogueSpeaker;
+	FText LastDialogueText;
+	bool bDialogueDelegatesBound = false;
 
 	/** Inventory component the open inventory screen is bound to (for delegate cleanup). */
 	UPROPERTY()

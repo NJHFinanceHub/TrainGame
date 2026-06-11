@@ -82,12 +82,23 @@ void ASEEHUD::ShowDeathScreen(const FText& CauseOfDeath)
 
 void ASEEHUD::ShowDialogue()
 {
-	// Stub: dialogue UI is not wired through the HUD anymore.
+	// Dialogue opens with an NPC context via USEEUISubsystem::OpenDialogue
+	// (driven from ASEECharacter::Interact); nothing sensible to show from here.
 }
 
 void ASEEHUD::HideDialogue()
 {
-	// Stub: dialogue UI is not wired through the HUD anymore.
+	// Delegate: close the subsystem's dialogue panel if one is up.
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		if (USEEUISubsystem* UISub = GI->GetSubsystem<USEEUISubsystem>())
+		{
+			if (UISub->GetCurrentScreen() == ESEEUIScreen::Dialogue)
+			{
+				UISub->CloseCurrentScreen();
+			}
+		}
+	}
 }
 
 void ASEEHUD::DrawHUD()

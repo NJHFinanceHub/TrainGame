@@ -14,6 +14,9 @@
 #include "Progression/SkillTreeComponent.h"
 #include "Exploration/ClimbingComponent.h"
 #include "Exploration/SwimmingComponent.h"
+#include "AI/SEENPCAIController.h"
+#include "UI/SEEUISubsystem.h"
+#include "Engine/GameInstance.h"
 
 ASEECharacter::ASEECharacter()
 {
@@ -329,6 +332,18 @@ void ASEECharacter::ToggleViewMode()
 
 void ASEECharacter::Interact()
 {
+	// A full-screen/dialogue panel already owns input — the panel handles E.
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		if (USEEUISubsystem* UISub = GI->GetSubsystem<USEEUISubsystem>())
+		{
+			if (UISub->IsScreenOpen()) return;
+		}
+	}
+
+	// Talkable NPC in front of us takes priority over world interactables.
+	if (TryStartNPCDialogue()) return;
+
 	UCameraComponent* ActiveCamera = bFirstPersonActive ? FirstPersonCamera : ThirdPersonCamera;
 	FVector Start = ActiveCamera->GetComponentLocation();
 	FVector End = Start + ActiveCamera->GetForwardVector() * 400.0f;
@@ -352,6 +367,43 @@ void ASEECharacter::Interact()
 			// Future: IInteractable interface check
 		}
 	}
+}
+
+bool ASEECharacter::TryStartNPCDialogue()
+{
+	// Pawn capsules ignore the visibility channel, so NPCs need their own
+	// sweep on the pawn channel: short reach, fat radius for easy targeting.
+	UCameraComponent* ActiveCamera = bFirstPersonActive ? FirstPersonCamera : ThirdPersonCamera;
+	if (!ActiveCamera) return false;
+
+	const FVector Start = ActiveCamera->GetComponentLocation();
+	const FVector End = Start + ActiveCamera->GetForwardVector() * 250.0f;
+
+	FCollisionQueryParams Params(FName(TEXT("SEEInteractNPC")), false, this);
+
+	TArray<FHitResult> Hits;
+	GetWorld()->SweepMultiByChannel(Hits, Start, End, FQuat::Identity,
+		ECC_Pawn, FCollisionShape::MakeSphere(60.0f), Params);
+
+	for (const FHitResult& Hit : Hits)
+	{
+		APawn* HitPawn = Cast<APawn>(Hit.GetActor());
+		if (!HitPawn || HitPawn == this) continue;
+
+		ASEENPCAIController* Brain = Cast<ASEENPCAIController>(HitPawn->GetController());
+		if (!Brain || !Brain->CanStartDialogue()) continue;
+
+		if (UGameInstance* GI = GetGameInstance())
+		{
+			if (USEEUISubsystem* UISub = GI->GetSubsystem<USEEUISubsystem>())
+			{
+				UISub->OpenDialogue(HitPawn);
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 void ASEECharacter::LightAttack()
