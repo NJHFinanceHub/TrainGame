@@ -26,6 +26,13 @@ void ASnowpiercerEEGameMode::BeginPlay()
 	// by Scripts/build_zone1.py — no streaming sublevels exist, so car-streaming
 	// registration is intentionally skipped. Restore RegisterZone1Cars() if the
 	// pipeline switches back to sublevel-per-car streaming.
+
+	// Seed the respawn checkpoint from the PlayerStart so falling out of the
+	// world before the first real checkpoint teleports somewhere valid.
+	if (AActor* Start = UGameplayStatics::GetActorOfClass(this, APlayerStart::StaticClass()))
+	{
+		SetCheckpoint(0, Start->GetActorTransform());
+	}
 }
 
 UClass* ASnowpiercerEEGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)

@@ -25,6 +25,10 @@ public:
 
 	virtual void BeginPlay() override;
 
+	/** Falling below KillZ teleports back to the last checkpoint instead of
+	    destroying the pawn (which would leave the player as a floating camera). */
+	virtual void FellOutOfWorld(const UDamageType& DmgType) override;
+
 	// --- Hit Reactions ---
 
 	/** Apply a hit reaction (stagger, knockback, or death ragdoll) */

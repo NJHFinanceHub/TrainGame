@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SEEHealthComponent.h"
 #include "SEECharacterAnimInstance.h"
+#include "SnowpiercerEEGameMode.h"
 
 ASEEPlayerCharacter::ASEEPlayerCharacter()
 {
@@ -23,6 +24,18 @@ void ASEEPlayerCharacter::BeginPlay()
 		HealthComponent->OnDamageTaken.AddDynamic(this, &ASEEPlayerCharacter::OnDamageTaken);
 		HealthComponent->OnDeath.AddDynamic(this, &ASEEPlayerCharacter::ActivateDeathRagdoll);
 	}
+}
+
+void ASEEPlayerCharacter::FellOutOfWorld(const UDamageType& DmgType)
+{
+	// Do NOT call Super — AActor::FellOutOfWorld destroys the pawn.
+	if (ASnowpiercerEEGameMode* GM = GetWorld()->GetAuthGameMode<ASnowpiercerEEGameMode>())
+	{
+		GetCharacterMovement()->StopMovementImmediately();
+		GM->RespawnPlayer();
+		return;
+	}
+	Super::FellOutOfWorld(DmgType);
 }
 
 void ASEEPlayerCharacter::OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* DamageInstigator)
