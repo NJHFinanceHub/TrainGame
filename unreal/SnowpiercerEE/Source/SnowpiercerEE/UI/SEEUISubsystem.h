@@ -1,12 +1,15 @@
-// SEEUISubsystem.h - Game UI manager: screen stack, input mode switching
+// SEEUISubsystem.h - Game UI manager: owns the Slate screen widgets, input mode switching
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "SEEUISubsystem.generated.h"
 
-class UUserWidget;
-class ASEEPlayerController;
+class APlayerController;
+class APawn;
+class SWidget;
+class SSEEInventoryScreen;
+class USEEInventoryComponent;
 
 UENUM(BlueprintType)
 enum class ESEEUIScreen : uint8
@@ -27,6 +30,18 @@ enum class ESEEUIScreen : uint8
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScreenChanged, ESEEUIScreen, NewScreen);
 
+/**
+ * USEEUISubsystem
+ *
+ * Single owner of all full-screen Slate UI. OpenScreen() constructs the matching
+ * SSEE* widget, adds it to the game viewport and switches the player controller
+ * to game-and-UI input with a visible cursor. CloseCurrentScreen() removes the
+ * widget and restores game-only input.
+ *
+ * Also drives the once-per-session main menu (shown paused at boot), the pause
+ * menu actions (save/load/settings/quit) and the death screen (reload checkpoint
+ * / quit to menu).
+ */
 UCLASS()
 class SNOWPIERCEREE_API USEEUISubsystem : public UGameInstanceSubsystem
 {
@@ -34,6 +49,7 @@ class SNOWPIERCEREE_API USEEUISubsystem : public UGameInstanceSubsystem
 
 public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+	virtual void Deinitialize() override;
 
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void OpenScreen(ESEEUIScreen Screen);
@@ -50,9 +66,64 @@ public:
 	UFUNCTION(BlueprintPure, Category = "UI")
 	bool IsScreenOpen() const { return CurrentScreen != ESEEUIScreen::None; }
 
+	/** Show the main menu (paused) the first time a map loads this session.
+	 *  Called from ASEEHUD::BeginPlay; subsequent respawns/level loads skip it
+	 *  unless QuitToMenu reset the flag. */
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void ShowMainMenuIfFirstBoot();
+
+	/** Open the death screen with a cause-of-death line. Safe to call repeatedly. */
+	UFUNCTION(BlueprintCallable, Category = "UI")
+	void NotifyPlayerDeath(const FText& Cause);
+
 	UPROPERTY(BlueprintAssignable, Category = "UI")
 	FOnScreenChanged OnScreenChanged;
 
 private:
+	// --- Widget lifecycle ---
+	TSharedPtr<SWidget> BuildScreenWidget(ESEEUIScreen Screen);
+	void RemoveActiveScreenWidget();
+	void ApplyOpenInputMode(const TSharedPtr<SWidget>& FocusWidget);
+	void ApplyClosedInputMode();
+	static int32 GetScreenZOrder(ESEEUIScreen Screen);
+
+	// --- Settings overlay (shared by main menu and pause menu) ---
+	void PushSettingsOverlay();
+	void PopSettingsOverlay();
+
+	// --- Menu actions ---
+	void HandleMainMenuNewGame();
+	void HandleMainMenuContinue();
+	void HandleQuitToDesktop();
+	void HandlePauseResume();
+	void HandlePauseSave();
+	void HandlePauseLoad();
+	void HandleQuitToMainMenu();
+	void HandleDeathReloadCheckpoint();
+
+	/** Dynamic-delegate target for USEEInventoryComponent::OnInventoryChanged. */
+	UFUNCTION()
+	void HandlePlayerInventoryChanged();
+
+	void HandleWorldTearDown(UWorld* World);
+
+	// --- Helpers ---
+	UWorld* GetGameWorld() const;
+	APlayerController* GetLocalPlayerController() const;
+	APawn* GetLocalPawn() const;
+	bool DoesSaveGameExistOnDisk() const;
+
 	ESEEUIScreen CurrentScreen = ESEEUIScreen::None;
+	bool bMainMenuShownThisSession = false;
+	FText PendingDeathCause;
+
+	TSharedPtr<SWidget> ActiveScreenWidget;
+	TSharedPtr<SSEEInventoryScreen> InventoryScreenWidget;
+	TSharedPtr<SWidget> SettingsOverlayWidget;
+
+	/** Inventory component the open inventory screen is bound to (for delegate cleanup). */
+	UPROPERTY()
+	TWeakObjectPtr<USEEInventoryComponent> BoundInventoryComp;
+
+	FDelegateHandle WorldTearDownHandle;
 };

@@ -141,6 +141,6 @@ struct FInventoryItem
 };
 
 // Delegate for inventory changes
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryChanged);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemAdded, const FInventoryItem&, Item);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnItemRemoved, const FInventoryItem&, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSnowyInventoryChanged);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSnowyItemAdded, const FInventoryItem&, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSnowyItemRemoved, const FInventoryItem&, Item);

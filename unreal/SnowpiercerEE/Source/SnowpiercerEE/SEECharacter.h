@@ -8,7 +8,7 @@ class USEEHealthComponent;
 class USEEStatsComponent;
 class USEECombatComponent;
 class USEEInventoryComponent;
-class USEEHungerComponent;
+class UArmorComponent;
 class USEEColdComponent;
 class USEESkillTreeComponent;
 class UClimbingComponent;
@@ -58,11 +58,35 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	bool IsRunning() const { return bIsRunning; }
 
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	bool IsSprinting() const { return bIsSprinting; }
+
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetStamina() const { return CurrentStamina; }
 
 	UFUNCTION(BlueprintCallable, Category = "Stats")
 	float GetMaxStamina() const { return MaxStamina; }
+
+	/** Spend stamina (clamped at zero) and reset the regen delay. */
+	UFUNCTION(BlueprintCallable, Category = "Stats")
+	void ConsumeStamina(float Amount);
+
+	/** True if at least Amount stamina is available. */
+	UFUNCTION(BlueprintPure, Category = "Stats")
+	bool HasStamina(float Amount) const { return CurrentStamina >= Amount; }
+
+	/** Invulnerability flag checked by the incoming-damage path (dodge i-frames). */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void SetInvulnerable(bool bInvulnerable) { bIsInvulnerable = bInvulnerable; }
+
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	bool IsInvulnerable() const { return bIsInvulnerable; }
+
+	/** Add a transient FOV offset (positive = punch out, negative = dip in) that decays back to zero. */
+	UFUNCTION(BlueprintCallable, Category = "Camera")
+	void AddCameraFOVImpulse(float Offset);
+
+	virtual void Landed(const FHitResult& Hit) override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -71,13 +95,49 @@ protected:
 	float DefaultWalkSpeed = 400.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
-	float SprintSpeed = 700.0f;
+	float SprintSpeed = 650.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float RunSpeed = 550.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Movement")
 	float CrouchSpeed = 200.0f;
+
+	// --- Landing recovery (hard landings briefly dampen move speed) ---
+
+	/** Downward landing speed (cm/s) above which landing recovery kicks in */
+	UPROPERTY(EditAnywhere, Category = "Movement|Landing")
+	float HardLandingSpeed = 700.0f;
+
+	/** How long the post-landing speed dampen lasts */
+	UPROPERTY(EditAnywhere, Category = "Movement|Landing")
+	float LandingRecoveryDuration = 0.35f;
+
+	/** Move speed multiplier while recovering from a hard landing */
+	UPROPERTY(EditAnywhere, Category = "Movement|Landing")
+	float LandingRecoverySpeedScale = 0.4f;
+
+	// --- Camera feel ---
+
+	/** Base camera field of view */
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float DefaultFOV = 90.0f;
+
+	/** Field of view while sprinting at speed */
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float SprintFOV = 100.0f;
+
+	/** Interp speed for FOV transitions */
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float FOVInterpSpeed = 8.0f;
+
+	/** How quickly transient FOV impulses (dodge pulse, damage dip) decay */
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float FOVImpulseRecoverySpeed = 6.0f;
+
+	/** Clamp for accumulated transient FOV impulses */
+	UPROPERTY(EditAnywhere, Category = "Camera")
+	float MaxFOVImpulse = 20.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float MaxStamina = 100.0f;
@@ -90,6 +150,10 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float StaminaRegenDelay = 1.5f;
+
+	/** Minimum stamina required to start sprinting (prevents stutter-sprint at zero) */
+	UPROPERTY(EditAnywhere, Category = "Stats")
+	float SprintMinStamina = 5.0f;
 
 	// Combat input
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -131,7 +195,7 @@ protected:
 	TObjectPtr<USEEInventoryComponent> InventoryComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<USEEHungerComponent> HungerComponent;
+	TObjectPtr<UArmorComponent> ArmorComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USEEColdComponent> ColdComponent;
@@ -158,6 +222,17 @@ private:
 	float CurrentStamina = 100.0f;
 	float StaminaRegenTimer = 0.0f;
 	bool bIsRunning = false;
+	bool bIsSprinting = false;
+	bool bIsInvulnerable = false;
+	bool bLandingRecoveryActive = false;
 	bool bFirstPersonActive = true;
 	bool bHeavyAttackCharging = false;
+	float FOVImpulse = 0.0f;
+	FTimerHandle LandingRecoveryTimer;
+
+	/** Recompute MaxWalkSpeed from sprint/run flags and landing recovery */
+	void RefreshMoveSpeed();
+	void UpdateStamina(float DeltaTime);
+	void UpdateCameraFOV(float DeltaTime);
+	void EndLandingRecovery();
 };

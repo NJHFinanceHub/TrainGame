@@ -3,6 +3,8 @@
 
 #include "SnowyEngine/Survival/SurvivalComponent.h"
 #include "SnowyEngine/Survival/KronoleComponent.h"
+#include "TrainGame/Economy/ArmorComponent.h"
+#include "Widgets/SSEEUIStyle.h"
 
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SOverlay.h"
@@ -15,11 +17,11 @@ void SSEESurvivalBars::Construct(const FArguments& InArgs)
 {
 	SurvivalComp = InArgs._SurvivalComponent;
 	KronoleComp = InArgs._KronoleComponent;
+	ArmorComp = InArgs._ArmorComponent;
 
-	// Initialize cached values
+	// Initialize cached values (hunger was removed from the game)
 	CachedPercents.Add(ESurvivalStatType::Health, 1.0f);
 	CachedPercents.Add(ESurvivalStatType::Stamina, 1.0f);
-	CachedPercents.Add(ESurvivalStatType::Hunger, 1.0f);
 	CachedPercents.Add(ESurvivalStatType::Cold, 1.0f);
 	CachedPercents.Add(ESurvivalStatType::Morale, 1.0f);
 
@@ -55,12 +57,12 @@ void SSEESurvivalBars::Construct(const FArguments& InArgs)
 					MakeStatBar(ESurvivalStatType::Stamina, NSLOCTEXT("HUD", "Stamina", "STA"), FLinearColor(0.9f, 0.8f, 0.1f))
 				]
 
-				// Hunger
+				// Armor (replaces the removed hunger meter)
 				+ SVerticalBox::Slot()
 				.AutoHeight()
 				.Padding(0, 2)
 				[
-					MakeStatBar(ESurvivalStatType::Hunger, NSLOCTEXT("HUD", "Hunger", "HGR"), FLinearColor(0.9f, 0.5f, 0.1f))
+					MakeArmorRow()
 				]
 
 				// Cold
@@ -188,6 +190,96 @@ TSharedRef<SWidget> SSEESurvivalBars::MakeKronoleIndicator()
 				.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
 				.ColorAndOpacity_Lambda([this]() { return GetKronoleStatusColor(); })
 			]
+		];
+}
+
+TSharedRef<SWidget> SSEESurvivalBars::MakeArmorRow()
+{
+	// One durability pip per armor slot; hidden when the slot is empty.
+	auto MakeDurabilityPip = [this](EArmorSlot Slot) -> TSharedRef<SWidget>
+	{
+		return SNew(SBox)
+			.WidthOverride(34.0f)
+			.HeightOverride(8.0f)
+			.Padding(FMargin(2, 0, 0, 0))
+			.Visibility_Lambda([this, Slot]()
+			{
+				return (ArmorComp.IsValid() && ArmorComp->HasArmorInSlot(Slot))
+					? EVisibility::SelfHitTestInvisible
+					: EVisibility::Collapsed;
+			})
+			[
+				SNew(SProgressBar)
+				.Percent_Lambda([this, Slot]()
+				{
+					FEquippedArmor Armor;
+					if (ArmorComp.IsValid() && ArmorComp->GetArmorInSlot(Slot, Armor) && Armor.MaxDurability > 0.0f)
+					{
+						return FMath::Clamp(Armor.CurrentDurability / Armor.MaxDurability, 0.0f, 1.0f);
+					}
+					return 0.0f;
+				})
+				.FillColorAndOpacity_Lambda([this, Slot]()
+				{
+					FEquippedArmor Armor;
+					if (ArmorComp.IsValid() && ArmorComp->GetArmorInSlot(Slot, Armor))
+					{
+						if (Armor.IsBroken()) return SEEUIStyle::DangerRed;
+						const float Pct = Armor.MaxDurability > 0.0f ? Armor.CurrentDurability / Armor.MaxDurability : 0.0f;
+						if (Pct < 0.3f) return SEEUIStyle::WarnAmber;
+					}
+					return SEEUIStyle::OkGreen;
+				})
+				.BackgroundImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
+				.FillImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
+				.BorderPadding(FVector2D(0, 0))
+			];
+	};
+
+	return SNew(SHorizontalBox)
+
+		// Label
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(VAlign_Center)
+		.Padding(0, 0, 6, 0)
+		[
+			SNew(SBox)
+			.WidthOverride(32.0f)
+			[
+				SNew(STextBlock)
+				.Text(NSLOCTEXT("HUD", "ArmorLabel", "ARM"))
+				.Font(FCoreStyle::GetDefaultFontStyle("Bold", 9))
+				.ColorAndOpacity(FSlateColor(FLinearColor(0.7f, 0.7f, 0.7f)))
+			]
+		]
+
+		// Total damage reduction %
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(VAlign_Center)
+		.Padding(0, 0, 6, 0)
+		[
+			SNew(STextBlock)
+			.Text_Lambda([this]()
+			{
+				const float DR = ArmorComp.IsValid() ? ArmorComp->GetTotalDamageReduction() : 0.0f;
+				return FText::Format(NSLOCTEXT("HUD", "ArmorDR", "{0}% DR"),
+					FText::AsNumber(FMath::RoundToInt(DR)));
+			})
+			.Font(FCoreStyle::GetDefaultFontStyle("Bold", 9))
+			.ColorAndOpacity(FSlateColor(SEEUIStyle::AccentSteel))
+		]
+
+		// Per-slot durability pips
+		+ SHorizontalBox::Slot()
+		.FillWidth(1.0f)
+		.VAlign(VAlign_Center)
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot().AutoWidth()[ MakeDurabilityPip(EArmorSlot::Head) ]
+			+ SHorizontalBox::Slot().AutoWidth()[ MakeDurabilityPip(EArmorSlot::Torso) ]
+			+ SHorizontalBox::Slot().AutoWidth()[ MakeDurabilityPip(EArmorSlot::Shield) ]
 		];
 }
 

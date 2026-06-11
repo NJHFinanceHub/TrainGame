@@ -25,7 +25,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChanged, float, NewStamina
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaminaDepleted);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKronoleModeActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnKronoleModeDeactivated);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath, AActor*, Killer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTGCombatDeath, AActor*, Killer);
 
 UCLASS(ClassGroup=(Combat), meta=(BlueprintSpawnableComponent))
 class TRAINGAME_API UCombatComponent : public UActorComponent
@@ -151,7 +151,7 @@ public:
 	FOnKronoleModeDeactivated OnKronoleModeDeactivated;
 
 	UPROPERTY(BlueprintAssignable, Category = "Combat")
-	FOnDeath OnDeath;
+	FOnTGCombatDeath OnDeath;
 
 protected:
 	virtual void BeginPlay() override;

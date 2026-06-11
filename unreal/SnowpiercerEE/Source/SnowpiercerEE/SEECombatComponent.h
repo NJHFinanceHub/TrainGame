@@ -5,6 +5,7 @@
 #include "SEECombatComponent.generated.h"
 
 class ASEEWeaponBase;
+class ASEECharacter;
 class USEEHealthComponent;
 class USEEStatsComponent;
 
@@ -34,6 +35,7 @@ public:
 	USEECombatComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// Actions
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -54,6 +56,11 @@ public:
 	// Receiving damage (called before HealthComponent)
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	float ProcessIncomingDamage(float BaseDamage, AActor* Attacker);
+
+	// Receiving damage with full hit context (block-breaking heavies).
+	// ProcessIncomingDamage remains as a thin wrapper for existing callers.
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	float ProcessIncomingHit(float BaseDamage, AActor* Attacker, bool bBreaksBlock);
 
 	// Weapon management
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -113,6 +120,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float BlockDamageReduction = 0.7f;
 
+	/** Armor durability lost per absorbed hit, scaled by raw incoming damage */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Armor")
+	float ArmorWearPerHit = 0.5f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float StaggerDuration = 0.8f;
 
@@ -124,6 +135,100 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float ComboWindow = 0.5f;
+
+	// --- Melee tuning ---
+
+	/** Damage multiplier per light combo step (combo length = array length, defaults 1.0/1.1/1.3) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	TArray<float> ComboDamageMultipliers;
+
+	/** Windup before a light swing's active frame (scaled by weapon attack speed) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float LightAttackWindup = 0.15f;
+
+	/** Windup before a heavy swing's active frame (scaled by weapon attack speed) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float HeavyAttackWindup = 0.5f;
+
+	/** Unarmed heavy damage multiplier (equipped weapons use their own) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float HeavyAttackMultiplier = 2.0f;
+
+	/** Forward lunge impulse at the start of a light swing */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float LightLungeImpulse = 280.0f;
+
+	/** Forward lunge impulse at the start of a heavy swing */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float HeavyLungeImpulse = 380.0f;
+
+	/** Unarmed light attack stamina cost (equipped weapons use StaminaCostLight) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float LightStaminaCost = 8.0f;
+
+	/** Unarmed heavy attack stamina cost (equipped weapons use StaminaCostHeavy) */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float HeavyStaminaCost = 20.0f;
+
+	/** Extra recovery time after the final hit of a light combo */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Melee")
+	float ComboFinisherExtraRecovery = 0.2f;
+
+	// --- Feedback ---
+
+	/** Knockback impulse applied to victims of light hits */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Feedback")
+	float LightHitKnockback = 180.0f;
+
+	/** Knockback impulse applied to victims of heavy hits */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Feedback")
+	float HeavyHitKnockback = 520.0f;
+
+	/** Hit-stop length in real seconds when a hit connects */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Feedback")
+	float HitStopDuration = 0.05f;
+
+	/** Global time dilation during hit-stop */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Feedback")
+	float HitStopTimeDilation = 0.3f;
+
+	// --- Dodge ---
+
+	/** Cooldown between dodges */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Dodge")
+	float DodgeCooldown = 0.8f;
+
+	/** Transient FOV pulse on dodge for feedback */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Dodge")
+	float DodgeFOVPulse = 6.0f;
+
+	// --- Block & parry ---
+
+	/** Total frontal arc (degrees) inside which block/parry are effective */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Block")
+	float BlockArcDegrees = 120.0f;
+
+	/** Stagger duration when a heavy attack breaks the block */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Block")
+	float BlockBreakStaggerDuration = 0.5f;
+
+	/** Knockback applied to parried attackers without a compatible combat component */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|Block")
+	float ParryKnockbackImpulse = 450.0f;
+
+	// --- Target assist (corridor-friendly soft lock) ---
+
+	/** Max distance to soft-lock onto an enemy when light attacking */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|TargetAssist")
+	float TargetAssistRange = 300.0f;
+
+	/** Half-angle (degrees) of the frontal acquisition cone */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|TargetAssist")
+	float TargetAssistConeHalfAngle = 60.0f;
+
+	/** Max yaw correction (degrees) applied per swing */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat|TargetAssist")
+	float TargetAssistMaxYawCorrection = 30.0f;
 
 private:
 	UPROPERTY()
@@ -138,4 +243,18 @@ private:
 	float ComboTimer = 0.0f;
 	bool bDodgeIFramesActive = false;
 	float DodgeTimer = 0.0f;
+	float DodgeCooldownRemaining = 0.0f;
+
+	// Timer-driven attack phases (no anim notifies — windup is pure code timing)
+	FTimerHandle AttackWindupTimer;
+	FTimerHandle HitStopTimer;
+	bool bPendingHeavyAttack = false;
+	float PendingDamageMultiplier = 1.0f;
+
+	void BeginAttack(bool bHeavy);
+	void OnAttackWindupComplete();
+	void ApplyTargetAssist();
+	void TriggerHitStop();
+	void EndHitStop();
+	ASEECharacter* GetOwnerSEECharacter() const;
 };

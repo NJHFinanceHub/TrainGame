@@ -74,6 +74,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "HitReaction")
 	float HeavyStaggerThreshold = 25.0f;
 
+	/** Transient camera FOV dip when taking a combat hit */
+	UPROPERTY(EditAnywhere, Category = "HitReaction")
+	float DamageFOVDip = 8.0f;
+
 private:
 	bool bInHitReaction = false;
 	FTimerHandle StaggerRecoveryTimer;

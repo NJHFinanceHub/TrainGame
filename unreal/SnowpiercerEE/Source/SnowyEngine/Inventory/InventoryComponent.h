@@ -106,13 +106,13 @@ public:
 	// --- Delegates ---
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FOnInventoryChanged OnInventoryChanged;
+	FOnSnowyInventoryChanged OnInventoryChanged;
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FOnItemAdded OnItemAdded;
+	FOnSnowyItemAdded OnItemAdded;
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
-	FOnItemRemoved OnItemRemoved;
+	FOnSnowyItemRemoved OnItemRemoved;
 
 protected:
 	virtual void BeginPlay() override;

@@ -11,6 +11,7 @@
 void SSEEMainMenu::Construct(const FArguments& InArgs)
 {
 	bHasSaveGame = InArgs._bHasSaveGame;
+	bShowCredits = InArgs._bShowCredits;
 	OnNewGame = InArgs._OnNewGame;
 	OnContinue = InArgs._OnContinue;
 	OnSettings = InArgs._OnSettings;
@@ -89,9 +90,15 @@ TSharedRef<SWidget> SSEEMainMenu::MakeTitle()
 		];
 }
 
+FReply SSEEMainMenu::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	// Consume everything; menu interaction is mouse-driven.
+	return FReply::Handled();
+}
+
 TSharedRef<SWidget> SSEEMainMenu::MakeMenuButtons()
 {
-	return SNew(SVerticalBox)
+	TSharedRef<SVerticalBox> Buttons = SNew(SVerticalBox)
 		+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
 		[
 			MakeMenuButton(NSLOCTEXT("HUD", "NewGame", "NEW GAME"), OnNewGame)
@@ -103,15 +110,22 @@ TSharedRef<SWidget> SSEEMainMenu::MakeMenuButtons()
 		+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
 		[
 			MakeMenuButton(NSLOCTEXT("HUD", "Settings", "SETTINGS"), OnSettings)
-		]
-		+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
+		];
+
+	if (bShowCredits)
+	{
+		Buttons->AddSlot().AutoHeight().Padding(0, 0, 0, 8)
 		[
 			MakeMenuButton(NSLOCTEXT("HUD", "Credits", "CREDITS"), OnCredits)
-		]
-		+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 8)
-		[
-			MakeMenuButton(NSLOCTEXT("HUD", "Quit", "QUIT"), OnQuit)
 		];
+	}
+
+	Buttons->AddSlot().AutoHeight().Padding(0, 0, 0, 8)
+	[
+		MakeMenuButton(NSLOCTEXT("HUD", "Quit", "QUIT"), OnQuit)
+	];
+
+	return Buttons;
 }
 
 TSharedRef<SWidget> SSEEMainMenu::MakeMenuButton(const FText& Label, FOnMenuAction Action, bool bEnabled)

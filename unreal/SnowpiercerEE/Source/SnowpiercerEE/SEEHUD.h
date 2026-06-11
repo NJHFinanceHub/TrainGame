@@ -2,27 +2,24 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
-#include "UI/SEEUISubsystem.h"
 #include "SEEHUD.generated.h"
 
+class ASEECharacter;
 class USEEHealthComponent;
-class USEEHungerComponent;
 class USEEColdComponent;
 class USEECombatComponent;
-class ASEECharacter;
-class USEEGameHUDWidget;
-class USEEInventoryWidget;
-class USEECharacterWidget;
-// NOTE: Quest log is now SSEEQuestLogWidget (Slate). UMG placeholder uses UUserWidget.
-class USEETrainMapWidget;
-class USEEFactionWidget;
-class USEECompanionWidget;
-class USEECraftingWidget;
-class USEECodexWidget;
-class USEEDialogueWidget;
-class USEEPauseMenuWidget;
-class USEEDeathScreenWidget;
+class UArmorComponent;
 
+/**
+ * ASEEHUD
+ *
+ * Canvas-drawn gameplay HUD: health/stamina bars, armor readout (damage
+ * reduction + per-slot durability), cold/weapon indicators and crosshair.
+ *
+ * Full-screen UI (inventory, menus, death screen, ...) is owned entirely by
+ * USEEUISubsystem; this class only kicks off the once-per-session main menu
+ * and reports the player's death to the subsystem.
+ */
 UCLASS()
 class SNOWPIERCEREE_API ASEEHUD : public AHUD
 {
@@ -33,79 +30,35 @@ public:
 
 	virtual void DrawHUD() override;
 
-	// --- UMG Widget Accessors ---
-
-	UFUNCTION(BlueprintPure, Category = "HUD")
-	USEEGameHUDWidget* GetGameHUD() const { return GameHUDWidget; }
-
-	UFUNCTION(BlueprintPure, Category = "HUD")
-	USEEDialogueWidget* GetDialogueWidget() const { return DialogueWidget; }
-
+	/** Legacy dialogue hooks (UMG dialogue was removed; Slate dialogue is driven
+	 *  by the dialogue manager directly). Kept as no-ops for API compatibility. */
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void ShowDialogue();
 
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void HideDialogue();
 
+	/** Routes to USEEUISubsystem::NotifyPlayerDeath. */
 	UFUNCTION(BlueprintCallable, Category = "HUD")
 	void ShowDeathScreen(const FText& CauseOfDeath);
 
 protected:
 	virtual void BeginPlay() override;
 
-	// Widget classes (set in Blueprint or C++ subclass)
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEGameHUDWidget> GameHUDWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEInventoryWidget> InventoryWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEECharacterWidget> CharacterWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<UUserWidget> QuestLogWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEETrainMapWidget> TrainMapWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEFactionWidget> FactionWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEECompanionWidget> CompanionWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEECraftingWidget> CraftingWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEECodexWidget> CodexWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEDialogueWidget> DialogueWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEPauseMenuWidget> PauseMenuWidgetClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "HUD|Widgets")
-	TSubclassOf<USEEDeathScreenWidget> DeathScreenWidgetClass;
-
 private:
+	/** Dynamic-delegate target for the pawn's USEEHealthComponent::OnDeath. */
 	UFUNCTION()
-	void OnScreenChanged(ESEEUIScreen NewScreen);
-	void ShowScreenWidget(ESEEUIScreen Screen);
-	void HideAllScreenWidgets();
-	UUserWidget* GetOrCreateWidget(ESEEUIScreen Screen);
-	void SetGameInputMode(bool bGameOnly);
+	void HandleOwnerDeath();
 
-	// Canvas HUD fallback (used when UMG not configured)
+	/** (Re)cache pawn component pointers and bind the death delegate. */
+	void CachePawnComponents();
+
+	// Canvas drawing
 	void DrawHealthBar();
 	void DrawStaminaBar();
-	void DrawHungerIndicator();
+	void DrawArmorIndicator();
 	void DrawColdIndicator();
 	void DrawWeaponIndicator();
-	void DrawInteractionPrompt();
-	void DrawDetectionIndicator();
 	void DrawCrosshair();
 	void DrawDamageDirection();
 
@@ -113,61 +66,13 @@ private:
 				 FLinearColor FillColor, FLinearColor BackColor);
 
 	// Cached references
-	UPROPERTY()
 	TWeakObjectPtr<ASEECharacter> PlayerCharacter;
-
-	UPROPERTY()
 	TWeakObjectPtr<USEEHealthComponent> HealthComp;
-
-	UPROPERTY()
-	TWeakObjectPtr<USEEHungerComponent> HungerComp;
-
-	UPROPERTY()
 	TWeakObjectPtr<USEEColdComponent> ColdComp;
-
-	UPROPERTY()
 	TWeakObjectPtr<USEECombatComponent> CombatComp;
-
-	// UMG widget instances
-	UPROPERTY()
-	TObjectPtr<USEEGameHUDWidget> GameHUDWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEEInventoryWidget> InventoryWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEECharacterWidget> CharacterWidget;
-
-	UPROPERTY()
-	TObjectPtr<UUserWidget> QuestLogWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEETrainMapWidget> TrainMapWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEEFactionWidget> FactionWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEECompanionWidget> CompanionWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEECraftingWidget> CraftingWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEECodexWidget> CodexWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEEDialogueWidget> DialogueWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEEPauseMenuWidget> PauseMenuWidget;
-
-	UPROPERTY()
-	TObjectPtr<USEEDeathScreenWidget> DeathScreenWidget;
+	TWeakObjectPtr<UArmorComponent> ArmorComp;
 
 	// Damage direction tracking
 	float LastDamageTime = 0.0f;
 	FVector LastDamageDirection = FVector::ZeroVector;
-
-	bool bUsingUMG = false;
 };

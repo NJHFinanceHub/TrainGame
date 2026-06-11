@@ -1,6 +1,7 @@
 // SSEEPauseMenu.cpp - Pause menu implementation
 #include "SSEEPauseMenu.h"
 
+#include "InputCoreTypes.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/Layout/SBox.h"
@@ -15,6 +16,7 @@ void SSEEPauseMenu::Construct(const FArguments& InArgs)
 	OnLoad = InArgs._OnLoad;
 	OnSettings = InArgs._OnSettings;
 	OnQuitToMenu = InArgs._OnQuitToMenu;
+	OnQuitToDesktop = InArgs._OnQuitToDesktop;
 
 	ChildSlot
 	[
@@ -66,14 +68,28 @@ void SSEEPauseMenu::Construct(const FArguments& InArgs)
 					[
 						MakeMenuButton(NSLOCTEXT("HUD", "PauseSettings", "SETTINGS"), OnSettings)
 					]
-					+ SVerticalBox::Slot().AutoHeight()
+					+ SVerticalBox::Slot().AutoHeight().Padding(0, 0, 0, 6)
 					[
 						MakeMenuButton(NSLOCTEXT("HUD", "QuitToMenu", "QUIT TO MENU"), OnQuitToMenu)
+					]
+					+ SVerticalBox::Slot().AutoHeight()
+					[
+						MakeMenuButton(NSLOCTEXT("HUD", "QuitToDesktop", "QUIT TO DESKTOP"), OnQuitToDesktop)
 					]
 				]
 			]
 		]
 	];
+}
+
+FReply SSEEPauseMenu::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	if (InKeyEvent.GetKey() == EKeys::Escape)
+	{
+		OnResume.ExecuteIfBound();
+		return FReply::Handled();
+	}
+	return SCompoundWidget::OnKeyDown(MyGeometry, InKeyEvent);
 }
 
 TSharedRef<SWidget> SSEEPauseMenu::MakeMenuButton(const FText& Label, FOnPauseMenuAction Action)

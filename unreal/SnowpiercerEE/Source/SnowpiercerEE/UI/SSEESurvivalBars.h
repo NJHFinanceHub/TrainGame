@@ -8,12 +8,15 @@
 
 class USurvivalComponent;
 class UKronoleComponent;
+class UArmorComponent;
 
 /**
  * SSEESurvivalBars
  *
- * Displays the five core survival stats as vertical or horizontal bars:
- * Health (red), Stamina (yellow), Hunger (orange), Cold (cyan), Morale (purple).
+ * Displays the core survival stats as horizontal bars:
+ * Health (red), Stamina (yellow), Cold (cyan), Morale (purple).
+ * (Hunger was removed from the game; an armor readout - total damage
+ * reduction % plus per-slot durability - takes its place.)
  *
  * Positioned in the bottom-left of the viewport. Bars pulse when crossing
  * into critical thresholds. Also shows Kronole addiction/withdrawal indicators
@@ -29,9 +32,11 @@ public:
 	SLATE_BEGIN_ARGS(SSEESurvivalBars)
 		: _SurvivalComponent(nullptr)
 		, _KronoleComponent(nullptr)
+		, _ArmorComponent(nullptr)
 	{}
 		SLATE_ARGUMENT(USurvivalComponent*, SurvivalComponent)
 		SLATE_ARGUMENT(UKronoleComponent*, KronoleComponent)
+		SLATE_ARGUMENT(UArmorComponent*, ArmorComponent)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -43,6 +48,9 @@ private:
 
 	// Build the Kronole status indicator
 	TSharedRef<SWidget> MakeKronoleIndicator();
+
+	// Build the armor readout row (total DR% + per-slot durability pips)
+	TSharedRef<SWidget> MakeArmorRow();
 
 	// Get the fill percent for a stat (0-1)
 	float GetStatPercent(ESurvivalStatType StatType) const;
@@ -56,6 +64,7 @@ private:
 
 	TWeakObjectPtr<USurvivalComponent> SurvivalComp;
 	TWeakObjectPtr<UKronoleComponent> KronoleComp;
+	TWeakObjectPtr<UArmorComponent> ArmorComp;
 
 	// Cached values for bar display
 	TMap<ESurvivalStatType, float> CachedPercents;

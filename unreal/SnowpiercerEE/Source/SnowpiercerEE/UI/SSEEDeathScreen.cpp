@@ -1,6 +1,7 @@
 // SSEEDeathScreen.cpp - Death screen implementation
 #include "SSEEDeathScreen.h"
 
+#include "InputCoreTypes.h"
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SOverlay.h"
 #include "Widgets/Layout/SBox.h"
@@ -120,4 +121,14 @@ void SSEEDeathScreen::Construct(const FArguments& InArgs)
 void SSEEDeathScreen::SetDeathCause(const FText& InCause)
 {
 	DeathCause = InCause;
+}
+
+FReply SSEEDeathScreen::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
+{
+	const FKey Key = InKeyEvent.GetKey();
+	if (Key == EKeys::Enter || Key == EKeys::SpaceBar)
+	{
+		OnReloadCheckpoint.ExecuteIfBound();
+	}
+	return FReply::Handled();
 }

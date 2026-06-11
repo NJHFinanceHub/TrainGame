@@ -3,12 +3,13 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "TimerManager.h"
 #include "Exploration/CollectibleComponent.h"
 #include "SEEHealthComponent.h"
 #include "SEEStatsComponent.h"
 #include "SEECombatComponent.h"
 #include "SEEInventoryComponent.h"
-#include "SEEHungerComponent.h"
+#include "TrainGame/Economy/ArmorComponent.h"
 #include "SEEColdComponent.h"
 #include "Progression/SkillTreeComponent.h"
 #include "Exploration/ClimbingComponent.h"
@@ -42,14 +43,24 @@ ASEECharacter::ASEECharacter()
 	ThirdPersonArm->SetActive(false);
 	bFirstPersonActive = true;
 
-	// Movement defaults
+	// Movement defaults — tuned for snappy starts and hard stops in tight corridors
 	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+	GetCharacterMovement()->MaxAcceleration = 2048.0f;
+	GetCharacterMovement()->BrakingDecelerationWalking = 2048.0f;
+	GetCharacterMovement()->GroundFriction = 8.0f;
+	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
+	GetCharacterMovement()->BrakingFriction = 6.0f;
+	GetCharacterMovement()->BrakingFrictionFactor = 1.0f;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->SetCrouchedHalfHeight(44.0f);
 	GetCharacterMovement()->MaxWalkSpeedCrouched = CrouchSpeed;
 	GetCharacterMovement()->bCanWalkOffLedges = true;
 	GetCharacterMovement()->JumpZVelocity = 420.0f;
-	GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->AirControl = 0.25f;
+
+	// Camera FOV baseline
+	FirstPersonCamera->SetFieldOfView(DefaultFOV);
+	ThirdPersonCamera->SetFieldOfView(DefaultFOV);
 
 	bUseControllerRotationYaw = true;
 
@@ -60,7 +71,7 @@ ASEECharacter::ASEECharacter()
 	StatsComponent = CreateDefaultSubobject<USEEStatsComponent>(TEXT("StatsComponent"));
 	CombatComponent = CreateDefaultSubobject<USEECombatComponent>(TEXT("CombatComponent"));
 	InventoryComponent = CreateDefaultSubobject<USEEInventoryComponent>(TEXT("InventoryComponent"));
-	HungerComponent = CreateDefaultSubobject<USEEHungerComponent>(TEXT("HungerComponent"));
+	ArmorComponent = CreateDefaultSubobject<UArmorComponent>(TEXT("ArmorComponent"));
 	ColdComponent = CreateDefaultSubobject<USEEColdComponent>(TEXT("ColdComponent"));
 	SkillTreeComponent = CreateDefaultSubobject<USEESkillTreeComponent>(TEXT("SkillTreeComponent"));
 	ClimbingComponent = CreateDefaultSubobject<UClimbingComponent>(TEXT("ClimbingComponent"));
@@ -70,7 +81,7 @@ ASEECharacter::ASEECharacter()
 void ASEECharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+	RefreshMoveSpeed();
 	CurrentStamina = MaxStamina;
 }
 
@@ -78,15 +89,37 @@ void ASEECharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Stamina system
-	if (bIsRunning && GetVelocity().SizeSquared() > 100.0f)
+	UpdateStamina(DeltaTime);
+	UpdateCameraFOV(DeltaTime);
+}
+
+void ASEECharacter::UpdateStamina(float DeltaTime)
+{
+	const bool bMoving = GetVelocity().SizeSquared() > 100.0f;
+
+	// Drain while actually moving under sprint/run; regenerate after a short delay otherwise
+	float DrainRate = 0.0f;
+	if (bMoving)
 	{
-		CurrentStamina = FMath::Max(0.0f, CurrentStamina - StaminaDrainRate * DeltaTime);
+		if (bIsSprinting)
+		{
+			DrainRate = StaminaDrainRate * 1.5f;
+		}
+		else if (bIsRunning)
+		{
+			DrainRate = StaminaDrainRate;
+		}
+	}
+
+	if (DrainRate > 0.0f)
+	{
+		CurrentStamina = FMath::Max(0.0f, CurrentStamina - DrainRate * DeltaTime);
 		StaminaRegenTimer = StaminaRegenDelay;
 
 		if (CurrentStamina <= 0.0f)
 		{
-			StopRun();
+			if (bIsSprinting) StopSprint();
+			if (bIsRunning) StopRun();
 		}
 	}
 	else
@@ -97,18 +130,81 @@ void ASEECharacter::Tick(float DeltaTime)
 			CurrentStamina = FMath::Min(MaxStamina, CurrentStamina + StaminaRegenRate * DeltaTime);
 		}
 	}
+}
 
-	// Sprint also drains stamina
-	if (GetCharacterMovement()->MaxWalkSpeed >= SprintSpeed && GetVelocity().SizeSquared() > 100.0f)
+void ASEECharacter::UpdateCameraFOV(float DeltaTime)
+{
+	// Transient impulses (dodge pulse, damage dip) decay back to zero
+	FOVImpulse = FMath::FInterpTo(FOVImpulse, 0.0f, DeltaTime, FOVImpulseRecoverySpeed);
+
+	// Sprint FOV kick only while actually moving at sprint pace
+	const bool bSprintingFast = bIsSprinting && GetVelocity().SizeSquared() > FMath::Square(DefaultWalkSpeed * 0.5f);
+	const float TargetFOV = (bSprintingFast ? SprintFOV : DefaultFOV) + FOVImpulse;
+
+	UCameraComponent* ActiveCamera = bFirstPersonActive ? FirstPersonCamera : ThirdPersonCamera;
+	if (ActiveCamera)
 	{
-		CurrentStamina = FMath::Max(0.0f, CurrentStamina - StaminaDrainRate * 1.5f * DeltaTime);
-		StaminaRegenTimer = StaminaRegenDelay;
-
-		if (CurrentStamina <= 0.0f)
-		{
-			StopSprint();
-		}
+		ActiveCamera->SetFieldOfView(FMath::FInterpTo(ActiveCamera->FieldOfView, TargetFOV, DeltaTime, FOVInterpSpeed));
 	}
+}
+
+void ASEECharacter::ConsumeStamina(float Amount)
+{
+	if (Amount <= 0.0f) return;
+
+	CurrentStamina = FMath::Max(0.0f, CurrentStamina - Amount);
+	StaminaRegenTimer = StaminaRegenDelay;
+
+	if (CurrentStamina <= 0.0f)
+	{
+		if (bIsSprinting) StopSprint();
+		if (bIsRunning) StopRun();
+	}
+}
+
+void ASEECharacter::AddCameraFOVImpulse(float Offset)
+{
+	FOVImpulse = FMath::Clamp(FOVImpulse + Offset, -MaxFOVImpulse, MaxFOVImpulse);
+}
+
+void ASEECharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	// Hard landings briefly dampen move speed for a weighty recovery
+	const float FallSpeed = -GetCharacterMovement()->Velocity.Z;
+	if (FallSpeed >= HardLandingSpeed)
+	{
+		bLandingRecoveryActive = true;
+		RefreshMoveSpeed();
+		GetWorldTimerManager().SetTimer(LandingRecoveryTimer, this, &ASEECharacter::EndLandingRecovery, LandingRecoveryDuration, false);
+	}
+}
+
+void ASEECharacter::EndLandingRecovery()
+{
+	bLandingRecoveryActive = false;
+	RefreshMoveSpeed();
+}
+
+void ASEECharacter::RefreshMoveSpeed()
+{
+	float Speed = DefaultWalkSpeed;
+	if (bIsSprinting)
+	{
+		Speed = SprintSpeed;
+	}
+	else if (bIsRunning)
+	{
+		Speed = RunSpeed;
+	}
+
+	if (bLandingRecoveryActive)
+	{
+		Speed *= LandingRecoverySpeedScale;
+	}
+
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
 }
 
 void ASEECharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -169,23 +265,18 @@ void ASEECharacter::MoveRight(float Value)
 
 void ASEECharacter::StartSprint()
 {
-	if (CurrentStamina > 0.0f)
+	if (CurrentStamina >= SprintMinStamina)
 	{
+		bIsSprinting = true;
 		bIsRunning = false;
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		RefreshMoveSpeed();
 	}
 }
 
 void ASEECharacter::StopSprint()
 {
-	if (bIsRunning)
-	{
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
-	}
-	else
-	{
-		GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
-	}
+	bIsSprinting = false;
+	RefreshMoveSpeed();
 }
 
 void ASEECharacter::StartRun()
@@ -193,19 +284,22 @@ void ASEECharacter::StartRun()
 	if (CurrentStamina > 0.0f)
 	{
 		bIsRunning = true;
-		GetCharacterMovement()->MaxWalkSpeed = RunSpeed;
+		bIsSprinting = false;
+		RefreshMoveSpeed();
 	}
 }
 
 void ASEECharacter::StopRun()
 {
 	bIsRunning = false;
-	GetCharacterMovement()->MaxWalkSpeed = DefaultWalkSpeed;
+	RefreshMoveSpeed();
 }
 
 void ASEECharacter::StartCrouch()
 {
 	bIsRunning = false;
+	bIsSprinting = false;
+	RefreshMoveSpeed();
 	Crouch();
 }
 

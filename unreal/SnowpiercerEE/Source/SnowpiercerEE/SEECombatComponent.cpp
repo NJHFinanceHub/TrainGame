@@ -2,12 +2,37 @@
 #include "SEEWeaponBase.h"
 #include "SEEHealthComponent.h"
 #include "SEEStatsComponent.h"
+#include "SEECharacter.h"
+#include "TrainGame/Economy/ArmorComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameFramework/Controller.h"
+#include "Engine/OverlapResult.h"
+#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
+#include "TimerManager.h"
 
 USEECombatComponent::USEECombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+
+	// 3-hit light combo with escalating damage
+	ComboDamageMultipliers = { 1.0f, 1.1f, 1.3f };
+}
+
+void USEECombatComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Never leave the world stuck in hit-stop dilation if we go away mid-freeze
+	if (UWorld* World = GetWorld())
+	{
+		if (World->GetTimerManager().IsTimerActive(HitStopTimer))
+		{
+			World->GetTimerManager().ClearTimer(HitStopTimer);
+			UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
+		}
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void USEECombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -41,9 +66,19 @@ void USEECombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		if (DodgeTimer <= 0.0f)
 		{
 			bDodgeIFramesActive = false;
-			SetCombatState(ESEECombatState::Idle);
+			if (ASEECharacter* OwnerChar = GetOwnerSEECharacter())
+			{
+				OwnerChar->SetInvulnerable(false);
+			}
+			if (CurrentState == ESEECombatState::Dodging)
+			{
+				SetCombatState(ESEECombatState::Idle);
+			}
 		}
 	}
+
+	// Dodge cooldown
+	DodgeCooldownRemaining = FMath::Max(0.0f, DodgeCooldownRemaining - DeltaTime);
 
 	// Combo timer
 	if (ComboTimer > 0.0f)
@@ -71,25 +106,23 @@ void USEECombatComponent::LightAttack()
 	if (!CanAttack()) return;
 	if (EquippedWeapon && EquippedWeapon->IsBroken()) return;
 
-	bInCombat = true;
-	CombatExitTimer = 0.0f;
-	ComboCount = FMath::Min(ComboCount + 1, 3);
-	ComboTimer = ComboWindow;
-
-	SetCombatState(ESEECombatState::Attacking);
-
-	float DamageMultiplier = 1.0f + (ComboCount - 1) * 0.15f;
-	PerformWeaponTrace(DamageMultiplier);
-
-	if (EquippedWeapon)
+	// Chain the next combo step if pressed inside the window after the previous active phase
+	if (ComboTimer > 0.0f && ComboCount > 0)
 	{
-		EquippedWeapon->DegradeDurability(1.0f);
+		ComboCount = FMath::Min(ComboCount + 1, ComboDamageMultipliers.Num());
+	}
+	else
+	{
+		ComboCount = 1;
 	}
 
-	// Recovery time based on weapon speed
-	float RecoveryTime = EquippedWeapon ? (0.4f / EquippedWeapon->GetAttackSpeed()) : 0.3f;
-	StateTimer = RecoveryTime;
-	SetCombatState(ESEECombatState::Recovering);
+	// Light attacks stay available at zero stamina but still drain it
+	if (ASEECharacter* OwnerChar = GetOwnerSEECharacter())
+	{
+		OwnerChar->ConsumeStamina(EquippedWeapon ? EquippedWeapon->StaminaCostLight : LightStaminaCost);
+	}
+
+	BeginAttack(false);
 }
 
 void USEECombatComponent::HeavyAttack()
@@ -97,28 +130,109 @@ void USEECombatComponent::HeavyAttack()
 	if (!CanAttack()) return;
 	if (EquippedWeapon && EquippedWeapon->IsBroken()) return;
 
+	// Heavy attacks require the full stamina cost up front
+	const float StaminaCost = EquippedWeapon ? EquippedWeapon->StaminaCostHeavy : HeavyStaminaCost;
+	if (ASEECharacter* OwnerChar = GetOwnerSEECharacter())
+	{
+		if (!OwnerChar->HasStamina(StaminaCost)) return;
+		OwnerChar->ConsumeStamina(StaminaCost);
+	}
+
+	ComboCount = 0;
+	ComboTimer = 0.0f;
+
+	BeginAttack(true);
+}
+
+void USEECombatComponent::BeginAttack(bool bHeavy)
+{
 	bInCombat = true;
 	CombatExitTimer = 0.0f;
-	ComboCount = 0;
+	bPendingHeavyAttack = bHeavy;
 
+	if (bHeavy)
+	{
+		PendingDamageMultiplier = EquippedWeapon ? EquippedWeapon->HeavyDamageMultiplier : HeavyAttackMultiplier;
+	}
+	else
+	{
+		const int32 ComboIndex = FMath::Clamp(ComboCount - 1, 0, ComboDamageMultipliers.Num() - 1);
+		PendingDamageMultiplier = ComboDamageMultipliers.IsValidIndex(ComboIndex) ? ComboDamageMultipliers[ComboIndex] : 1.0f;
+	}
+
+	ComboTimer = 0.0f; // the chain window reopens once the hit's active phase fires
 	SetCombatState(ESEECombatState::Attacking);
 
-	float DamageMultiplier = EquippedWeapon ? EquippedWeapon->HeavyDamageMultiplier : 2.0f;
-	PerformWeaponTrace(DamageMultiplier);
+	// Forward lunge so swings carry momentum down the corridor
+	if (ACharacter* OwnerChar = Cast<ACharacter>(GetOwner()))
+	{
+		const float Lunge = bHeavy ? HeavyLungeImpulse : LightLungeImpulse;
+		OwnerChar->LaunchCharacter(OwnerChar->GetActorForwardVector() * Lunge, false, false);
+	}
+
+	// Timer-driven active frame (no montages — windup is pure code timing)
+	const float AttackSpeed = EquippedWeapon ? FMath::Max(EquippedWeapon->GetAttackSpeed(), 0.1f) : 1.0f;
+	const float Windup = (bHeavy ? HeavyAttackWindup : LightAttackWindup) / AttackSpeed;
+	GetWorld()->GetTimerManager().SetTimer(AttackWindupTimer, this, &USEECombatComponent::OnAttackWindupComplete, Windup, false);
+}
+
+void USEECombatComponent::OnAttackWindupComplete()
+{
+	// Interrupted (staggered, dodged, etc.) during windup — the swing whiffs entirely
+	if (CurrentState != ESEECombatState::Attacking) return;
+
+	// Soft lock: nudge light swings toward the nearest frontal enemy before sweeping
+	if (!bPendingHeavyAttack)
+	{
+		ApplyTargetAssist();
+	}
+
+	PerformWeaponTrace(PendingDamageMultiplier);
 
 	if (EquippedWeapon)
 	{
-		EquippedWeapon->DegradeDurability(2.0f);
+		EquippedWeapon->DegradeDurability(bPendingHeavyAttack ? 2.0f : 1.0f);
 	}
 
-	float RecoveryTime = EquippedWeapon ? (0.8f / EquippedWeapon->GetAttackSpeed()) : 0.6f;
+	// Our swing was parried — the defender staggered us mid-trace; don't overwrite it
+	if (CurrentState == ESEECombatState::Staggered)
+	{
+		ComboCount = 0;
+		ComboTimer = 0.0f;
+		return;
+	}
+
+	// Recovery time based on weapon speed
+	const float AttackSpeed = EquippedWeapon ? FMath::Max(EquippedWeapon->GetAttackSpeed(), 0.1f) : 1.0f;
+	float RecoveryTime = (bPendingHeavyAttack ? 0.8f : 0.4f) / AttackSpeed;
+
+	const bool bComboFinisher = !bPendingHeavyAttack && ComboCount >= ComboDamageMultipliers.Num();
+	if (bComboFinisher)
+	{
+		RecoveryTime += ComboFinisherExtraRecovery;
+	}
+
 	StateTimer = RecoveryTime;
 	SetCombatState(ESEECombatState::Recovering);
+
+	if (bPendingHeavyAttack || bComboFinisher)
+	{
+		// Heavies and finishers reset the chain
+		ComboCount = 0;
+		ComboTimer = 0.0f;
+	}
+	else
+	{
+		// Chain window opens now that the hit's active phase has fired
+		ComboTimer = ComboWindow;
+	}
 }
 
 void USEECombatComponent::StartBlock()
 {
-	if (CurrentState == ESEECombatState::Staggered || CurrentState == ESEECombatState::Dodging) return;
+	if (CurrentState == ESEECombatState::Staggered ||
+		CurrentState == ESEECombatState::Dodging ||
+		CurrentState == ESEECombatState::Attacking) return;
 
 	ParryTimer = ParryWindowDuration;
 	SetCombatState(ESEECombatState::Parrying);
@@ -135,54 +249,123 @@ void USEECombatComponent::StopBlock()
 
 void USEECombatComponent::Dodge(FVector Direction)
 {
-	if (CurrentState == ESEECombatState::Staggered) return;
+	if (CurrentState == ESEECombatState::Staggered || CurrentState == ESEECombatState::Attacking) return;
+	if (DodgeCooldownRemaining > 0.0f) return;
+
+	// Dodge requires the full stamina cost
+	ASEECharacter* OwnerSEEChar = GetOwnerSEECharacter();
+	if (OwnerSEEChar)
+	{
+		if (!OwnerSEEChar->HasStamina(DodgeStaminaCost)) return;
+		OwnerSEEChar->ConsumeStamina(DodgeStaminaCost);
+	}
 
 	bInCombat = true;
 	CombatExitTimer = 0.0f;
+	DodgeCooldownRemaining = DodgeCooldown;
 
 	SetCombatState(ESEECombatState::Dodging);
 	bDodgeIFramesActive = true;
 	DodgeTimer = DodgeIFrameDuration;
 
-	// Apply dodge impulse
+	// Apply dodge impulse — input direction, or backward when standing still
 	if (ACharacter* OwnerChar = Cast<ACharacter>(GetOwner()))
 	{
-		FVector DodgeDir = Direction.IsNearlyZero() ? -OwnerChar->GetActorForwardVector() : Direction.GetSafeNormal();
+		FVector DodgeDir = Direction.GetSafeNormal2D();
+		if (DodgeDir.IsNearlyZero())
+		{
+			DodgeDir = -OwnerChar->GetActorForwardVector().GetSafeNormal2D();
+		}
 		OwnerChar->LaunchCharacter(DodgeDir * DodgeDistance, true, false);
+	}
+
+	if (OwnerSEEChar)
+	{
+		OwnerSEEChar->SetInvulnerable(true);
+		OwnerSEEChar->AddCameraFOVImpulse(DodgeFOVPulse);
 	}
 }
 
 float USEECombatComponent::ProcessIncomingDamage(float BaseDamage, AActor* Attacker)
 {
+	return ProcessIncomingHit(BaseDamage, Attacker, false);
+}
+
+float USEECombatComponent::ProcessIncomingHit(float BaseDamage, AActor* Attacker, bool bBreaksBlock)
+{
 	bInCombat = true;
 	CombatExitTimer = 0.0f;
 
-	// Dodge i-frames = no damage
-	if (bDodgeIFramesActive) return 0.0f;
+	AActor* Owner = GetOwner();
+	ASEECharacter* OwnerSEEChar = GetOwnerSEECharacter();
 
-	// Parry = counter-attack window, no damage
-	if (CurrentState == ESEECombatState::Parrying)
+	// Dodge i-frames = no damage
+	if (bDodgeIFramesActive || (OwnerSEEChar && OwnerSEEChar->IsInvulnerable())) return 0.0f;
+
+	// Facing check — block and parry only cover the frontal arc
+	bool bFrontal = true;
+	if (Owner && Attacker)
+	{
+		const FVector ToAttacker = (Attacker->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D();
+		const float FacingDot = FVector::DotProduct(Owner->GetActorForwardVector().GetSafeNormal2D(), ToAttacker);
+		bFrontal = FacingDot >= FMath::Cos(FMath::DegreesToRadians(BlockArcDegrees * 0.5f));
+	}
+
+	// Parry = block raised within the window before the hit: negate damage, punish the attacker
+	if (CurrentState == ESEECombatState::Parrying && bFrontal)
 	{
 		OnParrySuccess.Broadcast();
-		// Stagger the attacker
-		if (Attacker)
+		if (Attacker && Owner)
 		{
 			if (USEECombatComponent* AttackerCombat = Attacker->FindComponentByClass<USEECombatComponent>())
 			{
 				AttackerCombat->SetCombatState(ESEECombatState::Staggered);
 				AttackerCombat->StateTimer = StaggerDuration;
 			}
+			else if (ACharacter* AttackerChar = Cast<ACharacter>(Attacker))
+			{
+				// No compatible combat component — shove the attacker back instead
+				const FVector PushDir = (Attacker->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D();
+				AttackerChar->LaunchCharacter(PushDir * ParryKnockbackImpulse + FVector(0.0f, 0.0f, 60.0f), false, false);
+			}
 		}
+		TriggerHitStop();
 		return 0.0f;
 	}
 
-	// Block = reduced damage, stamina drain
-	if (CurrentState == ESEECombatState::Blocking)
+	// Block = reduced frontal damage; heavies smash straight through
+	float DamageThrough = BaseDamage;
+	if (CurrentState == ESEECombatState::Blocking && bFrontal)
 	{
-		return BaseDamage * (1.0f - BlockDamageReduction);
+		if (bBreaksBlock)
+		{
+			OnBlockBroken.Broadcast();
+			SetCombatState(ESEECombatState::Staggered);
+			StateTimer = BlockBreakStaggerDuration;
+		}
+		else
+		{
+			// Blocking a hit chips stamina
+			if (OwnerSEEChar)
+			{
+				OwnerSEEChar->ConsumeStamina(BlockStaminaDrainRate);
+			}
+			DamageThrough = BaseDamage * (1.0f - BlockDamageReduction);
+		}
 	}
 
-	return BaseDamage;
+	// Worn armor absorbs part of whatever got through, wearing down in return
+	if (Owner)
+	{
+		if (UArmorComponent* Armor = Owner->FindComponentByClass<UArmorComponent>())
+		{
+			const float Reduction = FMath::Clamp(Armor->GetTotalDamageReduction(), 0.0f, 0.9f);
+			DamageThrough *= (1.0f - Reduction);
+			Armor->ApplyHitToArmor(EArmorSlot::Torso, BaseDamage * ArmorWearPerHit);
+		}
+	}
+
+	return DamageThrough;
 }
 
 void USEECombatComponent::EquipWeapon(ASEEWeaponBase* Weapon)
@@ -271,7 +454,7 @@ void USEECombatComponent::PerformWeaponTrace(float DamageMultiplier)
 		float ProcessedDamage = FinalDamage;
 		if (USEECombatComponent* TargetCombat = HitActor->FindComponentByClass<USEECombatComponent>())
 		{
-			ProcessedDamage = TargetCombat->ProcessIncomingDamage(FinalDamage, Owner);
+			ProcessedDamage = TargetCombat->ProcessIncomingHit(FinalDamage, Owner, bPendingHeavyAttack);
 		}
 
 		if (ProcessedDamage > 0.0f)
@@ -281,9 +464,111 @@ void USEECombatComponent::PerformWeaponTrace(float DamageMultiplier)
 				ESEEDamageType DmgType = EquippedWeapon ? EquippedWeapon->GetDamageType() : ESEEDamageType::Blunt;
 				TargetHealth->TakeDamage(ProcessedDamage, DmgType, Owner);
 			}
+
+			// Shove the victim away from the attacker — heavies knock back harder
+			if (ACharacter* VictimChar = Cast<ACharacter>(HitActor))
+			{
+				const FVector Away = (HitActor->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D();
+				const float Knockback = bPendingHeavyAttack ? HeavyHitKnockback : LightHitKnockback;
+				const float UpKick = bPendingHeavyAttack ? 120.0f : 40.0f;
+				VictimChar->LaunchCharacter(Away * Knockback + FVector(0.0f, 0.0f, UpKick), false, false);
+			}
 		}
+
+		// Brief global hit-stop so connects feel weighty
+		TriggerHitStop();
 
 		OnAttackHit.Broadcast(HitActor, ProcessedDamage);
 		break; // Only hit first target in melee
 	}
+}
+
+void USEECombatComponent::ApplyTargetAssist()
+{
+	ACharacter* OwnerChar = Cast<ACharacter>(GetOwner());
+	UWorld* World = GetWorld();
+	if (!OwnerChar || !World) return;
+
+	FCollisionQueryParams Params(FName(TEXT("SEETargetAssist")), false, OwnerChar);
+	if (EquippedWeapon) Params.AddIgnoredActor(EquippedWeapon);
+
+	TArray<FOverlapResult> Overlaps;
+	World->OverlapMultiByObjectType(Overlaps, OwnerChar->GetActorLocation(), FQuat::Identity,
+		FCollisionObjectQueryParams(ECC_Pawn), FCollisionShape::MakeSphere(TargetAssistRange), Params);
+
+	const FVector Forward = OwnerChar->GetActorForwardVector().GetSafeNormal2D();
+	const float MinDot = FMath::Cos(FMath::DegreesToRadians(TargetAssistConeHalfAngle));
+
+	// Nearest living pawn inside the frontal cone
+	AActor* BestTarget = nullptr;
+	float BestDistSq = TNumericLimits<float>::Max();
+	for (const FOverlapResult& Overlap : Overlaps)
+	{
+		AActor* Candidate = Overlap.GetActor();
+		if (!Candidate || Candidate == OwnerChar) continue;
+		if (!Candidate->IsA<APawn>()) continue;
+
+		if (USEEHealthComponent* CandidateHealth = Candidate->FindComponentByClass<USEEHealthComponent>())
+		{
+			if (CandidateHealth->IsDead()) continue;
+		}
+
+		const FVector ToCandidate = Candidate->GetActorLocation() - OwnerChar->GetActorLocation();
+		if (FVector::DotProduct(Forward, ToCandidate.GetSafeNormal2D()) < MinDot) continue;
+
+		const float DistSq = ToCandidate.SizeSquared2D();
+		if (DistSq < BestDistSq)
+		{
+			BestDistSq = DistSq;
+			BestTarget = Candidate;
+		}
+	}
+
+	if (!BestTarget) return;
+
+	// Nudge yaw toward the target so the swing connects naturally
+	const FVector ToBest = BestTarget->GetActorLocation() - OwnerChar->GetActorLocation();
+	const float DesiredYaw = ToBest.Rotation().Yaw;
+	const float CurrentYaw = OwnerChar->GetActorRotation().Yaw;
+	const float YawDelta = FMath::Clamp(FMath::FindDeltaAngleDegrees(CurrentYaw, DesiredYaw),
+		-TargetAssistMaxYawCorrection, TargetAssistMaxYawCorrection);
+	if (FMath::IsNearlyZero(YawDelta, 0.1f)) return;
+
+	FRotator NewRotation = OwnerChar->GetActorRotation();
+	NewRotation.Yaw += YawDelta;
+	OwnerChar->SetActorRotation(NewRotation);
+
+	// Keep control rotation in sync so controller yaw doesn't immediately undo the assist
+	if (AController* Controller = OwnerChar->GetController())
+	{
+		FRotator ControlRotation = Controller->GetControlRotation();
+		ControlRotation.Yaw += YawDelta;
+		Controller->SetControlRotation(ControlRotation);
+	}
+}
+
+void USEECombatComponent::TriggerHitStop()
+{
+	UWorld* World = GetWorld();
+	if (!World || HitStopDuration <= 0.0f) return;
+	if (World->GetTimerManager().IsTimerActive(HitStopTimer)) return; // already mid hit-stop
+
+	UGameplayStatics::SetGlobalTimeDilation(World, HitStopTimeDilation);
+
+	// Timers advance in dilated time — scale the duration so the freeze lasts HitStopDuration real seconds
+	const float DilatedDuration = FMath::Max(HitStopDuration * HitStopTimeDilation, 0.001f);
+	World->GetTimerManager().SetTimer(HitStopTimer, this, &USEECombatComponent::EndHitStop, DilatedDuration, false);
+}
+
+void USEECombatComponent::EndHitStop()
+{
+	if (UWorld* World = GetWorld())
+	{
+		UGameplayStatics::SetGlobalTimeDilation(World, 1.0f);
+	}
+}
+
+ASEECharacter* USEECombatComponent::GetOwnerSEECharacter() const
+{
+	return Cast<ASEECharacter>(GetOwner());
 }

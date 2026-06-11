@@ -198,10 +198,10 @@ void USEESkillTreeComponent::InitializeDefaultData()
 		ESkillNodeTier::Tier1, 1, 1, ESkillNodeEffect::PassiveEffect, 0.2f,
 		"ColdResistance", NAME_None, FVector2D(0.5f, 0.1f));
 
-	AddNode("SRV_IronStomach", ESEESkillTree::Survival, "Iron Stomach",
-		"Hunger drains 25% slower",
+	AddNode("SRV_TemperedPlating", ESEESkillTree::Survival, "Tempered Plating",
+		"Armor durability wears 25% slower",
 		ESkillNodeTier::Tier1, 1, 1, ESkillNodeEffect::PassiveEffect, 0.25f,
-		"HungerReduction", NAME_None, FVector2D(0.3f, 0.1f));
+		"ArmorWearReduction", NAME_None, FVector2D(0.3f, 0.1f));
 
 	AddNode("SRV_Scavenger", ESEESkillTree::Survival, "Scavenger",
 		"Find 30% more loot from containers",

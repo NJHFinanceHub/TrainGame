@@ -40,19 +40,26 @@ void ASEEPlayerCharacter::FellOutOfWorld(const UDamageType& DmgType)
 
 void ASEEPlayerCharacter::OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* DamageInstigator)
 {
-	if (bInHitReaction) return;
 	if (!HealthComponent || HealthComponent->IsDead()) return;
+
+	// Brief FOV dip for combat hits only (environmental drains tick with no instigator)
+	if (DamageInstigator)
+	{
+		AddCameraFOVImpulse(-DamageFOVDip);
+	}
+
+	if (bInHitReaction) return;
+
+	// Environmental drains (hunger/cold, no instigator) tick continuously —
+	// they should not lock the player into a hit-reaction loop
+	if (!DamageInstigator) return;
 
 	// Determine reaction severity based on damage
 	float DamagePercent = (HealthComponent->GetMaxHealth() > 0.0f)
 		? (Damage / HealthComponent->GetMaxHealth()) * 100.0f
 		: 0.0f;
 
-	FVector HitDir = FVector::ZeroVector;
-	if (DamageInstigator)
-	{
-		HitDir = (GetActorLocation() - DamageInstigator->GetActorLocation()).GetSafeNormal();
-	}
+	FVector HitDir = (GetActorLocation() - DamageInstigator->GetActorLocation()).GetSafeNormal();
 
 	if (DamagePercent >= HeavyStaggerThreshold)
 	{

@@ -30,6 +30,12 @@ public:
 
 	void SetDeathCause(const FText& InCause);
 
+	virtual bool SupportsKeyboardFocus() const override { return true; }
+
+	/** Enter/Space reloads the checkpoint; every other key is swallowed so the
+	 *  controller's screen-toggle bindings cannot replace the death screen. */
+	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
+
 private:
 	FOnDeathScreenAction OnReloadCheckpoint;
 	FOnDeathScreenAction OnQuitToMenu;
