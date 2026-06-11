@@ -54,6 +54,8 @@ public:
 	void DetachFromWeaponSocket();
 
 protected:
+	// Dynamic-delegate handler (bound via AddDynamic) — must be a UFUNCTION
+	UFUNCTION()
 	void OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* DamageInstigator);
 
 	/** Knockback impulse strength */

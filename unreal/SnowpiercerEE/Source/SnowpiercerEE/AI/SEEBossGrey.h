@@ -132,6 +132,9 @@ protected:
 
 private:
 	void SetupCommanderGrey();
+
+	// Dynamic-delegate handler (bound via AddDynamic) — must be a UFUNCTION
+	UFUNCTION()
 	void OnGuardKilled(AEnemyCharacter* Guard);
 	bool IsAttackFromLeft(AActor* DamageCauser) const;
 

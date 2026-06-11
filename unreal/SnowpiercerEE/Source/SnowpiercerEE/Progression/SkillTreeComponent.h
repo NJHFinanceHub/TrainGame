@@ -153,5 +153,7 @@ private:
 	void ApplyNodeEffect(const FSEESkillNode& Node);
 	void ApplyPerkEffect(const FSEEPerk& Perk, bool bApply);
 
+	// Dynamic-delegate handler for USEEStatsComponent::OnLevelUp — must be a UFUNCTION
+	UFUNCTION()
 	void OnLevelUp(int32 NewLevel, int32 SkillPointsAvailable);
 };
