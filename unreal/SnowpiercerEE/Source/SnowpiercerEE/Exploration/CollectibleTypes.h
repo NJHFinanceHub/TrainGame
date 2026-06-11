@@ -85,19 +85,19 @@ struct FCollectibleData : public FTableRowBase
 	FText Description;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ECollectibleType Type;
+	ECollectibleType Type = ECollectibleType::TrainLog;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ECollectibleRarity Rarity;
+	ECollectibleRarity Rarity = ECollectibleRarity::Common;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ECollectibleZone Zone;
+	ECollectibleZone Zone = ECollectibleZone::Zone1_Tail;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ECollectibleAccessType AccessType;
+	ECollectibleAccessType AccessType = ECollectibleAccessType::Visible;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ECollectiblePersistence Persistence;
+	ECollectiblePersistence Persistence = ECollectiblePersistence::Persistent;
 
 	/** Car number where this collectible is found (0 for secret cars) */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (ClampMin = "0", ClampMax = "110"))

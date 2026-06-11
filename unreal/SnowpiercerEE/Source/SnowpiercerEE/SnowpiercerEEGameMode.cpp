@@ -22,14 +22,20 @@ void ASnowpiercerEEGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Register Zone 1 car sublevels on startup
-	if (UWorld* World = GetWorld())
+	// NOTE: Zone 1 cars are built directly into the persistent Zone1_Tail level
+	// by Scripts/build_zone1.py — no streaming sublevels exist, so car-streaming
+	// registration is intentionally skipped. Restore RegisterZone1Cars() if the
+	// pipeline switches back to sublevel-per-car streaming.
+}
+
+UClass* ASnowpiercerEEGameMode::GetDefaultPawnClassForController_Implementation(AController* InController)
+{
+	static const TCHAR* BPPawnPath = TEXT("/Game/Blueprints/Characters/BP_SEECharacter.BP_SEECharacter_C");
+	if (UClass* BPPawn = LoadClass<APawn>(nullptr, BPPawnPath))
 	{
-		if (USEECarStreamingSubsystem* Streaming = World->GetSubsystem<USEECarStreamingSubsystem>())
-		{
-			Streaming->RegisterZone1Cars();
-		}
+		return BPPawn;
 	}
+	return Super::GetDefaultPawnClassForController_Implementation(InController);
 }
 
 // --- Game Phase ---

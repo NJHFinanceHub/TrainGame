@@ -64,6 +64,10 @@ public:
     UFUNCTION(BlueprintCallable, Category="UI")
     void CloseCurrentUI();
 
+    /** Single Escape handler: closes the open UI screen, otherwise toggles the pause menu. */
+    UFUNCTION(BlueprintCallable, Category="UI")
+    void HandleEscape();
+
 protected:
     virtual void SetupInputComponent() override;
 

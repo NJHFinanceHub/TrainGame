@@ -33,6 +33,10 @@ class SNOWPIERCEREE_API ASnowpiercerEEGameMode : public AGameModeBase
 public:
 	ASnowpiercerEEGameMode();
 
+	/** Prefer the pipeline-generated Blueprint pawn (carries the visible mesh);
+	    fall back to the C++ pawn when generated content is absent. */
+	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
+
 	// --- Game Phase ---
 
 	UFUNCTION(BlueprintCallable, Category = "GameMode")

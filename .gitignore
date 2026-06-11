@@ -7,3 +7,8 @@ unreal/**/Intermediate/
 unreal/**/Saved/
 unreal/**/DerivedDataCache/
 __pycache__/
+# Regenerable imported content (recreated by Scripts/import_assets.py from Assets/)
+unreal/SnowpiercerEE/Content/Textures/
+unreal/SnowpiercerEE/Content/Reference/
+unreal/SnowpiercerEE/Content/Developers/
+unreal/SnowpiercerEE/Content/Collections/

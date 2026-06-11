@@ -16,8 +16,9 @@ void ASEEPlayerController::SetupInputComponent()
     InputComponent->BindAction("ToggleCompanions", IE_Pressed, this, &ASEEPlayerController::ToggleCompanions);
     InputComponent->BindAction("ToggleCrafting", IE_Pressed, this, &ASEEPlayerController::ToggleCrafting);
     InputComponent->BindAction("ToggleCodex", IE_Pressed, this, &ASEEPlayerController::ToggleCodex);
-    InputComponent->BindAction("PauseMenu", IE_Pressed, this, &ASEEPlayerController::TogglePauseMenu);
-    InputComponent->BindAction("CloseUI", IE_Pressed, this, &ASEEPlayerController::CloseCurrentUI);
+    // PauseMenu and CloseUI are both mapped to Escape; binding both fires both
+    // delegates on one press and they cancel each other out. One handler decides.
+    InputComponent->BindAction("PauseMenu", IE_Pressed, this, &ASEEPlayerController::HandleEscape);
 }
 
 void ASEEPlayerController::ToggleViewMode()
@@ -119,5 +120,18 @@ void ASEEPlayerController::CloseCurrentUI()
             UGameplayStatics::SetGamePaused(this, false);
         }
         UI->CloseCurrentScreen();
+    }
+}
+
+void ASEEPlayerController::HandleEscape()
+{
+    USEEUISubsystem* UI = GetUISubsystem();
+    if (UI && UI->IsScreenOpen() && UI->GetCurrentScreen() != ESEEUIScreen::PauseMenu)
+    {
+        CloseCurrentUI();
+    }
+    else
+    {
+        TogglePauseMenu();
     }
 }

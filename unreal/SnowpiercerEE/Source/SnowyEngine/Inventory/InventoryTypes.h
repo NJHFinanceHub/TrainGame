@@ -116,8 +116,8 @@ struct FInventoryItem
 {
 	GENERATED_BODY()
 
-	// Unique instance ID for this item stack
-	UPROPERTY(BlueprintReadOnly)
+	// Unique instance ID for this item stack (non-deterministic by design)
+	UPROPERTY(BlueprintReadOnly, Meta = (IgnoreForMemberInitializationTest))
 	FGuid InstanceID;
 
 	// Reference to the static definition
