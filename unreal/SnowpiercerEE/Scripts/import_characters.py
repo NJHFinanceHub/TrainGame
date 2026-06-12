@@ -17,24 +17,34 @@ import unreal
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 REPO_ROOT = os.path.dirname(os.path.dirname(PROJECT_DIR))
-FBX_DIR = os.path.join(REPO_ROOT, "Assets", "Characters",
-                       "BlockyCharacters", "Models", "FBX format")
-TEX_DIR = os.path.join(FBX_DIR, "Textures")
+# KayKit Adventurers (CC0): human-proportioned rigged GLBs with animations
+FBX_DIR = os.path.join(
+    REPO_ROOT, "Assets", "Characters", "KayKit",
+    "KayKit-Character-Pack-Adventures-1.0-main", "addons",
+    "kaykit_character_pack_adventures", "Characters", "gltf")
+MODEL_EXT = ".glb"
 
-DEST = "/Game/Characters/Blocky"
+DEST = "/Game/Characters/KayKit"
 editor_util = unreal.EditorAssetLibrary
 
-# Character letter -> role assignment. Kenney blocky chars a-r; pick
-# distinct silhouettes per faction. Textures share the letter suffix.
+# Human-silhouette role casting:
+#   Rogue        = scrappy leathers  -> the player
+#   Rogue_Hooded = ragged hood       -> Tailie civilians
+#   Knight       = armored           -> Jackboot riot gear
+#   Mage         = robed             -> Merchant / First Class
+#   Barbarian    = heavy build       -> Breachmen / the boss
 ROLE_MODELS = {
-    "player":     "character-a",
-    "civilian":   "character-b",
-    "jackboot":   "character-d",
-    "merchant":   "character-f",
-    "breachman":  "character-h",
-    "firstclass": "character-j",
-    "boss":       "character-r",
+    "player":     "Rogue",
+    "civilian":   "Rogue_Hooded",
+    "jackboot":   "Knight",
+    "merchant":   "Mage",
+    "breachman":  "Barbarian",
+    "firstclass": "Mage",
+    "boss":       "Barbarian",
 }
+
+# Stand height for a scaled character (capsule is 176cm tall)
+TARGET_HEIGHT = 170.0
 
 BP_FOR_ROLE = {
     "player":     "/Game/Blueprints/Characters/BP_SEECharacter",
@@ -47,22 +57,10 @@ BP_FOR_ROLE = {
 
 
 def import_fbx(fbx_path, dest_path, asset_name):
-    """Import one FBX as a skeletal mesh with its animations."""
+    """Import one character model (GLB via Interchange, FBX via legacy)."""
     if editor_util.does_asset_exist(f"{dest_path}/{asset_name}"):
         unreal.log(f"  Already imported: {asset_name}")
         return True
-
-    options = unreal.FbxImportUI()
-    options.set_editor_property("import_mesh", True)
-    options.set_editor_property("import_as_skeletal", True)
-    options.set_editor_property("import_materials", True)
-    options.set_editor_property("import_textures", True)
-    options.set_editor_property("import_animations", True)
-    try:
-        options.skeletal_mesh_import_data.set_editor_property(
-            "import_morph_targets", False)
-    except Exception:
-        pass
 
     task = unreal.AssetImportTask()
     task.set_editor_property("filename", fbx_path)
@@ -71,10 +69,26 @@ def import_fbx(fbx_path, dest_path, asset_name):
     task.set_editor_property("automated", True)
     task.set_editor_property("replace_existing", True)
     task.set_editor_property("save", True)
-    task.set_editor_property("options", options)
+    # GLB goes through Interchange with default options; force synchronous
+    # so headless runs see the results before exiting
+    try:
+        task.set_editor_property("async_", False)
+    except Exception:
+        pass
+    if fbx_path.lower().endswith(".fbx"):
+        options = unreal.FbxImportUI()
+        options.set_editor_property("import_mesh", True)
+        options.set_editor_property("import_as_skeletal", True)
+        options.set_editor_property("import_materials", True)
+        options.set_editor_property("import_textures", True)
+        options.set_editor_property("import_animations", True)
+        task.set_editor_property("options", options)
 
     unreal.AssetToolsHelpers.get_asset_tools().import_asset_tasks([task])
-    ok = editor_util.does_asset_exist(f"{dest_path}/{asset_name}")
+    # Interchange may nest assets under the destination folder — existence
+    # check by skeletal mesh discovery instead of exact path
+    ok = (editor_util.does_asset_exist(f"{dest_path}/{asset_name}")
+          or find_skeletal_mesh(dest_path, asset_name) is not None)
     unreal.log(f"  {'Imported' if ok else 'FAILED'}: {asset_name}")
     return ok
 
@@ -136,13 +150,20 @@ def assign_mesh_to_bp(bp_path, skel_mesh, idle_anim):
             unreal.log_warning(f"  No mesh component on {bp_path}")
             return False
         mesh_comp.set_editor_property("skeletal_mesh_asset", skel_mesh)
-        # Blocky characters are ~half mannequin height; keep capsule alignment
+        # Auto-scale so the character stands TARGET_HEIGHT, feet at capsule base
+        scale = 1.0
+        try:
+            h = skel_mesh.get_bounds().box_extent.z * 2.0
+            if h > 1.0:
+                scale = TARGET_HEIGHT / h
+        except Exception:
+            pass
         mesh_comp.set_editor_property(
             "relative_location", unreal.Vector(0.0, 0.0, -88.0))
         mesh_comp.set_editor_property(
             "relative_rotation", unreal.Rotator(0.0, 0.0, -90.0))
         mesh_comp.set_editor_property(
-            "relative_scale3d", unreal.Vector(2.6, 2.6, 2.6))
+            "relative_scale3d", unreal.Vector(scale, scale, scale))
         if idle_anim:
             try:
                 mesh_comp.set_editor_property(
@@ -199,7 +220,7 @@ def run():
     # 1. Import the role models
     needed = sorted(set(ROLE_MODELS.values()))
     for model in needed:
-        src = os.path.join(FBX_DIR, f"{model}.fbx")
+        src = os.path.join(FBX_DIR, f"{model}{MODEL_EXT}")
         if os.path.isfile(src):
             import_fbx(src, f"{DEST}/{model}", model)
         else:

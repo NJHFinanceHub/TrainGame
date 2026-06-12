@@ -13,7 +13,9 @@ class USEEColdComponent;
 class USEESkillTreeComponent;
 class UClimbingComponent;
 class USwimmingComponent;
+class USEETrainFeelComponent;
 class ASEEWeaponBase;
+class USoundBase;
 
 UCLASS()
 class SNOWPIERCEREE_API ASEECharacter : public ACharacter
@@ -142,20 +144,52 @@ protected:
 	float MaxFOVImpulse = 20.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	float MaxStamina = 100.0f;
+	float MaxStamina = 150.0f;
+
+	/** Base drain per second; sprint drains 1.5x this while moving (~14s of sprint from full) */
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float StaminaDrainRate = 7.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	float StaminaDrainRate = 15.0f;
+	float StaminaRegenRate = 16.0f;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	float StaminaRegenRate = 8.0f;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
-	float StaminaRegenDelay = 1.5f;
+	float StaminaRegenDelay = 1.0f;
 
 	/** Minimum stamina required to start sprinting (prevents stutter-sprint at zero) */
 	UPROPERTY(EditAnywhere, Category = "Stats")
-	float SprintMinStamina = 5.0f;
+	float SprintMinStamina = 10.0f;
+
+	// --- Footsteps (stride-driven, no anim notifies) ---
+
+	/** Distance walked between footsteps at walk pace (cm) */
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float StrideLength = 165.0f;
+
+	/** Stride length at full sprint pace (cm) — blended by speed ratio between walk and sprint */
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float SprintStrideLength = 210.0f;
+
+	/** Minimum horizontal speed (cm/s) before stride distance accumulates */
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float FootstepMinSpeed = 60.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float FootstepWalkVolume = 0.5f;
+
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float FootstepSprintVolume = 0.7f;
+
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float FootstepCrouchVolume = 0.25f;
+
+	/** Volume of the footstep played on landing */
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	float FootstepLandVolume = 0.9f;
+
+	/** Random pitch range applied per footstep (X = min, Y = max) */
+	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
+	FVector2D FootstepPitchRange = FVector2D(0.92f, 1.08f);
 
 	// Combat input
 	UFUNCTION(BlueprintCallable, Category = "Combat")
@@ -221,6 +255,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USwimmingComponent> SwimmingComponent;
 
+	/** Train-motion feel: camera sway + looping rail clack ambient (player-controlled pawns only) */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEETrainFeelComponent> TrainFeelComponent;
+
 private:
 	UPROPERTY()
 	TObjectPtr<class UCameraComponent> FirstPersonCamera;
@@ -231,7 +269,7 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UCameraComponent> ThirdPersonCamera;
 
-	float CurrentStamina = 100.0f;
+	float CurrentStamina = 150.0f;
 	float StaminaRegenTimer = 0.0f;
 	bool bIsRunning = false;
 	bool bIsSprinting = false;
@@ -247,6 +285,22 @@ private:
 	void UpdateStamina(float DeltaTime);
 	void UpdateCameraFOV(float DeltaTime);
 	void EndLandingRecovery();
+
+	// --- Footsteps (stride-driven) ---
+
+	/** Accumulate ground distance and fire a footstep every effective stride. */
+	void UpdateFootsteps(float DeltaTime);
+
+	/** Play a random footstep variant (never the same twice in a row) at the feet. */
+	void PlayFootstep(float Volume);
+
+	/** Footstep variants, lazily loaded once on first step (may be empty if not imported yet). */
+	UPROPERTY(Transient)
+	TArray<TObjectPtr<USoundBase>> FootstepSounds;
+
+	bool bFootstepSoundsLoaded = false;
+	float StrideDistanceAccum = 0.0f;
+	int32 LastFootstepIndex = INDEX_NONE;
 
 	/** Interact helper: sweep for a talkable NPC ahead and open dialogue. */
 	bool TryStartNPCDialogue();

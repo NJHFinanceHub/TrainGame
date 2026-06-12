@@ -112,7 +112,7 @@ protected:
 	float DodgeIFrameDuration = 0.3f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	float DodgeStaminaCost = 15.0f;
+	float DodgeStaminaCost = 10.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float BlockStaminaDrainRate = 10.0f;

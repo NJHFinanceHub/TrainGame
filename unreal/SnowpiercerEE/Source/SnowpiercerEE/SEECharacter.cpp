@@ -16,6 +16,9 @@
 #include "Progression/SkillTreeComponent.h"
 #include "Exploration/ClimbingComponent.h"
 #include "Exploration/SwimmingComponent.h"
+#include "Audio/SEETrainFeelComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
 #include "AI/SEENPCAIController.h"
 #include "UI/SEEUISubsystem.h"
 #include "Engine/GameInstance.h"
@@ -81,6 +84,7 @@ ASEECharacter::ASEECharacter()
 	SkillTreeComponent = CreateDefaultSubobject<USEESkillTreeComponent>(TEXT("SkillTreeComponent"));
 	ClimbingComponent = CreateDefaultSubobject<UClimbingComponent>(TEXT("ClimbingComponent"));
 	SwimmingComponent = CreateDefaultSubobject<USwimmingComponent>(TEXT("SwimmingComponent"));
+	TrainFeelComponent = CreateDefaultSubobject<USEETrainFeelComponent>(TEXT("TrainFeelComponent"));
 }
 
 void ASEECharacter::BeginPlay()
@@ -96,6 +100,116 @@ void ASEECharacter::Tick(float DeltaTime)
 
 	UpdateStamina(DeltaTime);
 	UpdateCameraFOV(DeltaTime);
+	UpdateFootsteps(DeltaTime);
+}
+
+void ASEECharacter::UpdateFootsteps(float DeltaTime)
+{
+	const UCharacterMovementComponent* Move = GetCharacterMovement();
+	if (!Move || !Move->IsMovingOnGround())
+	{
+		StrideDistanceAccum = 0.0f;
+		return;
+	}
+
+	const float Speed2D = GetVelocity().Size2D();
+	if (Speed2D <= FootstepMinSpeed)
+	{
+		// Shuffling below the threshold starts a fresh stride
+		StrideDistanceAccum = 0.0f;
+		return;
+	}
+
+	StrideDistanceAccum += Speed2D * DeltaTime;
+
+	// Stride lengthens with pace: walk speed -> StrideLength, sprint speed -> SprintStrideLength
+	const float SpeedRatio = FMath::Clamp(
+		FMath::GetRangePct(DefaultWalkSpeed, SprintSpeed, Speed2D), 0.0f, 1.0f);
+	const float EffectiveStride = FMath::Lerp(StrideLength, SprintStrideLength, SpeedRatio);
+
+	if (EffectiveStride > 0.0f && StrideDistanceAccum >= EffectiveStride)
+	{
+		StrideDistanceAccum -= EffectiveStride;
+
+		float Volume = FootstepWalkVolume;
+		if (bIsCrouched)
+		{
+			Volume = FootstepCrouchVolume;
+		}
+		else if (bIsSprinting)
+		{
+			Volume = FootstepSprintVolume;
+		}
+
+		PlayFootstep(Volume);
+	}
+}
+
+void ASEECharacter::PlayFootstep(float Volume)
+{
+	// Lazy one-time load: the wavs are synthesized by an external pipeline and
+	// may not be imported yet — warn once (globally) and stay silent if missing.
+	if (!bFootstepSoundsLoaded)
+	{
+		bFootstepSoundsLoaded = true;
+
+		static const TCHAR* FootstepPaths[] =
+		{
+			TEXT("/Game/Audio/Foley/SFX_Footstep_01.SFX_Footstep_01"),
+			TEXT("/Game/Audio/Foley/SFX_Footstep_02.SFX_Footstep_02"),
+			TEXT("/Game/Audio/Foley/SFX_Footstep_03.SFX_Footstep_03"),
+			TEXT("/Game/Audio/Foley/SFX_Footstep_04.SFX_Footstep_04"),
+		};
+
+		for (const TCHAR* Path : FootstepPaths)
+		{
+			if (USoundBase* Sound = LoadObject<USoundBase>(nullptr, Path))
+			{
+				FootstepSounds.Add(Sound);
+			}
+		}
+
+		if (FootstepSounds.Num() == 0)
+		{
+			static bool bWarnedMissingFootsteps = false;
+			if (!bWarnedMissingFootsteps)
+			{
+				bWarnedMissingFootsteps = true;
+				UE_LOG(LogTemp, Warning,
+					TEXT("Footstep sounds not found (/Game/Audio/Foley/SFX_Footstep_01..04) — footsteps disabled for this session"));
+			}
+		}
+	}
+
+	if (FootstepSounds.Num() == 0)
+	{
+		return;
+	}
+
+	// Random variant, never the same one twice in a row
+	int32 Index = 0;
+	if (FootstepSounds.Num() > 1)
+	{
+		if (LastFootstepIndex == INDEX_NONE)
+		{
+			Index = FMath::RandRange(0, FootstepSounds.Num() - 1);
+		}
+		else
+		{
+			Index = FMath::RandRange(0, FootstepSounds.Num() - 2);
+			if (Index >= LastFootstepIndex)
+			{
+				++Index;
+			}
+		}
+	}
+	LastFootstepIndex = Index;
+
+	const FVector FeetLocation = GetActorLocation()
+		- FVector(0.0f, 0.0f, GetCapsuleComponent()->GetScaledCapsuleHalfHeight());
+	const float Pitch = FMath::FRandRange(FootstepPitchRange.X, FootstepPitchRange.Y);
+
+	UGameplayStatics::PlaySoundAtLocation(this, FootstepSounds[Index], FeetLocation, Volume, Pitch);
 }
 
 void ASEECharacter::UpdateStamina(float DeltaTime)
@@ -175,6 +289,10 @@ void ASEECharacter::AddCameraFOVImpulse(float Offset)
 void ASEECharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+
+	// Touchdown thud — a footstep variant, slightly louder than a stride
+	PlayFootstep(FootstepLandVolume);
+	StrideDistanceAccum = 0.0f;
 
 	// Hard landings briefly dampen move speed for a weighty recovery
 	const float FallSpeed = -GetCharacterMovement()->Velocity.Z;
