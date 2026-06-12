@@ -13,6 +13,7 @@ class USEEColdComponent;
 class USEESkillTreeComponent;
 class UClimbingComponent;
 class USwimmingComponent;
+class ASEEWeaponBase;
 
 UCLASS()
 class SNOWPIERCEREE_API ASEECharacter : public ACharacter
@@ -23,6 +24,7 @@ public:
 	ASEECharacter();
 
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
@@ -181,6 +183,16 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void UseQuickSlot4();
 
+	// --- Quickslot weapon equip ---
+
+	/** Attach a spawned weapon actor to the right hand (socket if available, root offset fallback).
+	    Overridable so the player character can route through its weapon socket helper. */
+	virtual void AttachWeaponActorToHand(AActor* WeaponActor);
+
+	/** Destroy and unequip the currently equipped quickslot weapon (no-op when none). */
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void UnequipQuickSlotWeapon();
+
 	// Component accessors
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USEEHealthComponent> HealthComponent;
@@ -238,4 +250,21 @@ private:
 
 	/** Interact helper: sweep for a talkable NPC ahead and open dialogue. */
 	bool TryStartNPCDialogue();
+
+	// --- Quickslot weapon equip ---
+
+	/** Shared quickslot handler: weapon slots toggle equip, everything else
+	    falls through to the inventory's consumable quickslot path. */
+	void HandleQuickSlot(int32 QuickSlotIndex);
+
+	/** Find the Nth weapon-category item in the inventory and toggle-equip it.
+	    Returns true if the slot resolved to a weapon (handled), false to fall through. */
+	bool TryToggleWeaponQuickSlot(int32 WeaponOrdinal);
+
+	/** Spawn + equip a weapon for the given inventory ItemID, replacing any previous one. */
+	void EquipWeaponByItemID(FName ItemID);
+
+	/** Weapon actor spawned by the quickslot equip flow (owned + destroyed by this character). */
+	UPROPERTY()
+	TObjectPtr<ASEEWeaponBase> QuickSlotWeapon;
 };

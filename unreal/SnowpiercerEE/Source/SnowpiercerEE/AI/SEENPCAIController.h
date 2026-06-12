@@ -31,9 +31,11 @@ enum class ESEENPCBrainState : uint8
 // Hostiles (bHostile):
 //   - Aggro on sight (range + frontal cone + occlusion line trace) or on
 //     taking any damage.
-//   - Chase via MoveToActor; if pathfinding fails or the pawn stalls (no
-//     navmesh / partial path), falls back to straight AddMovementInput —
-//     train corridors run along +X so direct steering works.
+//   - Chase via MoveToActor; the first Failed request marks navigation as
+//     unavailable (degenerate/missing navmesh) and the chase switches to
+//     continuous straight AddMovementInput steering — train corridors run
+//     along +X so direct steering works. Pathfinding is re-tested every
+//     NavRetestInterval seconds.
 //   - In attack range: telegraphed swing (windup delay) on a randomized
 //     cooldown, damage routed through the player's USEECombatComponent
 //     (block/parry/dodge respected) then USEEHealthComponent.
@@ -42,7 +44,13 @@ enum class ESEENPCBrainState : uint8
 //     corpse cleaned up after 20s.
 //
 // Friendlies (!bHostile):
-//   - Short random wander around the spawn point every few seconds.
+//   - Short random wander around the spawn point every few seconds. Works
+//     with OR without a navmesh: goals are validated by a floor line trace
+//     and a capsule-radius sweep, then walked via direct AddMovementInput
+//     steering when pathfinding is unavailable (arrive radius / timeout /
+//     stall detection included). Goals are clamped to the car interior.
+//   - Ambient life while idle: occasional in-place turns toward nearby NPCs
+//     or small random yaw drift so groups feel alive.
 //   - Face the player when they are close, and stand still while in dialogue
 //     (bInDialogue is set by the UI subsystem when a conversation opens).
 //
@@ -121,15 +129,44 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
 	float WanderRadius = 600.0f;
 
+	/** Idle seconds between wander legs (randomized). */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
-	float WanderIntervalMin = 5.0f;
+	float WanderIntervalMin = 4.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
-	float WanderIntervalMax = 10.0f;
+	float WanderIntervalMax = 9.0f;
+
+	/** A wander leg counts as arrived inside this distance. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
+	float WanderArriveRadius = 80.0f;
+
+	/** Give up on a wander leg after this many seconds (stuck on props/pawns). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
+	float WanderMoveTimeout = 4.0f;
+
+	/** Wander goals are clamped to |Y| below this (train-car interior half width). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
+	float WanderYClamp = 1500.0f;
 
 	/** Friendlies turn to face the player inside this range. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
 	float FacePlayerRange = 450.0f;
+
+	/** Chance that a wander timer fires an in-place ambient turn instead of a walk. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
+	float AmbientTurnChance = 0.35f;
+
+	/** Ambient turns prefer facing another NPC inside this range (groups look alive). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
+	float AmbientFaceNPCRange = 600.0f;
+
+	/** Max random yaw drift (degrees, either direction) for an ambient turn. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Wander")
+	float AmbientYawDriftMax = 75.0f;
+
+	/** After a pathed move fails (no navmesh), re-test pathfinding this often. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Movement")
+	float NavRetestInterval = 30.0f;
 
 	/** Entry row in DT_Dialogue_Zone1 used when the player talks to this NPC. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Dialogue")
@@ -172,18 +209,31 @@ private:
 
 	// --- Per-tick movement ---
 	void UpdateChase(float DeltaTime);
-	void UpdateReturnHome();
+	void UpdateReturnHome(float DeltaTime);
+	void UpdateWander(float DeltaTime);
 	void UpdateDirectMove(float DeltaTime);
 	void RequestMove(const FVector& GoalLocation, AActor* GoalActor, float AcceptanceRadius);
+	void StartDirectMove(const FVector& Goal, float Duration, float StopDist);
 	void SetMoveSpeed(float Speed) const;
+
+	/** True while pathfinding is known-broken and the retest interval has not elapsed. */
+	bool IsNavBlocked() const;
 
 	// --- Attacks ---
 	void BeginAttackWindup();
 	void DeliverAttack();
 
-	// --- Friendly wander ---
+	// --- Friendly wander / ambient life ---
 	void ScheduleNextWander();
 	void OnWanderTimer();
+
+	/** Pick a validated wander goal: random point in the leash, Y-clamped to the car
+	  * interior, floor confirmed by a downward line trace, capsule-radius sweep so
+	  * the straight-line approach is not buried in a wall. */
+	bool TryPickWanderPoint(FVector& OutGoal) const;
+
+	/** Idle flavor: turn in place — face a nearby NPC or drift yaw randomly. */
+	void DoAmbientTurn();
 
 	// --- Damage/death (dynamic delegate targets must be UFUNCTIONs) ---
 	UFUNCTION()
@@ -207,10 +257,21 @@ private:
 	bool bInDialogue = false;
 	bool bConfigured = false;
 
-	/** Straight-line fallback used when pathfinding fails (no/partial navmesh). */
+	/** Straight-line steering used when pathfinding fails (no/partial navmesh). */
 	bool bDirectMoveActive = false;
 	FVector DirectMoveGoal = FVector::ZeroVector;
 	float DirectMoveTimeLeft = 0.0f;
+	float DirectMoveStopDist = 70.0f;
+	float DirectStuckTime = 0.0f;
+
+	/** Set when a pathed move request returns Failed (degenerate/missing navmesh).
+	  * All movement steers directly until NextNavRetestTime re-tests pathfinding. */
+	bool bNavUnavailable = false;
+	float NextNavRetestTime = 0.0f;
+
+	/** Goal of the wander leg in flight (pathed or direct). */
+	FVector ActiveWanderGoal = FVector::ZeroVector;
+	float WanderElapsed = 0.0f;
 
 	FTimerHandle PerceptionTimerHandle;
 	FTimerHandle WanderTimerHandle;

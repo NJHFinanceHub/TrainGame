@@ -1,6 +1,14 @@
 #include "SEEInventoryComponent.h"
 #include "SEEStatsComponent.h"
 #include "SEEHealthComponent.h"
+#include "SEEHungerComponent.h"
+#include "Engine/DataTable.h"
+
+namespace
+{
+	// Canonical item DataTable created by Scripts/create_datatables.py.
+	const TCHAR* GSEEItemDataTablePath = TEXT("/Game/DataTables/DT_Items.DT_Items");
+}
 
 USEEInventoryComponent::USEEInventoryComponent()
 {
@@ -11,19 +19,65 @@ USEEInventoryComponent::USEEInventoryComponent()
 void USEEInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	Slots.SetNum(MaxSlots);
+
+	// BUG FIX: nothing (C++ or content) ever assigned ItemDataTable, so every
+	// GetItemDataPtr() lookup failed: weight was always 0, UseItem() refused to
+	// run, the UI fell back to raw ItemID names and Junk categorisation.
+	// Resolve the project's canonical DT_Items as a default when unset.
+	if (!ItemDataTable)
+	{
+		ItemDataTable = LoadObject<UDataTable>(nullptr, GSEEItemDataTablePath);
+	}
+
+	// AddItem may legitimately run before BeginPlay (quest rewards during world
+	// init); EnsureSlots() may already have sized the array - don't shrink it.
+	EnsureSlots();
+}
+
+void USEEInventoryComponent::EnsureSlots()
+{
+	if (Slots.Num() < MaxSlots)
+	{
+		Slots.SetNum(MaxSlots);
+	}
 }
 
 bool USEEInventoryComponent::AddItem(FName ItemID, int32 Quantity)
 {
 	if (ItemID.IsNone() || Quantity <= 0) return false;
 
+	// BUG FIX: items granted before BeginPlay hit an empty slot array and were
+	// silently rejected (Slots was only sized in BeginPlay).
+	EnsureSlots();
+
 	const FSEEItemData* Data = GetItemDataPtr(ItemID);
-	int32 MaxStack = Data ? Data->MaxStackSize : 1;
-	float ItemWeight = Data ? Data->Weight : 1.0f;
+	const int32 MaxStack = FMath::Max(1, Data ? Data->MaxStackSize : 1);
+	const float ItemWeight = Data ? Data->Weight : 1.0f;
 
 	// Check weight capacity
 	if (GetCurrentWeight() + ItemWeight * Quantity > GetMaxWeight())
+	{
+		return false;
+	}
+
+	// BUG FIX: the old code mutated slots first and bailed out mid-add when it
+	// ran out of empty slots - items vanished into slots with no OnItemAdded /
+	// OnInventoryChanged broadcast and the pickup actor stayed in the world.
+	// Pre-check slot capacity so the add is all-or-nothing.
+	int32 Capacity = 0;
+	for (const FSEEInventorySlot& Slot : Slots)
+	{
+		if (Slot.IsEmpty())
+		{
+			Capacity += MaxStack;
+		}
+		else if (MaxStack > 1 && Slot.ItemID == ItemID && Slot.Quantity < MaxStack)
+		{
+			Capacity += MaxStack - Slot.Quantity;
+		}
+		if (Capacity >= Quantity) break;
+	}
+	if (Capacity < Quantity)
 	{
 		return false;
 	}
@@ -49,7 +103,7 @@ bool USEEInventoryComponent::AddItem(FName ItemID, int32 Quantity)
 	while (Remaining > 0)
 	{
 		int32 EmptyIdx = FindEmptySlot();
-		if (EmptyIdx == INDEX_NONE) return false;
+		if (EmptyIdx == INDEX_NONE) return false; // unreachable after pre-check
 
 		int32 CanAdd = FMath::Min(Remaining, MaxStack);
 		Slots[EmptyIdx].ItemID = ItemID;
@@ -125,8 +179,19 @@ bool USEEInventoryComponent::UseItem(int32 SlotIndex)
 			}
 		}
 
-		// Hunger and stamina restore handled by their respective components
-		// via delegates from OnItemUsed
+		// BUG FIX: the old comment claimed hunger restore was "handled via
+		// delegates from OnItemUsed" - no such delegate exists, so food items
+		// never fed the player. Apply HungerRestore directly.
+		if (Data->HungerRestore > 0.0f)
+		{
+			if (USEEHungerComponent* Hunger = Owner->FindComponentByClass<USEEHungerComponent>())
+			{
+				Hunger->Eat(Data->HungerRestore);
+			}
+		}
+
+		// StaminaRestore: no stamina pool component exposes a restore API yet;
+		// intentionally left until one exists.
 
 		Slots[SlotIndex].Quantity--;
 		if (Slots[SlotIndex].Quantity <= 0)
@@ -209,7 +274,22 @@ float USEEInventoryComponent::GetMaxWeight() const
 const FSEEItemData* USEEInventoryComponent::GetItemDataPtr(FName ItemID) const
 {
 	if (!ItemDataTable || ItemID.IsNone()) return nullptr;
-	return ItemDataTable->FindRow<FSEEItemData>(ItemID, TEXT(""));
+
+	if (const FSEEItemData* Row = ItemDataTable->FindRow<FSEEItemData>(ItemID, TEXT(""), /*bWarnIfRowMissing*/ false))
+	{
+		return Row;
+	}
+
+	// BUG FIX: world pickups / legacy saves carry short IDs ("Bandage",
+	// "ScrapMetal") while DT_Items rows are prefixed ("Item_Bandage",
+	// "Item_ScrapMetal"). Try the canonical prefixed row before giving up.
+	if (!ItemID.ToString().StartsWith(TEXT("Item_")))
+	{
+		const FName PrefixedID(*(TEXT("Item_") + ItemID.ToString()));
+		return ItemDataTable->FindRow<FSEEItemData>(PrefixedID, TEXT(""), /*bWarnIfRowMissing*/ false);
+	}
+
+	return nullptr;
 }
 
 bool USEEInventoryComponent::GetItemData(FName ItemID, FSEEItemData& OutData) const

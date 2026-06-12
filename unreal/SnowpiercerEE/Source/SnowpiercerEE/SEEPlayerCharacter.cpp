@@ -139,6 +139,20 @@ void ASEEPlayerCharacter::AttachToWeaponSocket(AActor* ActorToAttach)
 	ActorToAttach->AttachToComponent(GetMesh(), Rules, WeaponSocketName);
 }
 
+void ASEEPlayerCharacter::AttachWeaponActorToHand(AActor* WeaponActor)
+{
+	if (!WeaponActor) return;
+
+	// Use the configured socket when the skeletal mesh actually has it (socket or bone)
+	if (GetMesh() && GetMesh()->DoesSocketExist(WeaponSocketName))
+	{
+		AttachToWeaponSocket(WeaponActor);
+		return;
+	}
+
+	Super::AttachWeaponActorToHand(WeaponActor);
+}
+
 void ASEEPlayerCharacter::DetachFromWeaponSocket()
 {
 	// Detach all actors attached to the weapon socket

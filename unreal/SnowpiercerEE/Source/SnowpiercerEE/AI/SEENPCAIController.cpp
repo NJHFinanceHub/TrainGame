@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -163,12 +164,15 @@ void ASEENPCAIController::Tick(float DeltaTime)
 		break;
 
 	case ESEENPCBrainState::ReturnHome:
-		UpdateReturnHome();
-		UpdateDirectMove(DeltaTime);
+		UpdateReturnHome(DeltaTime);
+		break;
+
+	case ESEENPCBrainState::Wander:
+		UpdateWander(DeltaTime);
 		break;
 
 	default:
-		// Idle/Wander movement is timer-driven; only the direct-move fallback ticks.
+		// Idle is timer-driven; only a leftover direct-move fallback ticks.
 		UpdateDirectMove(DeltaTime);
 		break;
 	}
@@ -233,8 +237,10 @@ void ASEENPCAIController::UpdatePerception()
 				bDirectMoveActive = false;
 			}
 		}
-		else
+		else if (GetFocusActor() == Player)
 		{
+			// Only clear focus *we* put on the player — wander goals and
+			// ambient turns park focal points in the same Gameplay slot.
 			ClearFocus(EAIFocusPriority::Gameplay);
 		}
 	}
@@ -361,7 +367,20 @@ void ASEENPCAIController::UpdateChase(float DeltaTime)
 
 	if (bWindingUp) return; // committed to the swing, no repositioning
 
-	// Direct-movement fallback drives the pawn straight at the player.
+	// Navigation known-broken: steer directly for the WHOLE chase (not 2s
+	// bursts). The goal and timer are refreshed every tick so the direct move
+	// never expires until nav is re-tested.
+	if (IsNavBlocked())
+	{
+		bDirectMoveActive = true;
+		DirectMoveGoal = Player->GetActorLocation();
+		DirectMoveTimeLeft = 1.0f; // refreshed each tick — effectively endless
+		DirectMoveStopDist = AttackRange * 0.8f;
+		UpdateDirectMove(DeltaTime);
+		return;
+	}
+
+	// Direct-movement fallback (stall burst) drives the pawn straight at the player.
 	if (bDirectMoveActive)
 	{
 		DirectMoveGoal = Player->GetActorLocation();
@@ -369,15 +388,17 @@ void ASEENPCAIController::UpdateChase(float DeltaTime)
 		return;
 	}
 
-	// (Re)issue a pathed move periodically.
+	// (Re)issue a pathed move periodically. A Failed result inside RequestMove
+	// flips bNavUnavailable and starts direct steering immediately.
 	if (PathRetryCooldown <= 0.0f)
 	{
 		PathRetryCooldown = GPathRetryInterval;
 		RequestMove(Player->GetActorLocation(), Player, ChaseAcceptanceRadius);
+		if (bDirectMoveActive) return; // request failed, already steering
 	}
 
 	// Stall detection: pathing reported success but the pawn is not moving
-	// (missing/partial navmesh). Burst into direct movement.
+	// (partial navmesh / blocked path). Burst into direct movement.
 	if (PawnChar->GetVelocity().Size2D() < GStuckSpeedThreshold)
 	{
 		StuckTime += DeltaTime;
@@ -385,9 +406,7 @@ void ASEENPCAIController::UpdateChase(float DeltaTime)
 		{
 			StuckTime = 0.0f;
 			StopMovement();
-			bDirectMoveActive = true;
-			DirectMoveGoal = Player->GetActorLocation();
-			DirectMoveTimeLeft = GDirectMoveBurst;
+			StartDirectMove(Player->GetActorLocation(), GDirectMoveBurst, AttackRange * 0.8f);
 		}
 	}
 	else
@@ -396,7 +415,7 @@ void ASEENPCAIController::UpdateChase(float DeltaTime)
 	}
 }
 
-void ASEENPCAIController::UpdateReturnHome()
+void ASEENPCAIController::UpdateReturnHome(float DeltaTime)
 {
 	ACharacter* PawnChar = GetPawnCharacter();
 	if (!PawnChar) return;
@@ -408,24 +427,82 @@ void ASEENPCAIController::UpdateReturnHome()
 		return;
 	}
 
-	if (bDirectMoveActive) return; // UpdateDirectMove steers
+	if (bDirectMoveActive)
+	{
+		UpdateDirectMove(DeltaTime);
+		return;
+	}
+
+	// Nav known-broken: walk the whole way home on direct steering.
+	if (IsNavBlocked())
+	{
+		StartDirectMove(HomeLocation, 30.0f, 70.0f);
+		UpdateDirectMove(DeltaTime);
+		return;
+	}
 
 	if (PathRetryCooldown <= 0.0f)
 	{
 		PathRetryCooldown = GPathRetryInterval;
 		RequestMove(HomeLocation, nullptr, 80.0f);
+		if (bDirectMoveActive) return;
 	}
 
 	if (PawnChar->GetVelocity().Size2D() < GStuckSpeedThreshold)
 	{
-		StuckTime += GetWorld()->GetDeltaSeconds();
+		StuckTime += DeltaTime;
 		if (StuckTime >= GStuckTimeBeforeFallback)
 		{
 			StuckTime = 0.0f;
 			StopMovement();
-			bDirectMoveActive = true;
-			DirectMoveGoal = HomeLocation;
-			DirectMoveTimeLeft = GDirectMoveBurst;
+			StartDirectMove(HomeLocation, GDirectMoveBurst, 70.0f);
+		}
+	}
+	else
+	{
+		StuckTime = 0.0f;
+	}
+}
+
+void ASEENPCAIController::UpdateWander(float DeltaTime)
+{
+	ACharacter* PawnChar = GetPawnCharacter();
+	if (!PawnChar)
+	{
+		BrainState = ESEENPCBrainState::Idle;
+		return;
+	}
+
+	WanderElapsed += DeltaTime;
+
+	// Direct steering leg: UpdateDirectMove arrives/expires/stalls and drops
+	// back to Idle on its own.
+	if (bDirectMoveActive)
+	{
+		UpdateDirectMove(DeltaTime);
+		return;
+	}
+
+	// Pathed leg in flight.
+	const float Dist = FVector::Dist2D(PawnChar->GetActorLocation(), ActiveWanderGoal);
+	if (Dist <= WanderArriveRadius || WanderElapsed >= WanderMoveTimeout)
+	{
+		StopMovement();
+		BrainState = ESEENPCBrainState::Idle;
+		return;
+	}
+
+	// Stall on a "successful" pathed move (partial navmesh): finish the leg
+	// with direct steering instead of standing still.
+	if (PawnChar->GetVelocity().Size2D() < GStuckSpeedThreshold)
+	{
+		StuckTime += DeltaTime;
+		if (StuckTime >= GStuckTimeBeforeFallback)
+		{
+			StuckTime = 0.0f;
+			StopMovement();
+			StartDirectMove(ActiveWanderGoal,
+				FMath::Max(WanderMoveTimeout - WanderElapsed, 1.0f), WanderArriveRadius);
 		}
 	}
 	else
@@ -448,12 +525,34 @@ void ASEENPCAIController::UpdateDirectMove(float DeltaTime)
 	DirectMoveTimeLeft -= DeltaTime;
 
 	const FVector ToGoal = DirectMoveGoal - ControlledPawn->GetActorLocation();
-	const float StopDist = (BrainState == ESEENPCBrainState::Chase) ? AttackRange * 0.8f : 70.0f;
 
-	if (DirectMoveTimeLeft <= 0.0f || ToGoal.Size2D() <= StopDist)
+	// Stall detection (same idea chase uses): pushing into a wall/prop without
+	// progress. Chasers keep shoving — corridors run along +X and the player
+	// may free the lane — but wanderers/returners give up and re-plan later.
+	bool bStalled = false;
+	if (ControlledPawn->GetVelocity().Size2D() < GStuckSpeedThreshold)
+	{
+		DirectStuckTime += DeltaTime;
+		bStalled = (DirectStuckTime >= GStuckTimeBeforeFallback)
+			&& (BrainState != ESEENPCBrainState::Chase);
+	}
+	else
+	{
+		DirectStuckTime = 0.0f;
+	}
+
+	if (DirectMoveTimeLeft <= 0.0f || ToGoal.Size2D() <= DirectMoveStopDist || bStalled)
 	{
 		bDirectMoveActive = false;
+		DirectStuckTime = 0.0f;
 		PathRetryCooldown = 0.0f; // try pathfinding again right away
+
+		// A wander leg ends here either way — idle until the next timer.
+		if (BrainState == ESEENPCBrainState::Wander)
+		{
+			StopMovement();
+			BrainState = ESEENPCBrainState::Idle;
+		}
 		return;
 	}
 
@@ -478,13 +577,45 @@ void ASEENPCAIController::RequestMove(const FVector& GoalLocation, AActor* GoalA
 			/*bUsePathfinding=*/true, /*bProjectDestinationToNavigation=*/true, /*bCanStrafe=*/true);
 	}
 
-	// No navmesh (or unreachable goal): straight-line corridor fallback.
 	if (Result == EPathFollowingRequestResult::Failed)
 	{
-		bDirectMoveActive = true;
-		DirectMoveGoal = GoalActor ? GoalActor->GetActorLocation() : GoalLocation;
-		DirectMoveTimeLeft = GDirectMoveBurst;
+		// No navmesh (degenerate bounds volume) or unreachable goal: remember
+		// that nav is down so every consumer steers directly, and start the
+		// straight-line fallback for this request immediately.
+		if (!bNavUnavailable)
+		{
+			UE_LOG(LogTemp, Warning,
+				TEXT("SEENPCBrain: %s pathed move FAILED (no usable navmesh?) — direct steering for %.0fs"),
+				*GetNameSafe(GetPawn()), NavRetestInterval);
+		}
+		bNavUnavailable = true;
+		NextNavRetestTime = GetWorld()->GetTimeSeconds() + NavRetestInterval;
+
+		const FVector Goal = GoalActor ? GoalActor->GetActorLocation() : GoalLocation;
+		const bool bChasing = (BrainState == ESEENPCBrainState::Chase);
+		StartDirectMove(Goal,
+			bChasing ? GDirectMoveBurst : WanderMoveTimeout,
+			bChasing ? AttackRange * 0.8f : WanderArriveRadius);
 	}
+	else
+	{
+		// A path was actually built — navigation works again.
+		bNavUnavailable = false;
+	}
+}
+
+void ASEENPCAIController::StartDirectMove(const FVector& Goal, float Duration, float StopDist)
+{
+	bDirectMoveActive = true;
+	DirectMoveGoal = Goal;
+	DirectMoveTimeLeft = Duration;
+	DirectMoveStopDist = StopDist;
+	DirectStuckTime = 0.0f;
+}
+
+bool ASEENPCAIController::IsNavBlocked() const
+{
+	return bNavUnavailable && GetWorld()->GetTimeSeconds() < NextNavRetestTime;
 }
 
 void ASEENPCAIController::SetMoveSpeed(float Speed) const
@@ -571,7 +702,8 @@ void ASEENPCAIController::OnWanderTimer()
 	APawn* ControlledPawn = GetPawn();
 	if (!ControlledPawn) return;
 
-	// Don't pace around while the player is standing next to us.
+	// Don't pace around while the player is standing next to us — perception
+	// already keeps us facing them.
 	if (APawn* Player = GetPlayerPawn())
 	{
 		if (FVector::DistSquared(ControlledPawn->GetActorLocation(), Player->GetActorLocation())
@@ -581,11 +713,145 @@ void ASEENPCAIController::OnWanderTimer()
 		}
 	}
 
-	BrainState = ESEENPCBrainState::Wander;
+	// Ambient life: sometimes just turn in place instead of walking.
+	if (FMath::FRand() < AmbientTurnChance)
+	{
+		BrainState = ESEENPCBrainState::Idle;
+		DoAmbientTurn();
+		return;
+	}
 
-	const FVector2D Offset = FMath::RandPointInCircle(WanderRadius);
-	const FVector Goal = HomeLocation + FVector(Offset.X, Offset.Y, 0.0f);
-	RequestMove(Goal, nullptr, 60.0f);
+	FVector Goal;
+	if (!TryPickWanderPoint(Goal))
+	{
+		// Hemmed in by props — at least look around.
+		BrainState = ESEENPCBrainState::Idle;
+		DoAmbientTurn();
+		return;
+	}
+
+	BrainState = ESEENPCBrainState::Wander;
+	ActiveWanderGoal = Goal;
+	WanderElapsed = 0.0f;
+	StuckTime = 0.0f;
+	SetMoveSpeed(WalkSpeed); // unhurried shuffle; StartChase restores ChaseSpeed
+	ClearFocus(EAIFocusPriority::Gameplay);
+	SetFocalPoint(Goal);
+
+	if (IsNavBlocked())
+	{
+		// Skip the doomed pathed request and steer straight away.
+		StartDirectMove(Goal, WanderMoveTimeout, WanderArriveRadius);
+	}
+	else
+	{
+		// Failed requests flip to direct steering inside RequestMove.
+		RequestMove(Goal, nullptr, 60.0f);
+	}
+}
+
+bool ASEENPCAIController::TryPickWanderPoint(FVector& OutGoal) const
+{
+	const ACharacter* PawnChar = GetPawnCharacter();
+	UWorld* World = GetWorld();
+	if (!PawnChar || !World) return false;
+
+	const UCapsuleComponent* Capsule = PawnChar->GetCapsuleComponent();
+	const float CapsuleRadius = Capsule ? Capsule->GetScaledCapsuleRadius() : 35.0f;
+	const float HalfHeight = Capsule ? Capsule->GetScaledCapsuleHalfHeight() : 90.0f;
+	const FVector PawnLoc = PawnChar->GetActorLocation();
+
+	FCollisionQueryParams Params(FName(TEXT("SEEWanderPick")), false, PawnChar);
+
+	for (int32 Attempt = 0; Attempt < 6; ++Attempt)
+	{
+		const FVector2D Offset = FMath::RandPointInCircle(WanderRadius);
+		FVector Goal = HomeLocation + FVector(Offset.X, Offset.Y, 0.0f);
+
+		// Stay inside the car interior (walls sit at |Y| ~ half car width).
+		Goal.Y = FMath::Clamp(Goal.Y, -WanderYClamp + CapsuleRadius, WanderYClamp - CapsuleRadius);
+
+		// Floor check: trace down through the goal column (floors sit at z=0,
+		// so a generous window around the pawn's own height is plenty).
+		FHitResult Floor;
+		const FVector FloorStart(Goal.X, Goal.Y, PawnLoc.Z + 100.0f);
+		const FVector FloorEnd(Goal.X, Goal.Y, PawnLoc.Z - 400.0f);
+		if (!World->LineTraceSingleByChannel(Floor, FloorStart, FloorEnd, ECC_Visibility, Params))
+		{
+			continue; // hole / off the car — pick again
+		}
+		Goal.Z = Floor.ImpactPoint.Z + HalfHeight;
+
+		// Wall check: capsule-radius sphere sweep at chest height along the
+		// straight approach. If something blocks, stop short of it instead of
+		// grinding into a crate; if it is right in our face, pick elsewhere.
+		FHitResult Wall;
+		const FVector SweepEnd(Goal.X, Goal.Y, PawnLoc.Z);
+		const bool bBlocked = World->SweepSingleByChannel(Wall, PawnLoc, SweepEnd,
+			FQuat::Identity, ECC_Visibility,
+			FCollisionShape::MakeSphere(CapsuleRadius), Params);
+		if (bBlocked)
+		{
+			if (Wall.Distance < CapsuleRadius + 100.0f)
+			{
+				continue;
+			}
+			const FVector Dir = (SweepEnd - PawnLoc).GetSafeNormal2D();
+			const FVector Short = PawnLoc + Dir * (Wall.Distance - CapsuleRadius);
+			Goal.X = Short.X;
+			Goal.Y = Short.Y;
+		}
+
+		// A leg shorter than the arrive radius is not worth standing up for.
+		if (FVector::Dist2D(Goal, PawnLoc) <= WanderArriveRadius)
+		{
+			continue;
+		}
+
+		OutGoal = Goal;
+		return true;
+	}
+
+	return false;
+}
+
+void ASEENPCAIController::DoAmbientTurn()
+{
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn) return;
+
+	APawn* Player = GetPlayerPawn();
+
+	// Prefer facing a nearby fellow NPC so idle clusters read as conversations.
+	const ACharacter* Neighbor = nullptr;
+	float BestDistSq = FMath::Square(AmbientFaceNPCRange);
+	for (TActorIterator<ACharacter> It(GetWorld()); It; ++It)
+	{
+		const ACharacter* Other = *It;
+		if (!IsValid(Other) || Other == ControlledPawn || Other == Player) continue;
+		const float DistSq = FVector::DistSquared(
+			Other->GetActorLocation(), ControlledPawn->GetActorLocation());
+		if (DistSq < BestDistSq)
+		{
+			BestDistSq = DistSq;
+			Neighbor = Other;
+		}
+	}
+
+	if (Neighbor && FMath::FRand() < 0.6f)
+	{
+		SetFocalPoint(Neighbor->GetActorLocation());
+	}
+	else
+	{
+		// Small random yaw drift, expressed as a focal point: SetControlRotation
+		// would be stomped by UpdateControlRotation (it re-derives the control
+		// rotation from pawn orientation whenever no focal point is set).
+		const float DriftYaw = ControlledPawn->GetActorRotation().Yaw
+			+ FMath::FRandRange(-AmbientYawDriftMax, AmbientYawDriftMax);
+		const FVector DriftDir = FRotator(0.0f, DriftYaw, 0.0f).Vector();
+		SetFocalPoint(ControlledPawn->GetActorLocation() + DriftDir * 400.0f);
+	}
 }
 
 // ---------------------------------------------------------------------------

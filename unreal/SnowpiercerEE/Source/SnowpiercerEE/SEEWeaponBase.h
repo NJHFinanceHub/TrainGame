@@ -5,6 +5,10 @@
 #include "SEEHealthComponent.h"
 #include "SEEWeaponBase.generated.h"
 
+class UStaticMesh;
+class UStaticMeshComponent;
+class UMaterialInterface;
+
 UENUM(BlueprintType)
 enum class ESEEWeaponTier : uint8
 {
@@ -15,6 +19,18 @@ enum class ESEEWeaponTier : uint8
 	Legendary		UMETA(DisplayName = "Legendary")
 };
 
+/** Code-built visual silhouette for a weapon (engine basic shapes, no asset deps). */
+UENUM(BlueprintType)
+enum class ESEEWeaponShape : uint8
+{
+	Pipe		UMETA(DisplayName = "Pipe"),		// thin cylinder
+	Shiv		UMETA(DisplayName = "Shiv"),		// small wedge cube
+	Wrench		UMETA(DisplayName = "Wrench"),		// cylinder + box head
+	Blade		UMETA(DisplayName = "Blade"),		// long flat cube (machete)
+	Bat			UMETA(DisplayName = "Bat"),			// thick cylinder
+	Baton		UMETA(DisplayName = "Baton")		// short slim cylinder
+};
+
 UCLASS()
 class SNOWPIERCEREE_API ASEEWeaponBase : public AActor
 {
@@ -22,6 +38,20 @@ class SNOWPIERCEREE_API ASEEWeaponBase : public AActor
 
 public:
 	ASEEWeaponBase();
+
+	/**
+	 * Spawn a fully configured, visible weapon for a known weapon inventory item.
+	 * Maps DT_Items weapon ItemIDs (Item_Shiv, Item_RustyPipe, Item_Wrench,
+	 * Item_Machete, Item_ReinforcedBat, Item_JackbootBaton) to stats + shape.
+	 * Returns nullptr (with a log) for unknown ItemIDs.
+	 */
+	static ASEEWeaponBase* SpawnWeaponForItem(UWorld* World, FName ItemID, AActor* OwnerActor);
+
+	/** True if ItemID is one of the known weapon inventory items the factory can build. */
+	static bool IsWeaponItemID(FName ItemID);
+
+	/** Build the visible mesh for the given silhouette (engine basic shapes, dark metal tint). */
+	void ConfigureShape(ESEEWeaponShape Shape);
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	float GetBaseDamage() const { return BaseDamage; }
@@ -40,6 +70,9 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Weapon")
 	bool IsBroken() const { return CurrentDurability <= 0.0f; }
+
+	UFUNCTION(BlueprintPure, Category = "Weapon")
+	FName GetSourceItemID() const { return SourceItemID; }
 
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void DegradeDurability(float Amount = 1.0f);
@@ -83,9 +116,34 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 	float HeavyDamageMultiplier = 2.5f;
 
+	/** Inventory ItemID this weapon was spawned from (NAME_None for hand-placed weapons). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FName SourceItemID;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
 	UStaticMeshComponent* WeaponMesh;
 
+	/** Secondary piece (wrench head). Hidden for single-piece shapes. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	UStaticMeshComponent* WeaponHeadMesh;
+
 protected:
 	virtual void BeginPlay() override;
+
+	/** Tint applied via dynamic material instance on the engine BasicShapeMaterial. */
+	UPROPERTY(EditAnywhere, Category = "Weapon|Visual")
+	FLinearColor MetalTint = FLinearColor(0.06f, 0.06f, 0.07f, 1.0f);
+
+private:
+	// Engine basic shape assets resolved in the constructor (no project asset deps)
+	UPROPERTY()
+	TObjectPtr<UStaticMesh> CylinderShape;
+
+	UPROPERTY()
+	TObjectPtr<UStaticMesh> CubeShape;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInterface> BasicShapeMaterial;
+
+	void ApplyMetalTint(UStaticMeshComponent* MeshComp);
 };

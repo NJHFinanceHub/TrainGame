@@ -90,5 +90,8 @@ private:
 	int32 FindSlotWithItem(FName ItemID) const;
 	int32 FindEmptySlot() const;
 
+	/** Sizes the slot array (idempotent) - AddItem may run before BeginPlay. */
+	void EnsureSlots();
+
 	virtual void BeginPlay() override;
 };

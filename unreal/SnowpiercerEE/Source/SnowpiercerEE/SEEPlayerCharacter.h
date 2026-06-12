@@ -57,6 +57,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void DetachFromWeaponSocket();
 
+	/** Quickslot equip: prefer the configured weapon socket; fall back to base-class behavior. */
+	virtual void AttachWeaponActorToHand(AActor* WeaponActor) override;
+
 protected:
 	// Dynamic-delegate handler (bound via AddDynamic) — must be a UFUNCTION
 	UFUNCTION()

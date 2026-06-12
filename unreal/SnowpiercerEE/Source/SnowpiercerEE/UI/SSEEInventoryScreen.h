@@ -10,16 +10,21 @@ class USEEInventoryComponent;
 class UInventoryComponent; // legacy SnowyEngine inventory - accepted for source compat, unused
 class SVerticalBox;
 class SScrollBox;
+class SSEEMenuButton;
 
 /**
  * SSEEInventoryScreen
  *
- * Full-screen inventory panel backed by the pawn's USEEInventoryComponent:
- * - Item list (name, stack count, weight) with category filter tabs
+ * "POSSESSIONS" - the Eternal Engine inventory, in SSEEPanelFrame chrome:
+ * - Item list (category letter badge, name, equip marker, stack count, weight)
+ *   with category filter tabs
  * - Detail panel from FSEEItemData (description, rarity, weight, value, restores)
- * - Use (consumables - applies HealthRestore via USEEInventoryComponent::UseItem)
- * - Drop (USEEInventoryComponent::DropItem; quest items refuse)
- * - Carry-weight capacity bar
+ * - USE (consumables - applies HealthRestore via USEEInventoryComponent::UseItem)
+ *   and DROP (USEEInventoryComponent::DropItem; quest items refuse) as
+ *   SSEEMenuButton chrome
+ * - Carry-weight capacity bar that shades engine-amber to blood-red as it fills
+ * - Equip indicator: weapons matching the pawn's equipped weapon (queried
+ *   read-only from USEECombatComponent) show an amber marker, others a dash
  * - Keyboard navigation: Up/Down select, Enter use, Delete drop, Esc close
  *
  * The widget pulls a snapshot of the slots in Refresh(); the UI subsystem calls
@@ -62,13 +67,16 @@ private:
 	TSharedRef<SWidget> MakeTab(const FText& Label, uint8 CategoryValue);
 	TSharedRef<SWidget> MakeDetailPanel();
 	TSharedRef<SWidget> MakeWeightBar();
-	TSharedRef<SWidget> MakeActionButton(const FText& Label, bool bDanger);
+	TSharedRef<SWidget> MakeActionButtons();
 
 	void RebuildList();
 	void MoveSelection(int32 Delta);
 	void SelectEntry(int32 EntryIndex);
 	void UseSelected();
 	void DropSelected();
+
+	/** Re-query the pawn's combat component (read-only) for the equipped weapon's ItemID. */
+	void RefreshEquippedItemID();
 
 	bool HasSelection() const { return Entries.IsValidIndex(SelectedIndex); }
 	const FSEEItemData* GetData(FName ItemID) const;
@@ -78,15 +86,24 @@ private:
 	FText GetRarityText(ESEEItemRarity Rarity) const;
 	FLinearColor GetRarityColor(ESEEItemRarity Rarity) const;
 
+	/** Single-letter badge (W/A/C/M/Q/J) and its accent color per category. */
+	FText GetCategoryBadgeLetter(ESEEItemCategory Category) const;
+	FLinearColor GetCategoryBadgeColor(ESEEItemCategory Category) const;
+
 	TWeakObjectPtr<USEEInventoryComponent> InventoryComp;
 	FSimpleDelegate OnRequestClose;
 
 	TSharedPtr<SVerticalBox> ListBox;
 	TSharedPtr<SScrollBox> ListScrollBox;
+	TSharedPtr<SSEEMenuButton> UseButton;
+	TSharedPtr<SSEEMenuButton> DropButton;
 	TArray<FEntry> Entries;
 	TArray<TSharedPtr<SWidget>> RowWidgets;
 
 	int32 SelectedIndex = INDEX_NONE;
 	int32 OccupiedSlotCount = 0;
 	uint8 ActiveCategory = 255; // 255 = "All" filter
+
+	/** ItemID of the pawn's currently equipped weapon (NAME_None when unarmed). */
+	FName EquippedItemID;
 };

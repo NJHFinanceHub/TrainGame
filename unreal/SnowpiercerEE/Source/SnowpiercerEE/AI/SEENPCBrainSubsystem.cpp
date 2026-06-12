@@ -119,7 +119,8 @@ void USEENPCBrainSubsystem::ConfigureController(ASEENPCAIController* Controller,
 		Controller->AttackIntervalMax = 1.3f;
 		Controller->ChaseSpeed = 550.0f;
 		Controller->SightRange = 3000.0f;
-		Controller->DialogueEntryNode = NAME_None; // bosses do their talking with a baton
+		// Talkable only before the fight starts (CanStartDialogue blocks Chase).
+		Controller->DialogueEntryNode = TEXT("Guard_01");
 	}
 	else if (bJackboot)
 	{
@@ -137,7 +138,7 @@ void USEENPCBrainSubsystem::ConfigureController(ASEENPCAIController* Controller,
 	{
 		Controller->bHostile = false;
 		Controller->MaxHealth = 100.0f;
-		Controller->WanderRadius = 0.0f; // stays behind the stall
+		Controller->WanderRadius = 0.0f; // stays behind the stall, rotates to face the player
 		Controller->DialogueEntryNode = PickDialogueEntryNode(Identity, true, false);
 	}
 	else
@@ -145,35 +146,92 @@ void USEENPCBrainSubsystem::ConfigureController(ASEENPCAIController* Controller,
 		// Civilians, Breachmen, FirstClass and anything unrecognized: friendly wanderer.
 		Controller->bHostile = false;
 		Controller->MaxHealth = bBreachman ? 120.0f : 60.0f;
-		Controller->WanderRadius = 600.0f;
-		Controller->WalkSpeed = 180.0f;
+		Controller->WalkSpeed = 180.0f; // unhurried shuffle while wandering
 		Controller->DialogueEntryNode = PickDialogueEntryNode(Identity, false, bBreachman);
+
+		// Wander leash by archetype: named story NPCs hover near their post,
+		// generic civilians roam the car, breachmen range the widest.
+		const bool bNamedStoryNPC =
+			Identity.Contains(TEXT("Gilliam")) || Identity.Contains(TEXT("Whisper")) ||
+			Identity.Contains(TEXT("DrAsha")) || Identity.Contains(TEXT("Mourner")) ||
+			Identity.Contains(TEXT("KronoleKim")) || Identity.Contains(TEXT("Elder"));
+		if (bBreachman)
+		{
+			Controller->WanderRadius = 900.0f;
+		}
+		else if (bNamedStoryNPC)
+		{
+			Controller->WanderRadius = 500.0f;
+		}
+		else
+		{
+			Controller->WanderRadius = 750.0f;
+		}
 	}
 
 	Controller->MarkConfigured();
+
+	// One line per adopted NPC so a log pass shows the full liveliness map.
+	UE_LOG(LogTemp, Log,
+		TEXT("SEENPCBrain: adopted '%s' (%s) — %s, dialogue entry '%s', wander %.0f, walk %.0f"),
+		*Label, *ClassName,
+		Controller->bHostile ? TEXT("HOSTILE") : TEXT("friendly"),
+		*Controller->DialogueEntryNode.ToString(),
+		Controller->WanderRadius, Controller->WalkSpeed);
 }
 
 FName USEENPCBrainSubsystem::PickDialogueEntryNode(const FString& Identity, bool bMerchant, bool bBreachman)
 {
-	// Named characters first (labels set by populate_zone1.py), then class fallbacks.
-	// Entry rows live in /Game/DataTables/DT_Dialogue_Zone1 (see create_datatables.py):
-	//   Pike_01 (Old Man Pike), Dealer_01 (Kronole Dealer), Guard_01 (Jackboot Guard),
-	//   Mechanic_01 (Workshop Mechanic), Injured_01 (Injured Tailie).
-	if (Identity.Contains(TEXT("Gilliam")) || Identity.Contains(TEXT("Elder")) || Identity.Contains(TEXT("Whisper")))
+	// Named characters first (labels set by populate_zone1.py), then class
+	// fallbacks. Entry rows live in /Game/DataTables/DT_Dialogue_Zone1 (see
+	// create_datatables.py — 92 nodes, 7 speakers). Entry roots:
+	//   Pike_01     Old Man Pike (elder, revolt-with-patience quest giver)
+	//   Samuel_01   Samuel (young hothead, rush-the-gate firebrand)
+	//   Dealer_01   Kronole Dealer (den/smuggler bench rules)
+	//   Guard_01    Jackboot Guard (yellow-line gate guard)
+	//   Mechanic_01 Workshop Mechanic (welds, tools, the Network)
+	//   Injured_01  Mara, the Injured Tailie (cost of the last revolt)
+	//   Tanya_01    Tanya (grieving mother, taken-forward children)
+
+	// --- Named placed NPCs (full label coverage) ---
+	if (Identity.Contains(TEXT("Gilliam")) || Identity.Contains(TEXT("Elder")) ||
+		Identity.Contains(TEXT("Whisper")) || Identity.Contains(TEXT("Pike")))
 	{
-		return TEXT("Pike_01");
+		return TEXT("Pike_01"); // NPC_Gilliam, NPC_Whisper (listening post feeds the elder)
 	}
-	if (Identity.Contains(TEXT("Kronole")) || Identity.Contains(TEXT("Smuggler")) || Identity.Contains(TEXT("Dealer")))
+	if (Identity.Contains(TEXT("Hothead")) || Identity.Contains(TEXT("Samuel")) ||
+		Identity.Contains(TEXT("Firebrand")) || Identity.Contains(TEXT("Rebel")))
 	{
-		return TEXT("Dealer_01");
+		return TEXT("Samuel_01"); // young hothead archetype
 	}
-	if (Identity.Contains(TEXT("Workshop")) || Identity.Contains(TEXT("Mechanic")) || Identity.Contains(TEXT("Car07")))
+	if (Identity.Contains(TEXT("Kronole")) || Identity.Contains(TEXT("Smuggler")) ||
+		Identity.Contains(TEXT("Dealer")))
+	{
+		return TEXT("Dealer_01"); // NPC_KronoleKim, NPC_Merchant_Smuggler
+	}
+	if (Identity.Contains(TEXT("Mourner")) || Identity.Contains(TEXT("Tanya")) ||
+		Identity.Contains(TEXT("Widow")))
+	{
+		return TEXT("Tanya_01"); // NPC_Mourner at Martyr's Gate — the grief tree
+	}
+	if (Identity.Contains(TEXT("DrAsha")) || Identity.Contains(TEXT("Asha")) ||
+		Identity.Contains(TEXT("Sickbay")) || Identity.Contains(TEXT("Injured")) ||
+		Identity.Contains(TEXT("Mara")))
+	{
+		return TEXT("Injured_01"); // NPC_DrAsha tends Mara's tree in the sickbay
+	}
+	if (Identity.Contains(TEXT("Workshop")) || Identity.Contains(TEXT("Mechanic")) ||
+		Identity.Contains(TEXT("Car07")))
 	{
 		return TEXT("Mechanic_01");
 	}
+
+	// --- Class fallbacks ---
 	if (bMerchant) return TEXT("Dealer_01");
 	if (bBreachman) return TEXT("Mechanic_01");
 
-	// DrAsha, Mourner and generic civilians: the injured-Tailie quest tree.
+	// --- Anything unmatched (NPC_Car01_Civilian_0..4 and future generics) ---
+	// No generic-Tailie tree exists in the 92-node table, so reuse the
+	// injured-Tailie opening: every friendly stays talkable with a story hook.
 	return TEXT("Injured_01");
 }

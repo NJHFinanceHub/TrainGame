@@ -3,12 +3,14 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "TimerManager.h"
 #include "Exploration/CollectibleComponent.h"
 #include "SEEHealthComponent.h"
 #include "SEEStatsComponent.h"
 #include "SEECombatComponent.h"
 #include "SEEInventoryComponent.h"
+#include "SEEWeaponBase.h"
 #include "TrainGame/Economy/ArmorComponent.h"
 #include "SEEColdComponent.h"
 #include "Progression/SkillTreeComponent.h"
@@ -208,6 +210,18 @@ void ASEECharacter::RefreshMoveSpeed()
 	}
 
 	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+void ASEECharacter::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	// Spawned quickslot weapons are owned by this character — don't leak them
+	if (QuickSlotWeapon)
+	{
+		QuickSlotWeapon->Destroy();
+		QuickSlotWeapon = nullptr;
+	}
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ASEECharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -435,7 +449,150 @@ void ASEECharacter::DodgeInput()
 	}
 }
 
-void ASEECharacter::UseQuickSlot1() { if (InventoryComponent) InventoryComponent->UseQuickSlot(0); }
-void ASEECharacter::UseQuickSlot2() { if (InventoryComponent) InventoryComponent->UseQuickSlot(1); }
-void ASEECharacter::UseQuickSlot3() { if (InventoryComponent) InventoryComponent->UseQuickSlot(2); }
-void ASEECharacter::UseQuickSlot4() { if (InventoryComponent) InventoryComponent->UseQuickSlot(3); }
+void ASEECharacter::UseQuickSlot1() { HandleQuickSlot(0); }
+void ASEECharacter::UseQuickSlot2() { HandleQuickSlot(1); }
+void ASEECharacter::UseQuickSlot3() { HandleQuickSlot(2); }
+void ASEECharacter::UseQuickSlot4() { HandleQuickSlot(3); }
+
+void ASEECharacter::HandleQuickSlot(int32 QuickSlotIndex)
+{
+	// Weapon-category items take priority: slot N toggles the Nth weapon in the bag.
+	if (TryToggleWeaponQuickSlot(QuickSlotIndex))
+	{
+		return;
+	}
+
+	// Fall through to the inventory's assigned quickslot path (consumables etc.)
+	if (InventoryComponent)
+	{
+		InventoryComponent->UseQuickSlot(QuickSlotIndex);
+	}
+}
+
+bool ASEECharacter::TryToggleWeaponQuickSlot(int32 WeaponOrdinal)
+{
+	if (!InventoryComponent || !CombatComponent)
+	{
+		return false;
+	}
+
+	// Scan inventory slots in order for the Nth weapon-category item
+	FName TargetItemID = NAME_None;
+	int32 WeaponsSeen = 0;
+	for (const FSEEInventorySlot& Slot : InventoryComponent->GetAllSlots())
+	{
+		if (Slot.IsEmpty())
+		{
+			continue;
+		}
+
+		bool bIsWeapon = false;
+		if (const FSEEItemData* Data = InventoryComponent->GetItemDataPtr(Slot.ItemID))
+		{
+			bIsWeapon = (Data->Category == ESEEItemCategory::Weapon);
+		}
+		else
+		{
+			// Item data table missing/unassigned — fall back to the known weapon ItemID set
+			bIsWeapon = ASEEWeaponBase::IsWeaponItemID(Slot.ItemID);
+		}
+
+		if (!bIsWeapon)
+		{
+			continue;
+		}
+
+		if (WeaponsSeen == WeaponOrdinal)
+		{
+			TargetItemID = Slot.ItemID;
+			break;
+		}
+		++WeaponsSeen;
+	}
+
+	if (TargetItemID.IsNone())
+	{
+		return false;
+	}
+
+	// Same weapon already equipped -> toggle off
+	if (QuickSlotWeapon && QuickSlotWeapon->GetSourceItemID() == TargetItemID)
+	{
+		UnequipQuickSlotWeapon();
+		return true;
+	}
+
+	EquipWeaponByItemID(TargetItemID);
+	return true; // handled even if the spawn failed (don't consume the item as a consumable)
+}
+
+void ASEECharacter::EquipWeaponByItemID(FName ItemID)
+{
+	// Replace any previously spawned quickslot weapon
+	UnequipQuickSlotWeapon();
+
+	ASEEWeaponBase* NewWeapon = ASEEWeaponBase::SpawnWeaponForItem(GetWorld(), ItemID, this);
+	if (!NewWeapon)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s: failed to spawn weapon for item '%s'"), *GetName(), *ItemID.ToString());
+		return;
+	}
+
+	// Combat component drives damage/speed/range from the equipped weapon
+	// (and performs its own attach to the mesh's weapon_r socket)
+	if (CombatComponent)
+	{
+		CombatComponent->EquipWeapon(NewWeapon);
+	}
+
+	// Refine the attachment for meshes without a weapon_r socket
+	AttachWeaponActorToHand(NewWeapon);
+
+	QuickSlotWeapon = NewWeapon;
+	UE_LOG(LogTemp, Log, TEXT("%s equipped '%s' (dmg %.0f, speed %.1f)"),
+		*GetName(), *ItemID.ToString(), NewWeapon->GetBaseDamage(), NewWeapon->GetAttackSpeed());
+}
+
+void ASEECharacter::UnequipQuickSlotWeapon()
+{
+	if (!QuickSlotWeapon)
+	{
+		return;
+	}
+
+	if (CombatComponent && CombatComponent->GetEquippedWeapon() == QuickSlotWeapon)
+	{
+		CombatComponent->UnequipWeapon();
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("%s unequipped '%s'"), *GetName(), *QuickSlotWeapon->GetSourceItemID().ToString());
+	QuickSlotWeapon->Destroy();
+	QuickSlotWeapon = nullptr;
+}
+
+void ASEECharacter::AttachWeaponActorToHand(AActor* WeaponActor)
+{
+	if (!WeaponActor)
+	{
+		return;
+	}
+
+	const FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+	USkeletalMeshComponent* MeshComp = GetMesh();
+
+	if (MeshComp && MeshComp->DoesSocketExist(TEXT("weapon_r")))
+	{
+		WeaponActor->AttachToComponent(MeshComp, Rules, TEXT("weapon_r"));
+	}
+	else if (MeshComp && MeshComp->DoesSocketExist(TEXT("hand_r")))
+	{
+		WeaponActor->AttachToComponent(MeshComp, Rules, TEXT("hand_r"));
+	}
+	else
+	{
+		// No usable skeleton — hang it off the capsule with a forward offset so it's visible
+		WeaponActor->AttachToComponent(GetRootComponent(), Rules);
+		WeaponActor->SetActorRelativeLocation(FVector(45.0f, 20.0f, 10.0f));
+		WeaponActor->SetActorRelativeRotation(FRotator::ZeroRotator);
+	}
+}

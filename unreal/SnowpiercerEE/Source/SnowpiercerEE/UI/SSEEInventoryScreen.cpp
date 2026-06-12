@@ -1,9 +1,14 @@
-// SSEEInventoryScreen.cpp - Inventory screen implementation
+// SSEEInventoryScreen.cpp - "POSSESSIONS" inventory screen implementation
 #include "SSEEInventoryScreen.h"
 
 #include "SnowpiercerEE/SEEInventoryComponent.h"
+#include "SnowpiercerEE/SEECombatComponent.h"
+#include "SnowpiercerEE/SEEWeaponBase.h"
 #include "Widgets/SSEEUIStyle.h"
+#include "Widgets/SSEEPanelFrame.h"
+#include "Widgets/SSEEMenuButton.h"
 
+#include "GameFramework/Actor.h"
 #include "InputCoreTypes.h"
 
 #include "Widgets/SBoxPanel.h"
@@ -22,82 +27,94 @@ void SSEEInventoryScreen::Construct(const FArguments& InArgs)
 
 	ChildSlot
 	[
-		// Full-screen semi-transparent backdrop
+		// Full-screen darkened steel backdrop
 		SNew(SBorder)
-		.BorderImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
+		.BorderImage(SEEUIStyle::WhiteBrush())
 		.BorderBackgroundColor(SEEUIStyle::ScreenBackdrop)
-		.Padding(40.0f)
+		.HAlign(HAlign_Center)
+		.VAlign(VAlign_Center)
+		.Padding(24.0f)
 		[
-			SNew(SVerticalBox)
-
-			// Title bar
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(0, 0, 0, 8)
+			SNew(SSEEPanelFrame)
+			.Title(NSLOCTEXT("HUD", "Possessions", "POSSESSIONS"))
+			.ContentPadding(FMargin(24.0f, 16.0f, 24.0f, 20.0f))
 			[
-				MakeHeader()
-			]
-
-			// Category tabs
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(0, 0, 0, 8)
-			[
-				MakeCategoryTabs()
-			]
-
-			// Main content: item list (left) + detail panel (right)
-			+ SVerticalBox::Slot()
-			.FillHeight(1.0f)
-			[
-				SNew(SHorizontalBox)
-
-				+ SHorizontalBox::Slot()
-				.FillWidth(0.6f)
-				.Padding(0, 0, 8, 0)
+				SNew(SBox)
+				.WidthOverride(1140.0f)
+				.HeightOverride(600.0f)
 				[
-					SNew(SBorder)
-					.BorderImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
-					.BorderBackgroundColor(SEEUIStyle::PanelDark)
-					.Padding(4.0f)
+					SNew(SVerticalBox)
+
+					// Slot count strip
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0, 0, 0, 8)
 					[
-						SAssignNew(ListScrollBox, SScrollBox)
-						+ SScrollBox::Slot()
+						MakeHeader()
+					]
+
+					// Category tabs
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0, 0, 0, 8)
+					[
+						MakeCategoryTabs()
+					]
+
+					// Main content: item list (left) + detail panel (right)
+					+ SVerticalBox::Slot()
+					.FillHeight(1.0f)
+					[
+						SNew(SHorizontalBox)
+
+						+ SHorizontalBox::Slot()
+						.FillWidth(0.6f)
+						.Padding(0, 0, 8, 0)
 						[
-							SAssignNew(ListBox, SVerticalBox)
+							SNew(SBorder)
+							.BorderImage(SEEUIStyle::WhiteBrush())
+							.BorderBackgroundColor(SEEUIStyle::PanelDark)
+							.Padding(4.0f)
+							[
+								SAssignNew(ListScrollBox, SScrollBox)
+								+ SScrollBox::Slot()
+								[
+									SAssignNew(ListBox, SVerticalBox)
+								]
+							]
+						]
+
+						+ SHorizontalBox::Slot()
+						.FillWidth(0.4f)
+						[
+							MakeDetailPanel()
 						]
 					]
-				]
 
-				+ SHorizontalBox::Slot()
-				.FillWidth(0.4f)
-				[
-					MakeDetailPanel()
-				]
-			]
+					// Footer: weight capacity bar + key hints
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0, 10, 0, 0)
+					[
+						SNew(SHorizontalBox)
 
-			// Footer: weight capacity bar + key hints
-			+ SVerticalBox::Slot()
-			.AutoHeight()
-			.Padding(0, 8, 0, 0)
-			[
-				SNew(SHorizontalBox)
+						+ SHorizontalBox::Slot()
+						.FillWidth(0.6f)
+						.Padding(0, 0, 8, 0)
+						[
+							MakeWeightBar()
+						]
 
-				+ SHorizontalBox::Slot()
-				.FillWidth(0.6f)
-				.Padding(0, 0, 8, 0)
-				[
-					MakeWeightBar()
-				]
-
-				+ SHorizontalBox::Slot()
-				.FillWidth(0.4f)
-				.VAlign(VAlign_Bottom)
-				[
-					SNew(STextBlock)
-					.Text(NSLOCTEXT("HUD", "InvHints", "Up/Down select   Enter use   Del drop   Esc close"))
-					.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
-					.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
+						+ SHorizontalBox::Slot()
+						.FillWidth(0.4f)
+						.VAlign(VAlign_Bottom)
+						[
+							SNew(STextBlock)
+							.Text(NSLOCTEXT("HUD", "InvHints", "Up/Down select   Enter use   Del drop   Esc close"))
+							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
+							.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
+						]
+					]
 				]
 			]
 		]
@@ -108,7 +125,27 @@ void SSEEInventoryScreen::Construct(const FArguments& InArgs)
 
 void SSEEInventoryScreen::Refresh()
 {
+	RefreshEquippedItemID();
 	RebuildList();
+}
+
+void SSEEInventoryScreen::RefreshEquippedItemID()
+{
+	EquippedItemID = NAME_None;
+
+	if (!InventoryComp.IsValid()) return;
+
+	const AActor* Owner = InventoryComp->GetOwner();
+	if (!Owner) return;
+
+	// Read-only peek at the pawn's combat component for the equipped weapon.
+	const USEECombatComponent* Combat = Owner->FindComponentByClass<USEECombatComponent>();
+	if (!Combat) return;
+
+	if (const ASEEWeaponBase* Weapon = Combat->GetEquippedWeapon())
+	{
+		EquippedItemID = Weapon->GetSourceItemID();
+	}
 }
 
 FReply SSEEInventoryScreen::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent)
@@ -154,9 +191,9 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeHeader()
 		.FillWidth(1.0f)
 		[
 			SNew(STextBlock)
-			.Text(NSLOCTEXT("HUD", "Inventory", "INVENTORY"))
-			.Font(FCoreStyle::GetDefaultFontStyle("Bold", 18))
-			.ColorAndOpacity(FSlateColor(SEEUIStyle::TextHeader))
+			.Text(NSLOCTEXT("HUD", "InvSubtitle", "EVERYTHING YOU OWN FITS IN YOUR HANDS"))
+			.Font(SEEUIStyle::OverlineFont(10))
+			.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
 		]
 
 		+ SHorizontalBox::Slot()
@@ -205,9 +242,14 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeTab(const FText& Label, uint8 Categ
 		[
 			SNew(STextBlock)
 			.Text(Label)
-			.Font(FCoreStyle::GetDefaultFontStyle("Regular", 10))
-			.ColorAndOpacity(FSlateColor(SEEUIStyle::TextPrimary))
-			.Margin(FMargin(8, 4))
+			.Font(SEEUIStyle::CaptionFont(10))
+			.ColorAndOpacity_Lambda([this, CategoryValue]()
+			{
+				return FSlateColor(ActiveCategory == CategoryValue
+					? SEEUIStyle::EngineAmber
+					: SEEUIStyle::TextPrimary);
+			})
+			.Margin(FMargin(10, 5))
 		];
 }
 
@@ -264,7 +306,7 @@ void SSEEInventoryScreen::RebuildList()
 		.Padding(8.0f)
 		[
 			SNew(STextBlock)
-			.Text(NSLOCTEXT("HUD", "EmptyInv", "No items"))
+			.Text(NSLOCTEXT("HUD", "EmptyInv", "Nothing. Out here, that can be a death sentence."))
 			.Font(FCoreStyle::GetDefaultFontStyle("Italic", 10))
 			.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
 		];
@@ -281,6 +323,11 @@ void SSEEInventoryScreen::RebuildList()
 			: FText::FromName(Entry.ItemID);
 		const FLinearColor NameColor = Data ? GetRarityColor(Data->Rarity) : SEEUIStyle::RarityCommon;
 		const float UnitWeight = Data ? Data->Weight : 0.0f;
+		const ESEEItemCategory Category = Data ? Data->Category : ESEEItemCategory::Junk;
+
+		// Equip column: weapons matching the pawn's equipped weapon get a marker.
+		const bool bIsWeapon = (Category == ESEEItemCategory::Weapon);
+		const bool bEquipped = bIsWeapon && !EquippedItemID.IsNone() && (EquippedItemID == Entry.ItemID);
 
 		TSharedRef<SWidget> Row =
 			SNew(SBox)
@@ -301,16 +348,61 @@ void SSEEInventoryScreen::RebuildList()
 				[
 					SNew(SHorizontalBox)
 
+					// Category letter badge (W/A/C/M/Q/J)
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					.VAlign(VAlign_Center)
+					.Padding(6, 0, 8, 0)
+					[
+						SNew(SBox)
+						.WidthOverride(22.0f)
+						.HeightOverride(22.0f)
+						[
+							SNew(SBorder)
+							.BorderImage(SEEUIStyle::WhiteBrush())
+							.BorderBackgroundColor(SEEUIStyle::Dim(GetCategoryBadgeColor(Category), 0.22f))
+							.HAlign(HAlign_Center)
+							.VAlign(VAlign_Center)
+							.Padding(FMargin(0))
+							[
+								SNew(STextBlock)
+								.Text(GetCategoryBadgeLetter(Category))
+								.Font(FCoreStyle::GetDefaultFontStyle("Bold", 11))
+								.ColorAndOpacity(FSlateColor(GetCategoryBadgeColor(Category)))
+							]
+						]
+					]
+
 					// Name
 					+ SHorizontalBox::Slot()
 					.FillWidth(1.0f)
 					.VAlign(VAlign_Center)
-					.Padding(8, 0, 0, 0)
 					[
 						SNew(STextBlock)
 						.Text(Name)
 						.Font(FCoreStyle::GetDefaultFontStyle("Regular", 11))
 						.ColorAndOpacity(FSlateColor(NameColor))
+					]
+
+					// Equip indicator column (weapons only show the marker)
+					+ SHorizontalBox::Slot()
+					.AutoWidth()
+					.VAlign(VAlign_Center)
+					.Padding(0, 0, 10, 0)
+					[
+						SNew(SBox)
+						.WidthOverride(58.0f)
+						.HAlign(HAlign_Center)
+						[
+							SNew(STextBlock)
+							.Text(bEquipped
+								? NSLOCTEXT("HUD", "InvEquipped", "EQUIPPED")
+								: FText::FromString(FString(TEXT("—")))) // em dash
+							.Font(FCoreStyle::GetDefaultFontStyle("Bold", 8))
+							.ColorAndOpacity(FSlateColor(bEquipped
+								? SEEUIStyle::EngineAmber
+								: SEEUIStyle::Dim(SEEUIStyle::TextFaint, 0.6f)))
+						]
 					]
 
 					// Count
@@ -413,7 +505,7 @@ void SSEEInventoryScreen::DropSelected()
 TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 {
 	return SNew(SBorder)
-		.BorderImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
+		.BorderImage(SEEUIStyle::WhiteBrush())
 		.BorderBackgroundColor(SEEUIStyle::PanelDark)
 		.Padding(12.0f)
 		[
@@ -425,7 +517,7 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 			[
 				SNew(STextBlock)
 				.Text(NSLOCTEXT("HUD", "ItemDetail", "ITEM DETAILS"))
-				.Font(FCoreStyle::GetDefaultFontStyle("Bold", 12))
+				.Font(SEEUIStyle::CaptionFont(11))
 				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextHeader))
 			]
 
@@ -491,7 +583,7 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 							return Data ? Data->Description : FText::GetEmpty();
 						})
 						.Font(FCoreStyle::GetDefaultFontStyle("Regular", 10))
-						.ColorAndOpacity(FSlateColor(SEEUIStyle::TextPrimary))
+						.ColorAndOpacity(FSlateColor(SEEUIStyle::BoneText))
 						.AutoWrapText(true)
 					]
 
@@ -516,6 +608,10 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 							if (Data->HealthRestore > 0.0f)
 							{
 								Lines += FString::Printf(TEXT("\nRestores %0.f health"), Data->HealthRestore);
+							}
+							if (Data->HungerRestore > 0.0f)
+							{
+								Lines += FString::Printf(TEXT("\nRestores %0.f hunger"), Data->HungerRestore);
 							}
 							if (Data->StaminaRestore > 0.0f)
 							{
@@ -543,56 +639,61 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 			.AutoHeight()
 			.Padding(0, 10, 0, 0)
 			[
-				SNew(SHorizontalBox)
-
-				+ SHorizontalBox::Slot()
-				.FillWidth(0.5f)
-				.Padding(0, 0, 4, 0)
-				[
-					MakeActionButton(NSLOCTEXT("HUD", "InvUse", "USE"), false)
-				]
-
-				+ SHorizontalBox::Slot()
-				.FillWidth(0.5f)
-				[
-					MakeActionButton(NSLOCTEXT("HUD", "InvDrop", "DROP"), true)
-				]
+				MakeActionButtons()
 			]
 		];
 }
 
-TSharedRef<SWidget> SSEEInventoryScreen::MakeActionButton(const FText& Label, bool bDanger)
+TSharedRef<SWidget> SSEEInventoryScreen::MakeActionButtons()
 {
-	return SNew(SBox)
-		.HeightOverride(38.0f)
+	// Chrome buttons: USE (amber tick) / DROP (blood-red tick). Enabled state
+	// tracks the current selection via attributes (set after Construct, which
+	// would otherwise overwrite them with the bEnabled argument).
+	TSharedRef<SHorizontalBox> Buttons = SNew(SHorizontalBox)
+
+		+ SHorizontalBox::Slot()
+		.FillWidth(0.5f)
+		.Padding(0, 0, 4, 0)
 		[
-			SNew(SButton)
-			.ButtonStyle(&SEEUIStyle::GetMenuButtonStyle())
-			.IsEnabled_Lambda([this, bDanger]()
-			{
-				const FSEEItemData* Data = GetSelectedData();
-				if (!Data) return false;
-				if (bDanger) // DROP: anything except quest items
-				{
-					return Data->Category != ESEEItemCategory::Quest;
-				}
-				// USE: consumables only
-				return Data->Category == ESEEItemCategory::Consumable;
-			})
-			.OnClicked_Lambda([this, bDanger]()
-			{
-				if (bDanger) { DropSelected(); } else { UseSelected(); }
-				return FReply::Handled();
-			})
-			.HAlign(HAlign_Center)
-			.VAlign(VAlign_Center)
-			[
-				SNew(STextBlock)
-				.Text(Label)
-				.Font(FCoreStyle::GetDefaultFontStyle("Bold", 11))
-				.ColorAndOpacity(FSlateColor(bDanger ? SEEUIStyle::DangerRed : SEEUIStyle::OkGreen))
-			]
+			SAssignNew(UseButton, SSEEMenuButton)
+			.Text(NSLOCTEXT("HUD", "InvUse", "USE"))
+			.Width(180.0f)
+			.Height(42.0f)
+			.OnClicked(FSimpleDelegate::CreateSP(this, &SSEEInventoryScreen::UseSelected))
+		]
+
+		+ SHorizontalBox::Slot()
+		.FillWidth(0.5f)
+		[
+			SAssignNew(DropButton, SSEEMenuButton)
+			.Text(NSLOCTEXT("HUD", "InvDrop", "DROP"))
+			.Width(180.0f)
+			.Height(42.0f)
+			.TickColor(SEEUIStyle::BloodRed)
+			.bUseDefaultTickColor(false)
+			.OnClicked(FSimpleDelegate::CreateSP(this, &SSEEInventoryScreen::DropSelected))
 		];
+
+	if (UseButton.IsValid())
+	{
+		UseButton->SetEnabled(TAttribute<bool>::CreateLambda([this]()
+		{
+			const FSEEItemData* Data = GetSelectedData();
+			return Data && Data->Category == ESEEItemCategory::Consumable;
+		}));
+	}
+	if (DropButton.IsValid())
+	{
+		DropButton->SetEnabled(TAttribute<bool>::CreateLambda([this]()
+		{
+			if (!HasSelection()) return false;
+			const FSEEItemData* Data = GetSelectedData();
+			// Unknown items can always be dropped; quest items never.
+			return !Data || Data->Category != ESEEItemCategory::Quest;
+		}));
+	}
+
+	return Buttons;
 }
 
 TSharedRef<SWidget> SSEEInventoryScreen::MakeWeightBar()
@@ -617,7 +718,7 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeWeightBar()
 			{
 				if (InventoryComp.IsValid() && InventoryComp->IsOverweight())
 				{
-					return FSlateColor(SEEUIStyle::DangerRed);
+					return FSlateColor(SEEUIStyle::BloodRed);
 				}
 				return FSlateColor(SEEUIStyle::TextDim);
 			})
@@ -638,14 +739,18 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeWeightBar()
 				})
 				.FillColorAndOpacity_Lambda([this]()
 				{
-					if (InventoryComp.IsValid() && InventoryComp->IsOverweight())
+					// Engine-amber shading toward blood-red as the pack fills.
+					float Pct = 0.0f;
+					if (InventoryComp.IsValid())
 					{
-						return SEEUIStyle::DangerRed;
+						const float Max = InventoryComp->GetMaxWeight();
+						Pct = Max > 0.0f ? FMath::Clamp(InventoryComp->GetCurrentWeight() / Max, 0.0f, 1.0f) : 0.0f;
 					}
-					return SEEUIStyle::AccentBrass;
+					const float RedBlend = FMath::Clamp((Pct - 0.5f) / 0.5f, 0.0f, 1.0f);
+					return FMath::Lerp(SEEUIStyle::EngineAmber, SEEUIStyle::BloodRed, RedBlend);
 				})
-				.BackgroundImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
-				.FillImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
+				.BackgroundImage(SEEUIStyle::WhiteBrush())
+				.FillImage(SEEUIStyle::WhiteBrush())
 				.BorderPadding(FVector2D(0, 0))
 			]
 		];
@@ -671,6 +776,32 @@ FText SSEEInventoryScreen::GetCategoryText(ESEEItemCategory Category) const
 	case ESEEItemCategory::Crafting:   return NSLOCTEXT("HUD", "CatCraftLbl", "Crafting Material");
 	case ESEEItemCategory::Quest:      return NSLOCTEXT("HUD", "CatQuestLbl", "Quest Item");
 	default:                           return NSLOCTEXT("HUD", "CatJunkLbl", "Junk");
+	}
+}
+
+FText SSEEInventoryScreen::GetCategoryBadgeLetter(ESEEItemCategory Category) const
+{
+	switch (Category)
+	{
+	case ESEEItemCategory::Weapon:     return NSLOCTEXT("HUD", "BadgeW", "W");
+	case ESEEItemCategory::Armor:      return NSLOCTEXT("HUD", "BadgeA", "A");
+	case ESEEItemCategory::Consumable: return NSLOCTEXT("HUD", "BadgeC", "C");
+	case ESEEItemCategory::Crafting:   return NSLOCTEXT("HUD", "BadgeM", "M");
+	case ESEEItemCategory::Quest:      return NSLOCTEXT("HUD", "BadgeQ", "Q");
+	default:                           return NSLOCTEXT("HUD", "BadgeJ", "J");
+	}
+}
+
+FLinearColor SSEEInventoryScreen::GetCategoryBadgeColor(ESEEItemCategory Category) const
+{
+	switch (Category)
+	{
+	case ESEEItemCategory::Weapon:     return SEEUIStyle::BloodRed;
+	case ESEEItemCategory::Armor:      return SEEUIStyle::AccentSteel;
+	case ESEEItemCategory::Consumable: return SEEUIStyle::OkGreen;
+	case ESEEItemCategory::Crafting:   return SEEUIStyle::FrostBlue;
+	case ESEEItemCategory::Quest:      return SEEUIStyle::EngineAmber;
+	default:                           return SEEUIStyle::TextDim;
 	}
 }
 
