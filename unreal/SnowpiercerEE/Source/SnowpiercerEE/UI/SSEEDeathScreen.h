@@ -8,10 +8,11 @@
 /**
  * SSEEDeathScreen
  *
- * Death / game over overlay showing:
- * - "YOU DIED" text with cause of death
- * - Reload Checkpoint button
- * - Quit to Main Menu button
+ * Death / game over overlay ("Eternal Engine" chrome):
+ * - Deep red-black vignette layering
+ * - Huge stencil header: "FROZEN" for cold deaths, "THE TAIL REMEMBERS"
+ *   otherwise (picked from the death-cause string)
+ * - Cause line, then industrial buttons (Reload Checkpoint / Quit to Menu)
  *
  * Displayed when the player character dies. Actions exposed via delegates.
  */
@@ -37,6 +38,15 @@ public:
 	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
 
 private:
+	TSharedRef<SWidget> MakeVignetteLayers();
+
+	/** True when the cause string reads like death-by-cold (picks the header). */
+	bool IsColdDeath() const;
+
+	FText GetHeaderText() const;
+	FSlateColor GetHeaderColor() const;
+	FText GetCauseText() const;
+
 	FOnDeathScreenAction OnReloadCheckpoint;
 	FOnDeathScreenAction OnQuitToMenu;
 	FText DeathCause;

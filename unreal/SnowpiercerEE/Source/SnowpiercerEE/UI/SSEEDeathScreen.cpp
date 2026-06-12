@@ -1,5 +1,7 @@
-// SSEEDeathScreen.cpp - Death screen implementation
+// SSEEDeathScreen.cpp - Death screen implementation ("Eternal Engine" chrome)
 #include "SSEEDeathScreen.h"
+#include "Widgets/SSEEUIStyle.h"
+#include "Widgets/SSEEMenuButton.h"
 
 #include "InputCoreTypes.h"
 #include "Widgets/SBoxPanel.h"
@@ -7,7 +9,12 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Text/STextBlock.h"
-#include "Widgets/Input/SButton.h"
+
+namespace
+{
+	// Deep red-black base of the death backdrop.
+	const FLinearColor DeathBase = FLinearColor(0.045f, 0.012f, 0.010f, 0.96f);
+}
 
 void SSEEDeathScreen::Construct(const FArguments& InArgs)
 {
@@ -16,75 +23,90 @@ void SSEEDeathScreen::Construct(const FArguments& InArgs)
 
 	ChildSlot
 	[
-		// Dark red-tinted backdrop
+		// Deep red-black backdrop
 		SNew(SBorder)
-		.BorderImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
-		.BorderBackgroundColor(FLinearColor(0.08f, 0.0f, 0.0f, 0.9f))
-		.Padding(0)
+		.BorderImage(SEEUIStyle::WhiteBrush())
+		.BorderBackgroundColor(DeathBase)
+		.Padding(0.0f)
 		[
 			SNew(SOverlay)
 
+			// Vignette layering (darker bands at the screen edges)
+			+ SOverlay::Slot()
+			[
+				MakeVignetteLayers()
+			]
+
+			// Centered content
 			+ SOverlay::Slot()
 			.HAlign(HAlign_Center)
 			.VAlign(VAlign_Center)
 			[
 				SNew(SVerticalBox)
 
-				// "YOU DIED" header
+				// Stencil overline
 				+ SVerticalBox::Slot()
 				.AutoHeight()
 				.HAlign(HAlign_Center)
-				.Padding(0, 0, 0, 12)
+				.Padding(0.0f, 0.0f, 0.0f, 12.0f)
 				[
 					SNew(STextBlock)
-					.Text(NSLOCTEXT("HUD", "YouDied", "YOU DIED"))
-					.Font(FCoreStyle::GetDefaultFontStyle("Bold", 36))
-					.ColorAndOpacity(FSlateColor(FLinearColor(0.9f, 0.15f, 0.1f)))
+					.Text(NSLOCTEXT("HUD", "DeathOverline", "PASSENGER TERMINATED"))
+					.Font(SEEUIStyle::OverlineFont(12))
+					.ColorAndOpacity(FSlateColor(SEEUIStyle::Dim(SEEUIStyle::BloodRed, 0.85f)))
+				]
+
+				// Huge stencil header: FROZEN / THE TAIL REMEMBERS
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				.HAlign(HAlign_Center)
+				.Padding(0.0f, 0.0f, 0.0f, 10.0f)
+				[
+					SNew(STextBlock)
+					.Text(this, &SSEEDeathScreen::GetHeaderText)
+					.Font(SEEUIStyle::TitleFont(46))
+					.ColorAndOpacity(this, &SSEEDeathScreen::GetHeaderColor)
+				]
+
+				// Thin blood-red rule
+				+ SVerticalBox::Slot()
+				.AutoHeight()
+				.HAlign(HAlign_Center)
+				.Padding(0.0f, 0.0f, 0.0f, 14.0f)
+				[
+					SNew(SBox)
+					.WidthOverride(300.0f)
+					.HeightOverride(2.0f)
+					[
+						SNew(SBorder)
+						.BorderImage(SEEUIStyle::WhiteBrush())
+						.BorderBackgroundColor(SEEUIStyle::Dim(SEEUIStyle::BloodRed, 0.7f))
+						.Padding(0.0f)
+					]
 				]
 
 				// Death cause
 				+ SVerticalBox::Slot()
 				.AutoHeight()
 				.HAlign(HAlign_Center)
-				.Padding(0, 0, 0, 40)
+				.Padding(0.0f, 0.0f, 0.0f, 44.0f)
 				[
 					SNew(STextBlock)
-					.Text_Lambda([this]()
-					{
-						return DeathCause.IsEmpty()
-							? NSLOCTEXT("HUD", "DeathDefault", "The cold claims another soul.")
-							: DeathCause;
-					})
-					.Font(FCoreStyle::GetDefaultFontStyle("Italic", 12))
-					.ColorAndOpacity(FSlateColor(FLinearColor(0.6f, 0.4f, 0.4f)))
+					.Text(this, &SSEEDeathScreen::GetCauseText)
+					.Font(SEEUIStyle::BodyFont(15))
+					.ColorAndOpacity(FSlateColor(SEEUIStyle::Dim(SEEUIStyle::BoneText, 0.75f)))
 				]
 
 				// Reload Checkpoint
 				+ SVerticalBox::Slot()
 				.AutoHeight()
 				.HAlign(HAlign_Center)
-				.Padding(0, 0, 0, 8)
+				.Padding(0.0f, 0.0f, 0.0f, 10.0f)
 				[
-					SNew(SBox)
-					.WidthOverride(280.0f)
-					.HeightOverride(48.0f)
-					[
-						SNew(SButton)
-						.ButtonColorAndOpacity(FLinearColor(0.15f, 0.08f, 0.08f))
-						.OnClicked_Lambda([this]()
-						{
-							OnReloadCheckpoint.ExecuteIfBound();
-							return FReply::Handled();
-						})
-						.HAlign(HAlign_Center)
-						.VAlign(VAlign_Center)
-						[
-							SNew(STextBlock)
-							.Text(NSLOCTEXT("HUD", "Reload", "RELOAD CHECKPOINT"))
-							.Font(FCoreStyle::GetDefaultFontStyle("Bold", 14))
-							.ColorAndOpacity(FSlateColor(FLinearColor(0.9f, 0.8f, 0.7f)))
-						]
-					]
+					SNew(SSEEMenuButton)
+					.Text(NSLOCTEXT("HUD", "Reload", "RELOAD CHECKPOINT"))
+					.Width(320.0f).Height(50.0f)
+					.OnClicked(FSimpleDelegate::CreateLambda([this]() { OnReloadCheckpoint.ExecuteIfBound(); }))
 				]
 
 				// Quit to Menu
@@ -92,30 +114,121 @@ void SSEEDeathScreen::Construct(const FArguments& InArgs)
 				.AutoHeight()
 				.HAlign(HAlign_Center)
 				[
-					SNew(SBox)
-					.WidthOverride(280.0f)
-					.HeightOverride(48.0f)
-					[
-						SNew(SButton)
-						.ButtonColorAndOpacity(FLinearColor(0.1f, 0.05f, 0.05f))
-						.OnClicked_Lambda([this]()
-						{
-							OnQuitToMenu.ExecuteIfBound();
-							return FReply::Handled();
-						})
-						.HAlign(HAlign_Center)
-						.VAlign(VAlign_Center)
-						[
-							SNew(STextBlock)
-							.Text(NSLOCTEXT("HUD", "DeathQuit", "QUIT TO MENU"))
-							.Font(FCoreStyle::GetDefaultFontStyle("Bold", 12))
-							.ColorAndOpacity(FSlateColor(FLinearColor(0.5f, 0.4f, 0.4f)))
-						]
-					]
+					SNew(SSEEMenuButton)
+					.Text(NSLOCTEXT("HUD", "DeathQuit", "QUIT TO MENU"))
+					.Width(320.0f).Height(50.0f)
+					.TickColor(SEEUIStyle::BloodRed)
+					.bUseDefaultTickColor(false)
+					.OnClicked(FSimpleDelegate::CreateLambda([this]() { OnQuitToMenu.ExecuteIfBound(); }))
 				]
 			]
 		]
 	];
+}
+
+TSharedRef<SWidget> SSEEDeathScreen::MakeVignetteLayers()
+{
+	// Layered darkening bands: heavier at top/bottom, lighter mid - a cheap,
+	// asset-free vignette that pushes the eye to the centered header.
+	return SNew(SOverlay)
+
+		+ SOverlay::Slot()
+		[
+			SNew(SVerticalBox)
+			+ SVerticalBox::Slot().FillHeight(0.22f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.55f))
+				.Padding(0.0f)
+			]
+			+ SVerticalBox::Slot().FillHeight(0.16f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.25f))
+				.Padding(0.0f)
+			]
+			+ SVerticalBox::Slot().FillHeight(0.24f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f))
+				.Padding(0.0f)
+			]
+			+ SVerticalBox::Slot().FillHeight(0.16f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.25f))
+				.Padding(0.0f)
+			]
+			+ SVerticalBox::Slot().FillHeight(0.22f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.55f))
+				.Padding(0.0f)
+			]
+		]
+
+		// Side bands for the horizontal axis of the vignette
+		+ SOverlay::Slot()
+		[
+			SNew(SHorizontalBox)
+			+ SHorizontalBox::Slot().FillWidth(0.14f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.40f))
+				.Padding(0.0f)
+			]
+			+ SHorizontalBox::Slot().FillWidth(0.72f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.0f))
+				.Padding(0.0f)
+			]
+			+ SHorizontalBox::Slot().FillWidth(0.14f)
+			[
+				SNew(SBorder)
+				.BorderImage(SEEUIStyle::WhiteBrush())
+				.BorderBackgroundColor(FLinearColor(0.0f, 0.0f, 0.0f, 0.40f))
+				.Padding(0.0f)
+			]
+		];
+}
+
+bool SSEEDeathScreen::IsColdDeath() const
+{
+	if (DeathCause.IsEmpty())
+	{
+		return true; // default flavor is the cold
+	}
+	const FString Cause = DeathCause.ToString().ToLower();
+	return Cause.Contains(TEXT("cold")) || Cause.Contains(TEXT("frost"))
+		|| Cause.Contains(TEXT("froze")) || Cause.Contains(TEXT("ice"))
+		|| Cause.Contains(TEXT("frozen")) || Cause.Contains(TEXT("hypotherm"));
+}
+
+FText SSEEDeathScreen::GetHeaderText() const
+{
+	return IsColdDeath()
+		? NSLOCTEXT("HUD", "DeathFrozen", "FROZEN")
+		: NSLOCTEXT("HUD", "DeathTail", "THE TAIL REMEMBERS");
+}
+
+FSlateColor SSEEDeathScreen::GetHeaderColor() const
+{
+	return IsColdDeath() ? FSlateColor(SEEUIStyle::FrostBlue) : FSlateColor(SEEUIStyle::BloodRed);
+}
+
+FText SSEEDeathScreen::GetCauseText() const
+{
+	return DeathCause.IsEmpty()
+		? NSLOCTEXT("HUD", "DeathDefault", "The cold claims another soul.")
+		: DeathCause;
 }
 
 void SSEEDeathScreen::SetDeathCause(const FText& InCause)

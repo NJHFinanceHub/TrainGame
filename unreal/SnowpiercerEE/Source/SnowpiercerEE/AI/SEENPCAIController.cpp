@@ -4,6 +4,7 @@
 
 #include "SEENPCHealthComponent.h"
 #include "SnowpiercerEE/SEECombatComponent.h"
+#include "SnowpiercerEE/SEEFactionManager.h"
 #include "SnowpiercerEE/SEEJackbootCharacter.h"
 #include "SnowpiercerEE/SEECivilianCharacter.h"
 #include "Components/CapsuleComponent.h"
@@ -607,6 +608,8 @@ void ASEENPCAIController::HandlePawnDeath()
 	if (BrainState == ESEENPCBrainState::Dead) return;
 	BrainState = ESEENPCBrainState::Dead;
 
+	USEEFactionManager::NotifyNPCKilled(this, GetPawn()); // faction kill ripple (classifies jackboot/merchant/civilian)
+
 	GetWorldTimerManager().ClearTimer(PerceptionTimerHandle);
 	GetWorldTimerManager().ClearTimer(WanderTimerHandle);
 	GetWorldTimerManager().ClearTimer(AttackWindupTimerHandle);
@@ -651,6 +654,7 @@ bool ASEENPCAIController::CanStartDialogue() const
 	if (DialogueEntryNode.IsNone()) return false;
 	if (BrainState == ESEENPCBrainState::Dead || BrainState == ESEENPCBrainState::Chase) return false;
 	if (bWindingUp) return false;
+	if (USEEFactionManager::ShouldPawnRefuseDialogue(GetPawn())) return false; // standing too low — they turn their back
 	return true;
 }
 

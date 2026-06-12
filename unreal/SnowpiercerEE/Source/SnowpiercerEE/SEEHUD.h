@@ -61,6 +61,7 @@ private:
 	void DrawWeaponIndicator();
 	void DrawCrosshair();
 	void DrawDamageDirection();
+	void DrawNPCLabels();
 
 	void DrawBar(float X, float Y, float Width, float Height, float Percent,
 				 FLinearColor FillColor, FLinearColor BackColor);

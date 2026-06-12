@@ -7,8 +7,10 @@
 #include "UI/SEEUISubsystem.h"
 #include "UI/Widgets/SSEEUIStyle.h"
 #include "TrainGame/Economy/ArmorComponent.h"
+#include "AI/SEENPCAIController.h"
 #include "Engine/Canvas.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "GameFramework/PlayerController.h"
 
 ASEEHUD::ASEEHUD()
@@ -133,6 +135,79 @@ void ASEEHUD::DrawHUD()
 	DrawWeaponIndicator();
 	DrawCrosshair();
 	DrawDamageDirection();
+	DrawNPCLabels();
+}
+
+void ASEEHUD::DrawNPCLabels()
+{
+	APlayerController* PC = GetOwningPlayerController();
+	APawn* PlayerPawn = PC ? PC->GetPawn() : nullptr;
+	UWorld* World = GetWorld();
+	if (!PC || !PlayerPawn || !World) return;
+
+	const FVector PlayerLoc = PlayerPawn->GetActorLocation();
+	constexpr float MaxLabelDistSq = 2000.0f * 2000.0f;
+	constexpr float TalkHintDistSq = 350.0f * 350.0f;
+
+	for (TActorIterator<APawn> It(World); It; ++It)
+	{
+		APawn* NPC = *It;
+		if (!NPC || NPC == PlayerPawn) continue;
+
+		const float DistSq = FVector::DistSquared(PlayerLoc, NPC->GetActorLocation());
+		if (DistSq > MaxLabelDistSq) continue;
+
+		ASEENPCAIController* Brain = Cast<ASEENPCAIController>(NPC->GetController());
+		if (!Brain) continue;
+
+		// Role color: aggroed red, hostile dark red, talkable green, else grey
+		FLinearColor Color(0.75f, 0.75f, 0.75f, 0.9f);
+		FString Suffix;
+		if (Brain->bHostile)
+		{
+			Color = Brain->IsAggroed()
+				? FLinearColor(1.0f, 0.15f, 0.1f, 1.0f)
+				: FLinearColor(0.7f, 0.2f, 0.15f, 0.9f);
+		}
+		else if (Brain->CanStartDialogue())
+		{
+			Color = FLinearColor(0.4f, 0.9f, 0.5f, 0.9f);
+			if (DistSq <= TalkHintDistSq)
+			{
+				Suffix = TEXT("  [E]");
+			}
+		}
+
+		// Display name from the placed label (NPC_Gilliam -> Gilliam),
+		// falling back to a class-derived role
+		FString Name = NPC->GetActorNameOrLabel();
+		Name.RemoveFromStart(TEXT("NPC_"));
+		Name.RemoveFromStart(TEXT("Boss_"));
+		if (Name.StartsWith(TEXT("BP_NPC_")) || Name.Contains(TEXT("_C_")))
+		{
+			const FString ClassName = NPC->GetClass()->GetName();
+			if (ClassName.Contains(TEXT("Jackboot")))      Name = TEXT("Jackboot");
+			else if (ClassName.Contains(TEXT("Merchant")))  Name = TEXT("Merchant");
+			else if (ClassName.Contains(TEXT("Breachman"))) Name = TEXT("Breachman");
+			else                                            Name = TEXT("Tailie");
+		}
+
+		// Project a point above the head; skip if behind the camera
+		FVector2D Screen;
+		const FVector HeadLoc = NPC->GetActorLocation() + FVector(0, 0, 115.0f);
+		if (!PC->ProjectWorldLocationToScreen(HeadLoc, Screen, true)) continue;
+
+		// Fade with distance
+		const float DistFade = 1.0f - FMath::Clamp(
+			(FMath::Sqrt(DistSq) - 600.0f) / 1400.0f, 0.0f, 0.65f);
+		Color.A *= DistFade;
+
+		const FString Label = Name + Suffix;
+		float TextW = 0.0f, TextH = 0.0f;
+		GetTextSize(Label, TextW, TextH, GEngine->GetSmallFont());
+		DrawText(Label, Color, Screen.X - TextW * 0.5f, Screen.Y - TextH,
+				 GEngine->GetSmallFont());
+	}
 }
 
 // --- Canvas Drawing ---

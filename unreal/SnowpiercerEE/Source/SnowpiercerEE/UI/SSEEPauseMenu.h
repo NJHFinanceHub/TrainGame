@@ -8,7 +8,7 @@
 /**
  * SSEEPauseMenu
  *
- * Pause menu overlay with:
+ * Pause menu overlay ("Eternal Engine" chrome - riveted panel frame) with:
  * - Resume button
  * - Save Game button
  * - Load Game button
@@ -41,7 +41,7 @@ public:
 	virtual FReply OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InKeyEvent) override;
 
 private:
-	TSharedRef<SWidget> MakeMenuButton(const FText& Label, FOnPauseMenuAction Action);
+	TSharedRef<SWidget> MakeMenuButton(const FText& Label, FOnPauseMenuAction Action, bool bDanger = false);
 
 	FOnPauseMenuAction OnResume;
 	FOnPauseMenuAction OnSave;

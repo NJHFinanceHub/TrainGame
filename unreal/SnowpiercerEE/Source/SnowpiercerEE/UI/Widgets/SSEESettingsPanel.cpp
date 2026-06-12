@@ -1,6 +1,8 @@
-// SSEESettingsPanel.cpp - Settings overlay implementation
+// SSEESettingsPanel.cpp - Settings overlay implementation ("Eternal Engine" chrome)
 #include "SSEESettingsPanel.h"
 #include "SSEEUIStyle.h"
+#include "SSEEPanelFrame.h"
+#include "SSEEMenuButton.h"
 
 #include "Engine/Engine.h"
 #include "GameFramework/GameUserSettings.h"
@@ -26,8 +28,8 @@ void SSEESettingsPanel::Construct(const FArguments& InArgs)
 	[
 		// Full-screen backdrop so clicks don't fall through to the menu behind
 		SNew(SBorder)
-		.BorderImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
-		.BorderBackgroundColor(SEEUIStyle::ScreenBackdrop)
+		.BorderImage(SEEUIStyle::WhiteBrush())
+		.BorderBackgroundColor(SEEUIStyle::Dim(SEEUIStyle::SteelBlack, 0.88f))
 		.Padding(0.0f)
 		[
 			SNew(SOverlay)
@@ -36,68 +38,36 @@ void SSEESettingsPanel::Construct(const FArguments& InArgs)
 			.HAlign(HAlign_Center)
 			.VAlign(VAlign_Center)
 			[
-				SNew(SBorder)
-				.BorderImage(FCoreStyle::Get().GetBrush("GenericWhiteBox"))
-				.BorderBackgroundColor(SEEUIStyle::PanelDark)
-				.Padding(40.0f)
+				SNew(SSEEPanelFrame)
+				.Title(NSLOCTEXT("HUD", "SettingsTitle", "SETTINGS - CALIBRATION"))
+				.MinWidth(480.0f)
+				.ContentPadding(FMargin(28.0f, 24.0f, 28.0f, 28.0f))
 				[
-					SNew(SBox)
-					.WidthOverride(460.0f)
+					SNew(SVerticalBox)
+
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0.0f, 0.0f, 0.0f, 22.0f)
 					[
-						SNew(SVerticalBox)
+						MakeSensitivityRow()
+					]
 
-						// Title
-						+ SVerticalBox::Slot()
-						.AutoHeight()
-						.HAlign(HAlign_Center)
-						.Padding(0, 0, 0, 24)
-						[
-							SNew(STextBlock)
-							.Text(NSLOCTEXT("HUD", "SettingsTitle", "SETTINGS"))
-							.Font(FCoreStyle::GetDefaultFontStyle("Bold", 22))
-							.ColorAndOpacity(FSlateColor(SEEUIStyle::TextHeader))
-						]
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0.0f, 0.0f, 0.0f, 30.0f)
+					[
+						MakeWindowModeRow()
+					]
 
-						+ SVerticalBox::Slot()
-						.AutoHeight()
-						.Padding(0, 0, 0, 20)
-						[
-							MakeSensitivityRow()
-						]
-
-						+ SVerticalBox::Slot()
-						.AutoHeight()
-						.Padding(0, 0, 0, 28)
-						[
-							MakeWindowModeRow()
-						]
-
-						// Back button
-						+ SVerticalBox::Slot()
-						.AutoHeight()
-						.HAlign(HAlign_Center)
-						[
-							SNew(SBox)
-							.WidthOverride(220.0f)
-							.HeightOverride(42.0f)
-							[
-								SNew(SButton)
-								.ButtonStyle(&SEEUIStyle::GetMenuButtonStyle())
-								.OnClicked_Lambda([this]()
-								{
-									OnClose.ExecuteIfBound();
-									return FReply::Handled();
-								})
-								.HAlign(HAlign_Center)
-								.VAlign(VAlign_Center)
-								[
-									SNew(STextBlock)
-									.Text(NSLOCTEXT("HUD", "SettingsBack", "BACK"))
-									.Font(FCoreStyle::GetDefaultFontStyle("Bold", 12))
-									.ColorAndOpacity(FSlateColor(SEEUIStyle::TextPrimary))
-								]
-							]
-						]
+					// Back button
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.HAlign(HAlign_Center)
+					[
+						SNew(SSEEMenuButton)
+						.Text(NSLOCTEXT("HUD", "SettingsBack", "BACK"))
+						.Width(240.0f).Height(44.0f)
+						.OnClicked(FSimpleDelegate::CreateLambda([this]() { OnClose.ExecuteIfBound(); }))
 					]
 				]
 			]
@@ -121,7 +91,7 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeSensitivityRow()
 
 		+ SVerticalBox::Slot()
 		.AutoHeight()
-		.Padding(0, 0, 0, 6)
+		.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 		[
 			SNew(SHorizontalBox)
 
@@ -130,8 +100,8 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeSensitivityRow()
 			[
 				SNew(STextBlock)
 				.Text(NSLOCTEXT("HUD", "MouseSens", "MOUSE SENSITIVITY"))
-				.Font(FCoreStyle::GetDefaultFontStyle("Bold", 11))
-				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextDim))
+				.Font(SEEUIStyle::CaptionFont(11))
+				.ColorAndOpacity(FSlateColor(SEEUIStyle::Dim(SEEUIStyle::BoneText, 0.7f)))
 			]
 
 			+ SHorizontalBox::Slot()
@@ -142,8 +112,8 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeSensitivityRow()
 				{
 					return FText::FromString(FString::Printf(TEXT("%.3f"), SensitivityValue));
 				})
-				.Font(FCoreStyle::GetDefaultFontStyle("Regular", 11))
-				.ColorAndOpacity(FSlateColor(SEEUIStyle::AccentBrass))
+				.Font(SEEUIStyle::BodyFont(12))
+				.ColorAndOpacity(FSlateColor(SEEUIStyle::EngineAmber))
 			]
 		]
 
@@ -155,8 +125,8 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeSensitivityRow()
 			.MaxValue(0.30f)
 			.Value_Lambda([this]() { return SensitivityValue; })
 			.OnValueChanged_Lambda([this](float NewValue) { ApplySensitivity(NewValue); })
-			.SliderBarColor(SEEUIStyle::PanelMid)
-			.SliderHandleColor(SEEUIStyle::AccentBrass)
+			.SliderBarColor(SEEUIStyle::RivetLine)
+			.SliderHandleColor(SEEUIStyle::EngineAmber)
 		];
 }
 
@@ -166,23 +136,23 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeWindowModeRow()
 
 		+ SVerticalBox::Slot()
 		.AutoHeight()
-		.Padding(0, 0, 0, 6)
+		.Padding(0.0f, 0.0f, 0.0f, 8.0f)
 		[
 			SNew(STextBlock)
 			.Text(NSLOCTEXT("HUD", "WindowMode", "WINDOW MODE"))
-			.Font(FCoreStyle::GetDefaultFontStyle("Bold", 11))
-			.ColorAndOpacity(FSlateColor(SEEUIStyle::TextDim))
+			.Font(SEEUIStyle::CaptionFont(11))
+			.ColorAndOpacity(FSlateColor(SEEUIStyle::Dim(SEEUIStyle::BoneText, 0.7f)))
 		]
 
 		+ SVerticalBox::Slot()
 		.AutoHeight()
 		[
 			SNew(SHorizontalBox)
-			+ SHorizontalBox::Slot().FillWidth(1.0f).Padding(0, 0, 4, 0)
+			+ SHorizontalBox::Slot().FillWidth(1.0f).Padding(0.0f, 0.0f, 6.0f, 0.0f)
 			[
 				MakeWindowModeButton(NSLOCTEXT("HUD", "WMFullscreen", "FULLSCREEN"), EWindowMode::Fullscreen)
 			]
-			+ SHorizontalBox::Slot().FillWidth(1.0f).Padding(0, 0, 4, 0)
+			+ SHorizontalBox::Slot().FillWidth(1.0f).Padding(0.0f, 0.0f, 6.0f, 0.0f)
 			[
 				MakeWindowModeButton(NSLOCTEXT("HUD", "WMBorderless", "BORDERLESS"), EWindowMode::WindowedFullscreen)
 			]
@@ -195,16 +165,23 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeWindowModeRow()
 
 TSharedRef<SWidget> SSEESettingsPanel::MakeWindowModeButton(const FText& Label, EWindowMode::Type Mode)
 {
+	auto IsActiveMode = [Mode]()
+	{
+		UGameUserSettings* Settings = GEngine ? GEngine->GetGameUserSettings() : nullptr;
+		return Settings && Settings->GetFullscreenMode() == Mode;
+	};
+
 	return SNew(SBox)
-		.HeightOverride(34.0f)
+		.HeightOverride(36.0f)
 		[
 			SNew(SButton)
 			.ButtonStyle(&SEEUIStyle::GetRowButtonStyle())
-			.ButtonColorAndOpacity_Lambda([Mode]()
+			.ButtonColorAndOpacity_Lambda([IsActiveMode]()
 			{
-				UGameUserSettings* Settings = GEngine ? GEngine->GetGameUserSettings() : nullptr;
-				const bool bActive = Settings && Settings->GetFullscreenMode() == Mode;
-				return bActive ? SEEUIStyle::TabActive : SEEUIStyle::TabInactive;
+				// Active: amber-lit panel; inactive: gunmetal
+				return IsActiveMode()
+					? FLinearColor::LerpUsingHSV(SEEUIStyle::Gunmetal, SEEUIStyle::EngineAmber, 0.35f)
+					: SEEUIStyle::Gunmetal;
 			})
 			.OnClicked_Lambda([Mode]()
 			{
@@ -220,8 +197,13 @@ TSharedRef<SWidget> SSEESettingsPanel::MakeWindowModeButton(const FText& Label, 
 			[
 				SNew(STextBlock)
 				.Text(Label)
-				.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
-				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextPrimary))
+				.Font(SEEUIStyle::CaptionFont(10))
+				.ColorAndOpacity_Lambda([IsActiveMode]()
+				{
+					return IsActiveMode()
+						? FSlateColor(FLinearColor::White)
+						: FSlateColor(SEEUIStyle::Dim(SEEUIStyle::BoneText, 0.8f));
+				})
 			]
 		];
 }
