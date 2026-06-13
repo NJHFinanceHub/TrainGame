@@ -5,12 +5,14 @@
 #include "Widgets/SCompoundWidget.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "SnowpiercerEE/SEEItemBase.h"
+#include "TrainGame/Economy/ArmorComponent.h"
 
 class USEEInventoryComponent;
 class UInventoryComponent; // legacy SnowyEngine inventory - accepted for source compat, unused
 class SVerticalBox;
 class SScrollBox;
 class SSEEMenuButton;
+class SSEEArmorSlotWidget;
 
 /**
  * SSEEInventoryScreen
@@ -25,7 +27,12 @@ class SSEEMenuButton;
  * - Carry-weight capacity bar that shades engine-amber to blood-red as it fills
  * - Equip indicator: weapons matching the pawn's equipped weapon (queried
  *   read-only from USEECombatComponent) show an amber marker, others a dash
- * - Keyboard navigation: Up/Down select, Enter use, Delete drop, Esc close
+ * - Paper-doll armor panel (right column): HEAD/TORSO/SHIELD slot cells
+ *   - Armor inventory rows are draggable; drop onto a slot cell to equip
+ *   - E key or EQUIP button as keyboard/button fallback
+ *   - Each slot cell has an UNEQUIP affordance returning the piece to inventory
+ *   - Total DR% and cold resistance shown above the slots
+ * - Keyboard navigation: Up/Down select, Enter use, Delete drop, E equip, Esc close
  *
  * The widget pulls a snapshot of the slots in Refresh(); the UI subsystem calls
  * Refresh() on open and from the component's OnInventoryChanged delegate.
@@ -69,11 +76,34 @@ private:
 	TSharedRef<SWidget> MakeWeightBar();
 	TSharedRef<SWidget> MakeActionButtons();
 
+	/** Build the right-hand paper-doll armor panel. */
+	TSharedRef<SWidget> MakeArmorPanel();
+
 	void RebuildList();
 	void MoveSelection(int32 Delta);
 	void SelectEntry(int32 EntryIndex);
 	void UseSelected();
 	void DropSelected();
+
+	/**
+	 * Shared equip path used by both drag-drop and the keyboard/button fallback.
+	 * Equips ItemID into Slot via ArmorComponent->EquipFromItem, removes one from
+	 * inventory, and returns the evicted previous piece (if any) to inventory.
+	 * Calls Refresh() on success.
+	 */
+	void EquipArmorItem(FName ItemID, EArmorSlot Slot);
+
+	/**
+	 * Unequips the piece in Slot and adds it back to inventory.
+	 * Calls Refresh() on success.
+	 */
+	void UnequipArmorSlot(EArmorSlot Slot);
+
+	/**
+	 * Infer the best equip slot from an item's ID name.
+	 * Helm/Mask/Hood → Head; Shield/Guard → Shield; everything else → Torso.
+	 */
+	static EArmorSlot InferSlotFromItemID(FName ItemID);
 
 	/** Re-query the pawn's combat component (read-only) for the equipped weapon's ItemID. */
 	void RefreshEquippedItemID();
@@ -81,6 +111,9 @@ private:
 	bool HasSelection() const { return Entries.IsValidIndex(SelectedIndex); }
 	const FSEEItemData* GetData(FName ItemID) const;
 	const FSEEItemData* GetSelectedData() const;
+
+	/** Returns the pawn's UArmorComponent, or nullptr. */
+	UArmorComponent* GetArmorComponent() const;
 
 	FText GetCategoryText(ESEEItemCategory Category) const;
 	FText GetRarityText(ESEEItemRarity Rarity) const;
@@ -94,15 +127,22 @@ private:
 	FSimpleDelegate OnRequestClose;
 
 	TSharedPtr<SVerticalBox> ListBox;
-	TSharedPtr<SScrollBox> ListScrollBox;
+	TSharedPtr<SScrollBox>   ListScrollBox;
 	TSharedPtr<SSEEMenuButton> UseButton;
 	TSharedPtr<SSEEMenuButton> DropButton;
-	TArray<FEntry> Entries;
+	TSharedPtr<SSEEMenuButton> EquipButton;
+
+	/** The three slot cell widgets so we can issue targeted refreshes. */
+	TSharedPtr<SSEEArmorSlotWidget> HeadSlotWidget;
+	TSharedPtr<SSEEArmorSlotWidget> TorsoSlotWidget;
+	TSharedPtr<SSEEArmorSlotWidget> ShieldSlotWidget;
+
+	TArray<FEntry>              Entries;
 	TArray<TSharedPtr<SWidget>> RowWidgets;
 
-	int32 SelectedIndex = INDEX_NONE;
-	int32 OccupiedSlotCount = 0;
-	uint8 ActiveCategory = 255; // 255 = "All" filter
+	int32  SelectedIndex    = INDEX_NONE;
+	int32  OccupiedSlotCount = 0;
+	uint8  ActiveCategory   = 255; // 255 = "All" filter
 
 	/** ItemID of the pawn's currently equipped weapon (NAME_None when unarmed). */
 	FName EquippedItemID;

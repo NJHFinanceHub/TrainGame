@@ -4,6 +4,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "SnowyEngine/Inventory/InventoryTypes.h"
+#include "SnowpiercerEE/SEEItemBase.h"
 #include "ArmorComponent.generated.h"
 
 /**
@@ -146,6 +147,21 @@ public:
 	/** Check if torso armor is heavy enough to penalize dodge speed (>7kg). */
 	UFUNCTION(BlueprintPure, Category = "Armor")
 	bool HasHeavyArmorPenalty() const;
+
+	/**
+	 * Convenience equip from an inventory item.  Builds an FEquippedArmor from
+	 * FSEEItemData fields (BluntArmor averaged → DamageReduction, ColdResistance,
+	 * Weight), stores SourceItemID so the piece can be returned to inventory on
+	 * unequip, and calls EquipArmor().  Returns the previously equipped piece in
+	 * OutPrevious (check OutPrevious.IsValid()).
+	 *
+	 * NoiseLevel is inferred from weight:
+	 *   < 2 kg → Silent, < 4 kg → Quiet, < 7 kg → Normal, >= 7 kg → Loud.
+	 * BlockBonus is set only for Shield slot items (uses BluntArmor field as proxy).
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Armor")
+	bool EquipFromItem(FName ItemID, EArmorSlot Slot, const FSEEItemData& Data,
+	                   FEquippedArmor& OutPrevious);
 
 	// --- Delegates ---
 

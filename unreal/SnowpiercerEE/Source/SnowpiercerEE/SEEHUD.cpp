@@ -207,6 +207,45 @@ void ASEEHUD::DrawNPCLabels()
 		GetTextSize(Label, TextW, TextH, GEngine->GetSmallFont());
 		DrawText(Label, Color, Screen.X - TextW * 0.5f, Screen.Y - TextH,
 				 GEngine->GetSmallFont());
+
+		// Floating health bar for hostiles — shown once aggroed or wounded so the
+		// player gets unmistakable feedback that hits are landing.
+		if (Brain->bHostile)
+		{
+			if (const USEEHealthComponent* NPCHealth = NPC->FindComponentByClass<USEEHealthComponent>())
+			{
+				const float HP = NPCHealth->GetHealthPercent();
+				if (Brain->IsAggroed() || HP < 0.999f)
+				{
+					const float BarW = 56.0f;
+					const float BarH = 5.0f;
+					const float BX = Screen.X - BarW * 0.5f;
+					const float BY = Screen.Y + 2.0f;
+					DrawRect(FLinearColor(0.05f, 0.05f, 0.05f, 0.8f * DistFade), BX - 1.0f, BY - 1.0f, BarW + 2.0f, BarH + 2.0f);
+					DrawRect(FLinearColor(0.85f, 0.12f, 0.10f, 0.95f * DistFade), BX, BY, BarW * FMath::Clamp(HP, 0.0f, 1.0f), BarH);
+				}
+			}
+		}
+	}
+
+	// Center hitmarker: a brief white X for ~0.18s after a melee hit connects.
+	if (CombatComp.IsValid() && CombatComp->GetTimeSinceHitLanded() < 0.18f && Canvas)
+	{
+		const float CX = Canvas->SizeX * 0.5f;
+		const float CY = Canvas->SizeY * 0.5f;
+		const FLinearColor MarkerColor(1.0f, 1.0f, 1.0f, 0.9f);
+		const float G = 5.0f;   // inner gap
+		const float L = 9.0f;   // arm length
+		// four diagonal ticks forming an X
+		for (int32 sx = -1; sx <= 1; sx += 2)
+		{
+			for (int32 sy = -1; sy <= 1; sy += 2)
+			{
+				const float x0 = CX + sx * G;
+				const float y0 = CY + sy * G;
+				DrawLine(x0, y0, x0 + sx * L, y0 + sy * L, MarkerColor, 2.0f);
+			}
+		}
 	}
 }
 

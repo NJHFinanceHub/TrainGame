@@ -431,56 +431,137 @@ void USEECombatComponent::PerformWeaponTrace(float DamageMultiplier)
 
 	float FinalDamage = BaseDamage * DamageMultiplier * StrengthMod * InjuryMod;
 
-	// Weapon trace from character forward
-	FVector Start = Owner->GetActorLocation() + FVector(0, 0, 64.0f);
-	FVector End = Start + Owner->GetActorForwardVector() * TraceRange;
+	EnsureFoleyLoaded();
+	UWorld* World = GetWorld();
+	if (World && SwingSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(World, SwingSound, Owner->GetActorLocation(), 0.45f);
+	}
 
-	// Sweep for width
+	// Weapon trace from character forward
+	const FVector Start = Owner->GetActorLocation() + FVector(0, 0, 48.0f);
+	const FVector End = Start + Owner->GetActorForwardVector() * TraceRange;
+
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(Owner);
 	if (EquippedWeapon) Params.AddIgnoredActor(EquippedWeapon);
 
+	// Primary: a fat sphere sweep down the swing arc.
 	TArray<FHitResult> Hits;
-	float SweepRadius = 30.0f;
-	GetWorld()->SweepMultiByChannel(Hits, Start, End, FQuat::Identity,
-		ECC_Pawn, FCollisionShape::MakeSphere(SweepRadius), Params);
+	if (World)
+	{
+		World->SweepMultiByChannel(Hits, Start, End, FQuat::Identity,
+			ECC_Pawn, FCollisionShape::MakeSphere(MeleeSweepRadius), Params);
+	}
 
 	for (const FHitResult& Hit : Hits)
 	{
 		AActor* HitActor = Hit.GetActor();
 		if (!HitActor || HitActor == Owner) continue;
-
-		// Apply damage through combat component first (for block/parry), then health
-		float ProcessedDamage = FinalDamage;
-		if (USEECombatComponent* TargetCombat = HitActor->FindComponentByClass<USEECombatComponent>())
+		if (ApplyMeleeHitTo(HitActor, FinalDamage))
 		{
-			ProcessedDamage = TargetCombat->ProcessIncomingHit(FinalDamage, Owner, bPendingHeavyAttack);
+			return; // landed on a damageable target — melee hits one
 		}
-
-		if (ProcessedDamage > 0.0f)
-		{
-			if (USEEHealthComponent* TargetHealth = HitActor->FindComponentByClass<USEEHealthComponent>())
-			{
-				ESEEDamageType DmgType = EquippedWeapon ? EquippedWeapon->GetDamageType() : ESEEDamageType::Blunt;
-				TargetHealth->TakeDamage(ProcessedDamage, DmgType, Owner);
-			}
-
-			// Shove the victim away from the attacker — heavies knock back harder
-			if (ACharacter* VictimChar = Cast<ACharacter>(HitActor))
-			{
-				const FVector Away = (HitActor->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D();
-				const float Knockback = bPendingHeavyAttack ? HeavyHitKnockback : LightHitKnockback;
-				const float UpKick = bPendingHeavyAttack ? 120.0f : 40.0f;
-				VictimChar->LaunchCharacter(Away * Knockback + FVector(0.0f, 0.0f, UpKick), false, false);
-			}
-		}
-
-		// Brief global hit-stop so connects feel weighty
-		TriggerHitStop();
-
-		OnAttackHit.Broadcast(HitActor, ProcessedDamage);
-		break; // Only hit first target in melee
 	}
+
+	// Fallback: the sweep can miss a capsule whose Pawn-channel response isn't Block
+	// (crowd NPCs, odd presets). Object-type overlap finds every pawn reliably; pick
+	// the nearest one inside a frontal cone and hit it. This is what makes melee
+	// actually connect in the corridors.
+	if (World)
+	{
+		const FVector OwnerLoc = Owner->GetActorLocation();
+		const FVector Forward = Owner->GetActorForwardVector().GetSafeNormal2D();
+		const float Reach = TraceRange + MeleeSweepRadius;
+
+		TArray<FOverlapResult> Overlaps;
+		FCollisionObjectQueryParams ObjParams(ECC_Pawn);
+		World->OverlapMultiByObjectType(Overlaps, OwnerLoc, FQuat::Identity,
+			ObjParams, FCollisionShape::MakeSphere(Reach), Params);
+
+		AActor* Best = nullptr;
+		float BestDistSq = TNumericLimits<float>::Max();
+		for (const FOverlapResult& Ov : Overlaps)
+		{
+			AActor* Cand = Ov.GetActor();
+			if (!Cand || Cand == Owner) continue;
+			if (!Cand->FindComponentByClass<USEEHealthComponent>()) continue;
+			const FVector To = (Cand->GetActorLocation() - OwnerLoc);
+			const FVector To2D = To.GetSafeNormal2D();
+			if (FVector::DotProduct(Forward, To2D) < 0.35f) continue; // ~70 deg frontal cone
+			const float DistSq = To.SizeSquared2D();
+			if (DistSq < BestDistSq)
+			{
+				BestDistSq = DistSq;
+				Best = Cand;
+			}
+		}
+		if (Best)
+		{
+			ApplyMeleeHitTo(Best, FinalDamage);
+		}
+	}
+}
+
+bool USEECombatComponent::ApplyMeleeHitTo(AActor* HitActor, float FinalDamage)
+{
+	AActor* Owner = GetOwner();
+	if (!HitActor || HitActor == Owner) return false;
+
+	// A damageable target must have a health component (the AI controller adds one
+	// to every adopted NPC on possess).
+	USEEHealthComponent* TargetHealth = HitActor->FindComponentByClass<USEEHealthComponent>();
+	if (!TargetHealth) return false;
+
+	// Route through the target's combat component first (block/parry), then health.
+	float ProcessedDamage = FinalDamage;
+	if (USEECombatComponent* TargetCombat = HitActor->FindComponentByClass<USEECombatComponent>())
+	{
+		ProcessedDamage = TargetCombat->ProcessIncomingHit(FinalDamage, Owner, bPendingHeavyAttack);
+	}
+
+	if (ProcessedDamage > 0.0f)
+	{
+		const ESEEDamageType DmgType = EquippedWeapon ? EquippedWeapon->GetDamageType() : ESEEDamageType::Blunt;
+		TargetHealth->TakeDamage(ProcessedDamage, DmgType, Owner);
+
+		if (ACharacter* VictimChar = Cast<ACharacter>(HitActor))
+		{
+			const FVector Away = (HitActor->GetActorLocation() - Owner->GetActorLocation()).GetSafeNormal2D();
+			const float Knockback = bPendingHeavyAttack ? HeavyHitKnockback : LightHitKnockback;
+			const float UpKick = bPendingHeavyAttack ? 120.0f : 40.0f;
+			VictimChar->LaunchCharacter(Away * Knockback + FVector(0.0f, 0.0f, UpKick), false, false);
+		}
+	}
+
+	// Feedback: hit sound at the victim + a timestamp the HUD reads for the hitmarker
+	if (UWorld* World = GetWorld())
+	{
+		LastHitLandedTime = World->GetTimeSeconds();
+		if (HitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(World, HitSound, HitActor->GetActorLocation(), 0.8f);
+		}
+	}
+
+	TriggerHitStop();
+	OnAttackHit.Broadcast(HitActor, ProcessedDamage);
+	return true;
+}
+
+float USEECombatComponent::GetTimeSinceHitLanded() const
+{
+	const UWorld* World = GetWorld();
+	if (!World) return 1000.0f;
+	return World->GetTimeSeconds() - LastHitLandedTime;
+}
+
+void USEECombatComponent::EnsureFoleyLoaded()
+{
+	if (bFoleyLoaded) return;
+	bFoleyLoaded = true;
+	HitSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Audio/Combat/SFX_MeleeHit_01.SFX_MeleeHit_01"));
+	SwingSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Audio/Combat/SFX_MeleeSwing_01.SFX_MeleeSwing_01"));
 }
 
 void USEECombatComponent::ApplyTargetAssist()

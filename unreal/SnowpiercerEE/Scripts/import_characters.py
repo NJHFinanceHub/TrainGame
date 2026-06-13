@@ -2,11 +2,30 @@
 Snowpiercer: Eternal Engine -- Character Model Import & Assignment
 Run headless: UnrealEditor-Cmd <uproject> -ExecutePythonScript=<this file>
 
-Imports the Kenney Blocky Characters v2 pack (CC0, rigged FBX) from
-Assets/Characters/BlockyCharacters and assigns skeletal meshes to the player
-and NPC blueprints so characters are real models instead of box+sphere
-placeholders. Removes the NPCVis_* placeholder actors from Zone1_Tail once
-real meshes are assigned.
+Imports the Quaternius Zombie Apocalypse Kit (CC0, rigged FBX, March 2024)
+from Assets/Characters/QuaterniusZombieApocalypse and assigns skeletal meshes
+to the player and NPC blueprints so characters are real gritty post-apoc
+humans instead of placeholder geometry or mis-cast fantasy adventurers.
+
+Pack: "Zombie Apocalypse Kit - March 2024" by Quaternius
+License: CC0 (https://creativecommons.org/publicdomain/zero/1.0/)
+Source: https://archive.org/download/zombie-apocalypse-kit/
+        Zombie%20Apocalypse%20Kit%20-%20March%202024-20240909T025008Z-001.zip
+        (originally from https://quaternius.com/)
+
+Characters included (4 survivors x 20 anims each + 4 zombie/infected enemies):
+  Characters_Sam    -- ragged survivor, casual jacket/jeans/boots
+  Characters_Lis    -- female survivor, practical layered clothing
+  Characters_Matt   -- stocky male survivor, heavy coat
+  Characters_Shaun  -- wiry male survivor, hooded vest
+  Zombie_Basic      -- infected humanoid, torn clothes (enemy)
+  Zombie_Chubby     -- large/heavy infected, hulking frame (boss material)
+  Zombie_Ribcage    -- skeletal infected (alternate enemy)
+  Zombie_Arm        -- partial infected (environmental/scripted use)
+
+Why this fits Snowpiercer: all models are gritty, realistic-proportion,
+modern-clothed humans or infected humanoids -- appropriate for the tail end
+of an apocalyptic train. Fully replaces the fantasy Knight/Mage/Barbarian set.
 
 Idempotent: re-running re-imports only missing assets and re-assigns meshes.
 """
@@ -17,30 +36,30 @@ import unreal
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(SCRIPT_DIR)
 REPO_ROOT = os.path.dirname(os.path.dirname(PROJECT_DIR))
-# KayKit Adventurers (CC0): human-proportioned rigged GLBs with animations
+# Quaternius Zombie Apocalypse Kit (CC0): rigged FBX humanoids with 20 anims
 FBX_DIR = os.path.join(
-    REPO_ROOT, "Assets", "Characters", "KayKit",
-    "KayKit-Character-Pack-Adventures-1.0-main", "addons",
-    "kaykit_character_pack_adventures", "Characters", "gltf")
-MODEL_EXT = ".glb"
+    REPO_ROOT, "Assets", "Characters", "QuaterniusZombieApocalypse",
+    "Zombie Apocalypse Kit - March 2024", "Characters", "FBX")
+MODEL_EXT = ".fbx"
 
-DEST = "/Game/Characters/KayKit"
+DEST = "/Game/Characters/QuaterniusZombieApocalypse"
 editor_util = unreal.EditorAssetLibrary
 
-# Human-silhouette role casting:
-#   Rogue        = scrappy leathers  -> the player
-#   Rogue_Hooded = ragged hood       -> Tailie civilians
-#   Knight       = armored           -> Jackboot riot gear
-#   Mage         = robed             -> Merchant / First Class
-#   Barbarian    = heavy build       -> Breachmen / the boss
+# Snowpiercer role casting (all are modern/gritty post-apoc humans):
+#   Characters_Sam    = ragged survivor, informal wear   -> player + merchants
+#   Characters_Lis    = female survivor, practical gear  -> Tailie civilians
+#   Characters_Matt   = stocky survivor, heavy coat      -> Jackboot guard
+#   Characters_Shaun  = wiry survivor, hooded vest       -> First Class attendant
+#   Zombie_Chubby     = large/hulking infected frame     -> Breachman (heavyset)
+#   Zombie_Basic      = standard infected humanoid       -> Boss (scaled up x3.4)
 ROLE_MODELS = {
-    "player":     "Rogue",
-    "civilian":   "Rogue_Hooded",
-    "jackboot":   "Knight",
-    "merchant":   "Mage",
-    "breachman":  "Barbarian",
-    "firstclass": "Mage",
-    "boss":       "Barbarian",
+    "player":     "Characters_Sam",
+    "civilian":   "Characters_Lis",
+    "jackboot":   "Characters_Matt",
+    "merchant":   "Characters_Sam",
+    "breachman":  "Zombie_Chubby",
+    "firstclass": "Characters_Shaun",
+    "boss":       "Zombie_Basic",
 }
 
 # Stand height for a scaled character (capsule is 176cm tall)
@@ -210,7 +229,7 @@ def remove_placeholder_actors():
 
 def run():
     unreal.log("=" * 64)
-    unreal.log("CHARACTER IMPORT & ASSIGNMENT (Kenney Blocky v2, CC0)")
+    unreal.log("CHARACTER IMPORT & ASSIGNMENT (Quaternius Zombie Apocalypse Kit, CC0)")
     unreal.log("=" * 64)
 
     if not os.path.isdir(FBX_DIR):

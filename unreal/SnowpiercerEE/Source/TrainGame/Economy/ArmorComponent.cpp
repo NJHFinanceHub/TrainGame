@@ -165,3 +165,47 @@ bool UArmorComponent::HasHeavyArmorPenalty() const
 	const FEquippedArmor* Torso = EquippedArmor.Find(EArmorSlot::Torso);
 	return Torso && !Torso->IsBroken() && Torso->Weight > HeavyArmorThreshold;
 }
+
+bool UArmorComponent::EquipFromItem(FName ItemID, EArmorSlot Slot, const FSEEItemData& Data,
+                                    FEquippedArmor& OutPrevious)
+{
+	if (ItemID.IsNone()) return false;
+
+	// Snapshot previous piece so the caller can return it to inventory.
+	OutPrevious = FEquippedArmor();
+	if (EquippedArmor.Contains(Slot))
+	{
+		OutPrevious = EquippedArmor[Slot]; // copy before EquipArmor calls UnequipArmor
+	}
+
+	FEquippedArmor Piece;
+	Piece.ArmorItemID = ItemID;
+	Piece.Slot        = Slot;
+	Piece.Weight      = Data.Weight;
+
+	// Passive damage reduction: average the three typed-armor values from FSEEItemData.
+	// Head/Torso use this as passive DR; Shield puts it in BlockBonus instead.
+	const float AverageDR = (Data.BluntArmor + Data.BladedArmor + Data.PiercingArmor) / 3.0f;
+	if (Slot == EArmorSlot::Shield)
+	{
+		Piece.DamageReduction = 0.0f;
+		Piece.BlockBonus      = AverageDR;
+	}
+	else
+	{
+		Piece.DamageReduction = AverageDR;
+		Piece.BlockBonus      = 0.0f;
+	}
+
+	Piece.ColdResistance   = Data.ColdResistance;
+	Piece.CurrentDurability = 100.0f;
+	Piece.MaxDurability     = 100.0f;
+
+	// Noise level inferred from weight.
+	if (Data.Weight < 2.0f)       Piece.NoiseLevel = EArmorNoiseLevel::Silent;
+	else if (Data.Weight < 4.0f)  Piece.NoiseLevel = EArmorNoiseLevel::Quiet;
+	else if (Data.Weight < 7.0f)  Piece.NoiseLevel = EArmorNoiseLevel::Normal;
+	else                          Piece.NoiseLevel = EArmorNoiseLevel::Loud;
+
+	return EquipArmor(Piece);
+}

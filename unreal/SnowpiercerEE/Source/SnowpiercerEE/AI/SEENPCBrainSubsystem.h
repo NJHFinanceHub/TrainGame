@@ -53,5 +53,15 @@ private:
 	/** Map a placed NPC (label + class) to its DT_Dialogue_Zone1 entry row. */
 	static FName PickDialogueEntryNode(const FString& Identity, bool bMerchant, bool bBreachman);
 
+	/**
+	 * Generic-Tailie dialogue pool (10 entries, indices 0-9).
+	 * Entry-node IDs must match the pool trees in create_datatables.py
+	 * DIALOGUE_ZONE1 (search "GENERIC TAILIE POOL").
+	 * Generic NPCs are routed by GetTypeHash(Label) % GenericPoolSize so
+	 * every instance gets a deterministic, distinct tree across sessions.
+	 */
+	static const TArray<FName>& GetGenericDialoguePool();
+	static constexpr int32 GenericPoolSize = 10;
+
 	FTimerHandle ScanTimerHandle;
 };

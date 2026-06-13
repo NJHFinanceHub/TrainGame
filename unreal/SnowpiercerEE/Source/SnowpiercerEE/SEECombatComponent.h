@@ -85,6 +85,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Combat")
 	bool IsBlocking() const { return CurrentState == ESEECombatState::Blocking; }
 
+	/** Seconds since the player's last landed melee hit (huge if never). Drives the HUD hitmarker. */
+	UFUNCTION(BlueprintPure, Category = "Combat")
+	float GetTimeSinceHitLanded() const;
+
 	// Delegates
 	UPROPERTY(BlueprintAssignable, Category = "Combat")
 	FOnAttackHit OnAttackHit;
@@ -128,10 +132,14 @@ protected:
 	float StaggerDuration = 0.8f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	float UnarmedDamage = 5.0f;
+	float UnarmedDamage = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-	float UnarmedRange = 100.0f;
+	float UnarmedRange = 175.0f;
+
+	/** Sphere radius of the melee sweep — wide enough to connect in crowded corridors */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+	float MeleeSweepRadius = 48.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float ComboWindow = 0.5f;
@@ -250,6 +258,21 @@ private:
 	FTimerHandle HitStopTimer;
 	bool bPendingHeavyAttack = false;
 	float PendingDamageMultiplier = 1.0f;
+
+	// Hit feedback (no animation assets — feel comes from sound, knockback, hitmarker)
+	float LastHitLandedTime = -1000.0f;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USoundBase> HitSound;
+
+	UPROPERTY(Transient)
+	TObjectPtr<USoundBase> SwingSound;
+
+	bool bFoleyLoaded = false;
+	void EnsureFoleyLoaded();
+
+	/** Apply a melee hit to one actor (damage pipeline + knockback + feedback). Returns true if it had a health component. */
+	bool ApplyMeleeHitTo(AActor* HitActor, float FinalDamage);
 
 	void BeginAttack(bool bHeavy);
 	void OnAttackWindupComplete();

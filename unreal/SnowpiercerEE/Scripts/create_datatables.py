@@ -303,6 +303,77 @@ ITEMS = [
         "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
         "BluntArmor": 15.0, "BladedArmor": 20.0, "PiercingArmor": 12.0, "ColdResistance": 10.0,
     },
+    # --- Armor loot pool (paper-doll equippable: Head / Torso / Shield) ---
+    {
+        "RowName": "Item_Armor_TailRags", "ItemID": "Item_Armor_TailRags",
+        "DisplayName": "Tail Rags", "Description": "Layered scraps of cloth and hide. Better than nothing, which is what most of the Tail has.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Common"], "Weight": 1.2, "MaxStackSize": 1, "Value": 6,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 2.0, "BladedArmor": 2.0, "PiercingArmor": 1.0, "ColdResistance": 4.0,
+    },
+    {
+        "RowName": "Item_Armor_WorkerCoat", "ItemID": "Item_Armor_WorkerCoat",
+        "DisplayName": "Worker's Heavy Coat", "Description": "Thick third-class labor coat, padded against the cold of the working spine.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 3.5, "MaxStackSize": 1, "Value": 35,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 5.0, "BladedArmor": 3.0, "PiercingArmor": 2.0, "ColdResistance": 12.0,
+    },
+    {
+        "RowName": "Item_Armor_JackbootHelmet", "ItemID": "Item_Armor_JackbootHelmet",
+        "DisplayName": "Jackboot Riot Helmet", "Description": "Visored composite helmet, pried off a guard who won't need it.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 2.1, "MaxStackSize": 1, "Value": 60,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 12.0, "BladedArmor": 8.0, "PiercingArmor": 10.0, "ColdResistance": 2.0,
+    },
+    {
+        "RowName": "Item_Armor_ScrapPlate", "ItemID": "Item_Armor_ScrapPlate",
+        "DisplayName": "Scrap-Metal Plate Vest", "Description": "Hammered plate lashed to a harness. Heavy, loud, and it stops a blade.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Rare"], "Weight": 6.8, "MaxStackSize": 1, "Value": 90,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 14.0, "BladedArmor": 6.0, "PiercingArmor": 5.0, "ColdResistance": 1.0,
+    },
+    {
+        "RowName": "Item_Armor_EngineMonkHood", "ItemID": "Item_Armor_EngineMonkHood",
+        "DisplayName": "Order Hood", "Description": "A felt hood of the Engine's faithful. Silent, warm, and it draws no second looks up-train.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.9, "MaxStackSize": 1, "Value": 40,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 4.0, "BladedArmor": 4.0, "PiercingArmor": 4.0, "ColdResistance": 8.0,
+    },
+    {
+        "RowName": "Item_Armor_FreezerSuit", "ItemID": "Item_Armor_FreezerSuit",
+        "DisplayName": "Freezer-Breach Suit", "Description": "Insulated suit for the cold cars. Bulky, but the only thing keeping the breach from killing you.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Rare"], "Weight": 4.0, "MaxStackSize": 1, "Value": 80,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 3.0, "BladedArmor": 3.0, "PiercingArmor": 3.0, "ColdResistance": 30.0,
+    },
+    {
+        "RowName": "Item_Armor_KronoleGuard", "ItemID": "Item_Armor_KronoleGuard",
+        "DisplayName": "Runner's Buckler", "Description": "A strapped scrap shield the kronole couriers swear by. Turns a knife, mostly.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 1.4, "MaxStackSize": 1, "Value": 45,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 18.0, "BladedArmor": 18.0, "PiercingArmor": 18.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_Armor_FirstClassVisor", "ItemID": "Item_Armor_FirstClassVisor",
+        "DisplayName": "First-Class Visor Mask", "Description": "Lacquered mask from the front cars. Fine work — and a fine disguise.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Rare"], "Weight": 1.0, "MaxStackSize": 1, "Value": 110,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 6.0, "BladedArmor": 10.0, "PiercingArmor": 6.0, "ColdResistance": 5.0,
+    },
+    {
+        "RowName": "Item_Armor_WilfordPlate", "ItemID": "Item_Armor_WilfordPlate",
+        "DisplayName": "Engine Plate", "Description": "Ceremonial armor of the Engine's wardens. Nobody this far back should have it.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Legendary"], "Weight": 8.2, "MaxStackSize": 1, "Value": 400,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 20.0, "BladedArmor": 15.0, "PiercingArmor": 18.0, "ColdResistance": 15.0,
+    },
+    {
+        "RowName": "Item_Armor_ThawShield", "ItemID": "Item_Armor_ThawShield",
+        "DisplayName": "Thaw Shield", "Description": "A heretic's shield, painted with a melting sun. Heavy enough to matter.",
+        "Category": ITEM_CATEGORY["Armor"], "Rarity": ITEM_RARITY["Rare"], "Weight": 2.8, "MaxStackSize": 1, "Value": 95,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 30.0, "BladedArmor": 30.0, "PiercingArmor": 30.0, "ColdResistance": 10.0,
+    },
     # --- Crafting Materials ---
     {
         "RowName": "Item_ScrapMetal",
@@ -370,6 +441,19 @@ ITEMS = [
         "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
     },
     # --- Quest Items ---
+    {
+        "RowName": "Item_TinStar",
+        "ItemID": "Item_TinStar",
+        "DisplayName": "Tin Star",
+        "Description": "A five-pointed star cut from a tin can, edges sharp enough to draw blood. Timmy made it for the nursery ceiling. It smells faintly of rust and the Tail. Tanya gave it to you — show it to him.",
+        "Category": ITEM_CATEGORY["Quest"],
+        "Rarity": ITEM_RARITY["Legendary"],
+        "Weight": 0.05,
+        "MaxStackSize": 1,
+        "Value": 0,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
     {
         "RowName": "Item_GateKey",
         "ItemID": "Item_GateKey",
@@ -817,8 +901,225 @@ DIALOGUE_ZONE1 = [
          next_node="Tanya_End"),
     _dlg("Tanya_11", "Tanya_11", "NPCLine", "Tanya",
          "Take this. *a tin star, cut from a can, sharp at the edges* He made it for the nursery ceiling. Show him, so he knows you came from me. And don't make a mother a promise you don't mean to keep.",
-         next_node="Tanya_End"),
+         flag_to_set="Reward_TinStar", flag_value=True, next_node="Tanya_End"),
+    # NOTE — DIALOGUE-DIRECT ITEM GRANT: Tanya_11 sets "Reward_TinStar".
+    # Wire a one-shot C++ / Blueprint OnDialogueFlagSet handler that calls
+    # InventoryComponent->AddItem("Item_TinStar", 1) when this flag is first
+    # set. Item_TinStar must be added to DT_Items (Quest category, Legendary,
+    # "A five-pointed star cut from a tin can, sharp at the edges. Timmy made
+    # it for the nursery ceiling. It smells faintly of rust and the Tail.").
+    # Guard against re-granting: check flag before AddItem or use a one-shot
+    # flag clear after the grant.
     _dlg("Tanya_End", "Tanya_End", "End", "", ""),
+
+    # =================================================================
+    # GENERIC TAILIE POOL — 10 short trees, 3-5 nodes each, 1-2 branches.
+    # Entry node IDs must match GENERIC_POOL_NODES in SEENPCBrainSubsystem.cpp.
+    # C++ routes unnamed civilians here via GetTypeHash(Label) % 10.
+    # ALL existing named trees above are UNCHANGED.
+    # =================================================================
+
+    # --- POOL 0: BUNKMATE (rumour trader) ---
+    # Entry: Gen_Bunkmate_01
+    _dlg("Gen_Bunkmate_01", "Gen_Bunkmate_01", "NPCLine", "Bunkmate",
+         "Keep your voice down. I swap rumours for protein blocks. Heard something last night that's worth at least half.",
+         flag_to_set="Flag_MetBunkmate", flag_value=True, next_node="Gen_Bunkmate_02"),
+    _dlg("Gen_Bunkmate_02", "Gen_Bunkmate_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("What did you hear?", "Gen_Bunkmate_03"),
+             _choice("I don't trade in rumours.", "Gen_Bunkmate_05"),
+         ]),
+    _dlg("Gen_Bunkmate_03", "Gen_Bunkmate_03", "NPCLine", "Bunkmate",
+         "Guard rotation in Car 3 changed last night. Different face on the door. Either a promotion or they're hiding something. Might be a window if you need one.",
+         flag_to_set="Flag_Bunkmate_Rumour", flag_value=True, next_node="Gen_Bunkmate_04"),
+    _dlg("Gen_Bunkmate_04", "Gen_Bunkmate_04", "NPCLine", "Bunkmate",
+         "Half block. Fair price for a gap in the schedule, yes? Information keeps you alive back here — almost as well as food.",
+         next_node="Gen_Bunkmate_End"),
+    _dlg("Gen_Bunkmate_05", "Gen_Bunkmate_05", "NPCLine", "Bunkmate",
+         "Your loss. Rumours and rats — the only things that breed freely in the Tail. I'll find another buyer.",
+         next_node="Gen_Bunkmate_End"),
+    _dlg("Gen_Bunkmate_End", "Gen_Bunkmate_End", "End", "", ""),
+
+    # --- POOL 1: STARVING FATHER ---
+    # Entry: Gen_Father_01
+    _dlg("Gen_Father_01", "Gen_Father_01", "NPCLine", "Starving Father",
+         "My boy ate his whole block in one bite. Twelve years old and you can count his ribs. I used to give him half of mine but I can't stand anymore if I do.",
+         flag_to_set="Flag_MetFather", flag_value=True, next_node="Gen_Father_02"),
+    _dlg("Gen_Father_02", "Gen_Father_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("How old is your son?", "Gen_Father_03"),
+             _choice("The revolt will fix the ration.", "Gen_Father_04"),
+         ]),
+    _dlg("Gen_Father_03", "Gen_Father_03", "NPCLine", "Starving Father",
+         "Twelve. Born on the train — never knew grass, never knew a full belly. He thinks this is just how the world is. I don't have the heart to tell him it wasn't always.",
+         next_node="Gen_Father_End"),
+    _dlg("Gen_Father_04", "Gen_Father_04", "NPCLine", "Starving Father",
+         "I'll believe that when he eats a whole block AND the one after. Until then, wake me when the gate opens — I'll be right behind you.",
+         next_node="Gen_Father_End"),
+    _dlg("Gen_Father_End", "Gen_Father_End", "End", "", ""),
+
+    # --- POOL 2: CARD PLAYER ---
+    # Entry: Gen_CardPlayer_01
+    _dlg("Gen_CardPlayer_01", "Gen_CardPlayer_01", "NPCLine", "Card Player",
+         "One hand before you go. Cards made from meal tickets — it's the closest thing to money we've got back here.",
+         flag_to_set="Flag_MetCardPlayer", flag_value=True, next_node="Gen_CardPlayer_02"),
+    _dlg("Gen_CardPlayer_02", "Gen_CardPlayer_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("What are you betting?", "Gen_CardPlayer_03"),
+             _choice("No time for cards.", "Gen_CardPlayer_05"),
+         ]),
+    _dlg("Gen_CardPlayer_03", "Gen_CardPlayer_03", "NPCLine", "Card Player",
+         "Information, mostly. A lost card might mean you owe someone a chore. A won hand might mean you learn which bunk holds what. The whole economy of the Tail runs on this table.",
+         next_node="Gen_CardPlayer_04"),
+    _dlg("Gen_CardPlayer_04", "Gen_CardPlayer_04", "NPCLine", "Card Player",
+         "Pike doesn't approve, of course. Says it creates resentment. I say it creates the only entertainment left. We can't all sit and count bullets.",
+         next_node="Gen_CardPlayer_End"),
+    _dlg("Gen_CardPlayer_05", "Gen_CardPlayer_05", "NPCLine", "Card Player",
+         "Always time for cards. You just have to decide if you'd rather think or sit still. Back here, the cards are how people think.",
+         next_node="Gen_CardPlayer_End"),
+    _dlg("Gen_CardPlayer_End", "Gen_CardPlayer_End", "End", "", ""),
+
+    # --- POOL 3: OLD WOMAN (remembers boarding day) ---
+    # Entry: Gen_OldWoman_01
+    _dlg("Gen_OldWoman_01", "Gen_OldWoman_01", "NPCLine", "Old Woman",
+         "I boarded at Rotterdam. Three hours before they sealed the doors. I remember sunshine on the platform and thinking — just a moment, just a moment of ordinary life.",
+         flag_to_set="Flag_MetOldWoman", flag_value=True, next_node="Gen_OldWoman_02"),
+    _dlg("Gen_OldWoman_02", "Gen_OldWoman_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("What was it like, boarding day?", "Gen_OldWoman_03"),
+             _choice("Do you regret getting on?", "Gen_OldWoman_04"),
+         ]),
+    _dlg("Gen_OldWoman_03", "Gen_OldWoman_03", "NPCLine", "Old Woman",
+         "Chaos. Families separated at the gangway. A man shot for pushing. The Wilford men with lists, checking names. Those of us near the back — the Tail — were waved on without a check. That should have told us something.",
+         next_node="Gen_OldWoman_End"),
+    _dlg("Gen_OldWoman_04", "Gen_OldWoman_04", "NPCLine", "Old Woman",
+         "Every day for eighteen years. And then I remember the cold outside and I stop regretting. This train is a prison but the world outside is a grave. At least in prison you can still talk.",
+         next_node="Gen_OldWoman_End"),
+    _dlg("Gen_OldWoman_End", "Gen_OldWoman_End", "End", "", ""),
+
+    # --- POOL 4: KID RUNNER ---
+    # Entry: Gen_KidRunner_01
+    _dlg("Gen_KidRunner_01", "Gen_KidRunner_01", "NPCLine", "Kid Runner",
+         "I run messages for Pike. Three blocks an hour, both ways, no stopping. I know every bolt and blind corner in the Tail better than the guards do.",
+         flag_to_set="Flag_MetKidRunner", flag_value=True, next_node="Gen_KidRunner_02"),
+    _dlg("Gen_KidRunner_02", "Gen_KidRunner_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("That sounds dangerous.", "Gen_KidRunner_03"),
+             _choice("Can you pass a message for me?", "Gen_KidRunner_04"),
+         ]),
+    _dlg("Gen_KidRunner_03", "Gen_KidRunner_03", "NPCLine", "Kid Runner",
+         "The guards grab slower kids. I'm not slow. Besides — if you're twelve in the Tail you're either useful or you're scared. I decided to be useful.",
+         next_node="Gen_KidRunner_End"),
+    _dlg("Gen_KidRunner_04", "Gen_KidRunner_04", "NPCLine", "Kid Runner",
+         "Two protein blocks upfront. I don't do favours — Pike says a runner who does favours becomes a leaky pipe. The message gets there, or I eat the blocks and the message never existed.",
+         next_node="Gen_KidRunner_End"),
+    _dlg("Gen_KidRunner_End", "Gen_KidRunner_End", "End", "", ""),
+
+    # --- POOL 5: CYNIC ---
+    # Entry: Gen_Cynic_01
+    _dlg("Gen_Cynic_01", "Gen_Cynic_01", "NPCLine", "Cynic",
+         "Don't give me that look. I've seen three revolts fail and I'll probably see a fourth. The Tail eats hope for breakfast and spits out the pits.",
+         flag_to_set="Flag_MetCynic", flag_value=True, next_node="Gen_Cynic_02"),
+    _dlg("Gen_Cynic_02", "Gen_Cynic_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("This time is different. The rifles may be empty.", "Gen_Cynic_03"),
+             _choice("Then why are you still here?", "Gen_Cynic_04"),
+         ]),
+    _dlg("Gen_Cynic_03", "Gen_Cynic_03", "NPCLine", "Cynic",
+         "That's what they said about Marta's run. *Empty rifles, empty promises.* Fine. Prove it. I'll be the last one through the gate — right behind the first wave of bodies.",
+         next_node="Gen_Cynic_End"),
+    _dlg("Gen_Cynic_04", "Gen_Cynic_04", "NPCLine", "Cynic",
+         "Where would I go? I was born in Car 1. This bunk is the only address I've ever had. I'll die here too, most likely. But I'll die calling it what it is.",
+         next_node="Gen_Cynic_End"),
+    _dlg("Gen_Cynic_End", "Gen_Cynic_End", "End", "", ""),
+
+    # --- POOL 6: BELIEVER IN WILFORD ---
+    # Entry: Gen_Believer_01
+    _dlg("Gen_Believer_01", "Gen_Believer_01", "NPCLine", "Believer",
+         "The Engine provides. I know how that sounds back here. But we're alive. We're still moving. Eighteen years and the train hasn't stopped once. That's Wilford.",
+         flag_to_set="Flag_MetBeliever", flag_value=True, next_node="Gen_Believer_02"),
+    _dlg("Gen_Believer_02", "Gen_Believer_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("Wilford put us in the Tail.", "Gen_Believer_03"),
+             _choice("You really believe that?", "Gen_Believer_04"),
+         ]),
+    _dlg("Gen_Believer_03", "Gen_Believer_03", "NPCLine", "Believer",
+         "Wilford saved us. The Tail is the price of that salvation. Every engine needs a stoker — the front cars can't keep moving without the weight at the back. That's balance. That's the train.",
+         next_node="Gen_Believer_End"),
+    _dlg("Gen_Believer_04", "Gen_Believer_04", "NPCLine", "Believer",
+         "I have to. My wife is in the drawers. My daughter is forward somewhere — selected three years ago. If Wilford is a lie, then everything I've endured is for nothing. I can't afford for it to be a lie.",
+         next_node="Gen_Believer_End"),
+    _dlg("Gen_Believer_End", "Gen_Believer_End", "End", "", ""),
+
+    # --- POOL 7: GRIEVING WIDOW ---
+    # Entry: Gen_Widow_01
+    _dlg("Gen_Widow_01", "Gen_Widow_01", "NPCLine", "Grieving Widow",
+         "He went up in the last revolt. I used to hate the memory — the waste of it. Now I think: at least he chose. Most of us just endure.",
+         flag_to_set="Flag_MetWidow", flag_value=True, next_node="Gen_Widow_02"),
+    _dlg("Gen_Widow_02", "Gen_Widow_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("What was his name?", "Gen_Widow_03"),
+             _choice("This revolt won't waste anyone.", "Gen_Widow_04"),
+         ]),
+    _dlg("Gen_Widow_03", "Gen_Widow_03", "NPCLine", "Grieving Widow",
+         "Piotr. He carried a section of bed frame as a shield. The Jackboots thought it was funny until it wasn't. His name is on the wall. I add a mark below it every year we keep going without him.",
+         next_node="Gen_Widow_End"),
+    _dlg("Gen_Widow_04", "Gen_Widow_04", "NPCLine", "Grieving Widow",
+         "That's what he said. *No waste this time.* You can't promise that. But try anyway. The alternative is doing nothing, and I've had eighteen years of that already.",
+         next_node="Gen_Widow_End"),
+    _dlg("Gen_Widow_End", "Gen_Widow_End", "End", "", ""),
+
+    # --- POOL 8: BRAWLER (spoiling for revolt) ---
+    # Entry: Gen_Brawler_01
+    _dlg("Gen_Brawler_01", "Gen_Brawler_01", "NPCLine", "Brawler",
+         "Pike keeps saying wait. Samuel keeps saying soon. Meanwhile my knuckles heal between beatings and I still don't have breakfast. I'm done waiting.",
+         flag_to_set="Flag_MetBrawler", flag_value=True, next_node="Gen_Brawler_02"),
+    _dlg("Gen_Brawler_02", "Gen_Brawler_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("Charging blind gets people killed.", "Gen_Brawler_03"),
+             _choice("Save that anger for the gate.", "Gen_Brawler_04"),
+         ]),
+    _dlg("Gen_Brawler_03", "Gen_Brawler_03", "NPCLine", "Brawler",
+         "Starving slow also gets people killed — just quieter, so nobody writes a song about it. I'll take a fast death that means something over a slow one that doesn't.",
+         next_node="Gen_Brawler_End"),
+    _dlg("Gen_Brawler_04", "Gen_Brawler_04", "NPCLine", "Brawler",
+         "That I can do. You just tell me when and which gate. I'll be at the front row and I won't need a weapon — just a big enough problem and enough room to swing.",
+         next_node="Gen_Brawler_End"),
+    _dlg("Gen_Brawler_End", "Gen_Brawler_End", "End", "", ""),
+
+    # --- POOL 9: SICK MAN ---
+    # Entry: Gen_SickMan_01
+    # NOTE: Gen_SickMan_04 sets FlagToSet="Reward_Bandage" as a direct-grant
+    # signal. C++ will need a one-shot item grant wired to this flag
+    # (see implementation notes at bottom of file).
+    _dlg("Gen_SickMan_01", "Gen_SickMan_01", "NPCLine", "Sick Man",
+         "*his cough rattles the bunk boards* Been like this three weeks. Asha says it's the ventilation — same recycled air moving through the same sick lungs. Half the car sounds like me now.",
+         flag_to_set="Flag_MetSickMan", flag_value=True, next_node="Gen_SickMan_02"),
+    _dlg("Gen_SickMan_02", "Gen_SickMan_02", "PlayerChoice", "", "",
+         choices=[
+             _choice("Let me find you a bandage at least.", "Gen_SickMan_03"),
+             _choice("Is it getting worse?", "Gen_SickMan_05"),
+         ]),
+    _dlg("Gen_SickMan_03", "Gen_SickMan_03", "NPCLine", "Sick Man",
+         "Bandage won't fix lungs. But — yes. Thank you. Tying one around the face keeps some of the particulate out. Here, take this scrap in return — I'm done pretending I'll ever finish that shiv.",
+         next_node="Gen_SickMan_04"),
+    _dlg("Gen_SickMan_04", "Gen_SickMan_04", "SetFlag", "Sick Man",
+         "",
+         flag_to_set="Reward_Bandage", flag_value=True, next_node="Gen_SickMan_End"),
+    _dlg("Gen_SickMan_05", "Gen_SickMan_05", "NPCLine", "Sick Man",
+         "Every week. The blocks keep us alive but they don't keep us well. I figure I've got until the revolt or until spring, whichever's further away. I'm betting on the revolt.",
+         next_node="Gen_SickMan_End"),
+    _dlg("Gen_SickMan_End", "Gen_SickMan_End", "End", "", ""),
+
+    # NOTE — DIALOGUE-DIRECT ITEM GRANTS:
+    # Gen_SickMan_04 sets flag "Reward_Bandage" (NodeType=SetFlag, no text).
+    # This is a one-shot grant signal: wire a BlueprintCallable or C++
+    # OnDialogueFlagSet handler that calls InventoryComponent->AddItem("Item_Bandage", 1)
+    # when "Reward_Bandage" is set, then immediately clears or checks the flag
+    # so it doesn't fire again on a second conversation. The QuestManager's
+    # HandleDialogueFlagSet already propagates SetFlag nodes, but AddItem must
+    # be called by a separate grant handler — the QuestManager does NOT do
+    # dialogue-direct grants (only quest completion grants in GrantRewards).
 ]
 
 
@@ -969,7 +1270,7 @@ QUESTS = [
             {"ObjectiveID": "TC_04", "Description": "Decide what to tell Tanya", "Type": OBJECTIVE_TYPE["Dialogue"], "TargetID": "Tanya_Report", "RequiredCount": 1, "CurrentCount": 0, "bCompleted": False, "bOptional": False},
         ],
         "XPReward": 250,
-        "ItemRewards": [],
+        "ItemRewards": ["Item_TinStar"],
         "FactionRepRewards": {"Tailies": 20},
         "PrerequisiteQuests": [],
     },
@@ -1709,7 +2010,7 @@ def main():
 
     # Summary
     log.info("Items:        %d entries", len(ITEMS))
-    log.info("Dialogue:     %d nodes (7 speakers: Pike, Samuel, Dealer, Guard, Josie, Mara, Tanya)", len(DIALOGUE_ZONE1))
+    log.info("Dialogue:     %d nodes (7 named + 10 generic-pool trees)", len(DIALOGUE_ZONE1))
     log.info("Quests:       %d quests", len(QUESTS))
     log.info("Collectibles: %d entries", len(COLLECTIBLES))
     log.info("Total:        %d data rows",

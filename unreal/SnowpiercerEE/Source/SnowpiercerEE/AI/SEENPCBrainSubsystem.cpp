@@ -223,11 +223,52 @@ void USEENPCBrainSubsystem::ConfigureController(ASEENPCAIController* Controller,
 		Controller->WanderRadius, Controller->WalkSpeed);
 }
 
+// ---------------------------------------------------------------------------
+// Generic-Tailie dialogue pool
+// ---------------------------------------------------------------------------
+//
+// Pool indices map 1:1 to the "GENERIC TAILIE POOL" trees in create_datatables.py.
+// The list MUST stay in the same order as the trees appear in that file.
+//
+//   Index  Entry Node          Character
+//   -----  ------------------  ------------------------------------------
+//     0    Gen_Bunkmate_01     Bunkmate (rumour trader)
+//     1    Gen_Father_01       Starving Father
+//     2    Gen_CardPlayer_01   Card Player
+//     3    Gen_OldWoman_01     Old Woman (remembers boarding day)
+//     4    Gen_KidRunner_01    Kid Runner (Pike's messenger)
+//     5    Gen_Cynic_01        Cynic
+//     6    Gen_Believer_01     Believer in Wilford
+//     7    Gen_Widow_01        Grieving Widow
+//     8    Gen_Brawler_01      Brawler (spoiling for the revolt)
+//     9    Gen_SickMan_01      Sick Man
+//
+// GenericPoolSize (declared in the header) must equal this array's length.
+
+const TArray<FName>& USEENPCBrainSubsystem::GetGenericDialoguePool()
+{
+	static const TArray<FName> Pool =
+	{
+		TEXT("Gen_Bunkmate_01"),   // 0
+		TEXT("Gen_Father_01"),     // 1
+		TEXT("Gen_CardPlayer_01"), // 2
+		TEXT("Gen_OldWoman_01"),   // 3
+		TEXT("Gen_KidRunner_01"),  // 4
+		TEXT("Gen_Cynic_01"),      // 5
+		TEXT("Gen_Believer_01"),   // 6
+		TEXT("Gen_Widow_01"),      // 7
+		TEXT("Gen_Brawler_01"),    // 8
+		TEXT("Gen_SickMan_01"),    // 9
+	};
+	static_assert(GenericPoolSize == 10, "GenericPoolSize must equal the Pool array length above.");
+	return Pool;
+}
+
 FName USEENPCBrainSubsystem::PickDialogueEntryNode(const FString& Identity, bool bMerchant, bool bBreachman)
 {
 	// Named characters first (labels set by populate_zone1.py), then class
-	// fallbacks. Entry rows live in /Game/DataTables/DT_Dialogue_Zone1 (see
-	// create_datatables.py — 92 nodes, 7 speakers). Entry roots:
+	// fallbacks. Entry rows live in /Game/DataTables/DT_Dialogue_Zone1.
+	// Named entry roots (UNCHANGED — existing save data relies on these IDs):
 	//   Pike_01     Old Man Pike (elder, revolt-with-patience quest giver)
 	//   Samuel_01   Samuel (young hothead, rush-the-gate firebrand)
 	//   Dealer_01   Kronole Dealer (den/smuggler bench rules)
@@ -235,6 +276,13 @@ FName USEENPCBrainSubsystem::PickDialogueEntryNode(const FString& Identity, bool
 	//   Mechanic_01 Workshop Mechanic (welds, tools, the Network)
 	//   Injured_01  Mara, the Injured Tailie (cost of the last revolt)
 	//   Tanya_01    Tanya (grieving mother, taken-forward children)
+	//
+	// Generic Tailies use a 10-entry pool (GetGenericDialoguePool).
+	// Each instance hashes its actor label into a deterministic pool slot:
+	//   slot = GetTypeHash(Label) % GenericPoolSize
+	// This guarantees NPC_D_Bunkmate_Car01_1 and _2 get different trees while
+	// the SAME NPC always returns the same tree across play sessions (label
+	// is stable; hash is deterministic for a given FString value).
 
 	// --- Named placed NPCs (full label coverage) ---
 	if (Identity.Contains(TEXT("Gilliam")) || Identity.Contains(TEXT("Elder")) ||
@@ -269,12 +317,28 @@ FName USEENPCBrainSubsystem::PickDialogueEntryNode(const FString& Identity, bool
 		return TEXT("Mechanic_01");
 	}
 
-	// --- Class fallbacks ---
-	if (bMerchant) return TEXT("Dealer_01");
+	// --- Class fallbacks (named types, not generic civilians) ---
+	if (bMerchant)  return TEXT("Dealer_01");
 	if (bBreachman) return TEXT("Mechanic_01");
 
-	// --- Anything unmatched (NPC_Car01_Civilian_0..4 and future generics) ---
-	// No generic-Tailie tree exists in the 92-node table, so reuse the
-	// injured-Tailie opening: every friendly stays talkable with a story hook.
-	return TEXT("Injured_01");
+	// --- Generic civilians: deterministic pool routing by label hash ---
+	// Extract just the label portion (before the '|' separator added by ConfigureController).
+	FString Label = Identity;
+	{
+		int32 PipeIdx = INDEX_NONE;
+		if (Identity.FindChar(TEXT('|'), PipeIdx))
+		{
+			Label = Identity.Left(PipeIdx);
+		}
+	}
+
+	const uint32 Hash = GetTypeHash(Label);
+	const int32  Slot = static_cast<int32>(Hash % static_cast<uint32>(GenericPoolSize));
+	const TArray<FName>& Pool = GetGenericDialoguePool();
+
+	UE_LOG(LogTemp, Verbose,
+		TEXT("SEENPCBrain: generic NPC '%s' -> pool slot %d ('%s')"),
+		*Label, Slot, *Pool[Slot].ToString());
+
+	return Pool[Slot];
 }
