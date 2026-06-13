@@ -16,6 +16,7 @@ public:
 	USEEHungerComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Hunger")
 	void Eat(float Amount);
@@ -45,7 +46,14 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunger")
 	float MaxHunger = 100.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hunger")
+	// CO-OP: hunger is server-authoritative. The drain in TickComponent and the
+	// starving health-drain (TakeDamage, server-gated) run on the server; Eat is
+	// authority-gated and already reached server-side via USEEInventoryComponent's
+	// ServerUseItem path. CurrentHunger replicates to the OWNING client only
+	// (COND_OwnerOnly), where the HUD polls GetHungerPercent() and OnRep fires the
+	// same OnHungerChanged delegate the server fires. Standalone is authority:
+	// the server path runs, OnRep never fires — single-player is unchanged.
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentHunger, Category = "Hunger")
 	float CurrentHunger = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunger")
@@ -53,4 +61,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunger")
 	float StarvingHealthDrain = 1.0f;
+
+	/** Client feedback: replicated hunger changed — fire OnHungerChanged. */
+	UFUNCTION()
+	void OnRep_CurrentHunger();
 };

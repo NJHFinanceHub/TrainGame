@@ -1,5 +1,6 @@
 #include "SEEDialogueManager.h"
 #include "SEEInventoryComponent.h"
+#include "SEECharacter.h"
 #include "Engine/GameInstance.h"
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
@@ -121,9 +122,25 @@ void USEEDialogueManager::GrantRewardItem(FName ItemID)
 	if (ItemID.IsNone()) return;
 	const UGameInstance* GI = GetGameInstance();
 	const UWorld* World = GI ? GI->GetWorld() : nullptr;
+	// Dialogue runs locally on each machine, so the local player controller is the
+	// player who is talking (the host on the host, a guest on a guest).
 	APlayerController* PC = World ? World->GetFirstPlayerController() : nullptr;
 	APawn* Pawn = PC ? PC->GetPawn() : nullptr;
 	if (!Pawn) return;
+
+	// CO-OP: the item gift is a WORLD/QUEST side-effect and must be server-
+	// authoritative. Route it through the player pawn's authoritative grant path
+	// (direct on host/standalone, Server RPC on a guest) instead of calling the
+	// inventory directly, so a guest's reward isn't a client-only mutation that the
+	// next inventory replication overwrites. Pure conversation navigation stays local.
+	if (ASEECharacter* Character = Cast<ASEECharacter>(Pawn))
+	{
+		Character->GrantDialogueRewardItem(ItemID);
+		UE_LOG(LogTemp, Log, TEXT("Dialogue reward granted: %s"), *ItemID.ToString());
+		return;
+	}
+
+	// Fallback (non-ASEECharacter pawn): add directly — authority decides validity.
 	if (USEEInventoryComponent* Inv = Pawn->FindComponentByClass<USEEInventoryComponent>())
 	{
 		Inv->AddItem(ItemID, 1);

@@ -20,6 +20,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundBase.h"
 #include "AI/SEENPCAIController.h"
+#include "AI/SEENPCDialogueComponent.h"
 #include "UI/SEEUISubsystem.h"
 #include "Engine/GameInstance.h"
 #include "Net/UnrealNetwork.h"
@@ -109,6 +110,12 @@ void ASEECharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	DOREPLIFETIME(ASEECharacter, EquippedWeaponId);
+
+	// Per-player survival state — private to the owning client (COND_OwnerOnly).
+	// The server computes drain/regen; the value replicates down so the owner's
+	// HUD (which polls GetStamina()) stays in sync, and so it can't desync.
+	DOREPLIFETIME_CONDITION(ASEECharacter, CurrentStamina, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(ASEECharacter, MaxStamina, COND_OwnerOnly);
 }
 
 void ASEECharacter::OnRep_EquippedWeaponId()
@@ -126,11 +133,20 @@ void ASEECharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// CO-OP: stamina drain/regen runs on the SERVER (authoritative source of truth,
+	// replicated to the owner via CurrentStamina) and ALSO on the locally-controlled
+	// owning client (local prediction for zero-latency sprint feel — the replicated
+	// server value reconciles it). Simulated proxies (other players' pawns on this
+	// machine) must NOT run it: their stamina isn't replicated to us and isn't shown.
+	// Standalone is authority + locally controlled, so the single existing path runs
+	// exactly once — single-player behavior is byte-for-byte unchanged.
+	if (HasAuthority() || IsLocallyControlled())
+	{
+		UpdateStamina(DeltaTime);
+	}
+
 	// Camera/FOV is purely cosmetic for the owning player's view — remote proxies
-	// (other players' pawns on this machine) must not run it. Stamina/footsteps are
-	// safe everywhere: stamina only drains under sprint/run flags the owner sets,
-	// and footsteps are 3D positional cues everyone should hear.
-	UpdateStamina(DeltaTime);
+	// must not run it. Footsteps are 3D positional cues everyone should hear.
 	if (IsLocallyControlled())
 	{
 		UpdateCameraFOV(DeltaTime);
@@ -557,8 +573,12 @@ bool ASEECharacter::TryStartNPCDialogue()
 		APawn* HitPawn = Cast<APawn>(Hit.GetActor());
 		if (!HitPawn || HitPawn == this) continue;
 
-		ASEENPCAIController* Brain = Cast<ASEENPCAIController>(HitPawn->GetController());
-		if (!Brain || !Brain->CanStartDialogue()) continue;
+		// CO-OP: read talkability from the pawn's REPLICATED dialogue component, not
+		// from the server-only AI controller (null on clients — the old blocker).
+		// The component exists + replicates on every machine, so host, standalone and
+		// guests all take this one path.
+		USEENPCDialogueComponent* NPCDialogue = HitPawn->FindComponentByClass<USEENPCDialogueComponent>();
+		if (!NPCDialogue || !NPCDialogue->bReplicatedCanStartDialogue) continue;
 
 		if (UGameInstance* GI = GetGameInstance())
 		{
@@ -710,6 +730,67 @@ bool ASEECharacter::ServerUnequipQuickSlotWeapon_Validate() { return true; }
 void ASEECharacter::ServerUnequipQuickSlotWeapon_Implementation()
 {
 	UnequipQuickSlotWeapon();
+}
+
+void ASEECharacter::SetNPCInDialogue(APawn* NPCPawn, bool bInDialogue)
+{
+	if (!NPCPawn) return;
+
+	// Authority (host/standalone): drive the server-side brain directly. Guest:
+	// route to the server, which has the AI controller. The NPC's "stand still /
+	// face me" pause is a shared-actor effect, so it must be authoritative; the
+	// conversation UI itself stays local on whichever client opened it.
+	if (HasAuthority())
+	{
+		if (ASEENPCAIController* Brain = Cast<ASEENPCAIController>(NPCPawn->GetController()))
+		{
+			Brain->SetInDialogue(bInDialogue);
+		}
+	}
+	else
+	{
+		ServerSetNPCInDialogue(NPCPawn, bInDialogue);
+	}
+}
+
+bool ASEECharacter::ServerSetNPCInDialogue_Validate(APawn* NPCPawn, bool bInDialogue) { return true; }
+void ASEECharacter::ServerSetNPCInDialogue_Implementation(APawn* NPCPawn, bool bInDialogue)
+{
+	// Server: resolve the server-only brain and apply the pause.
+	if (!NPCPawn) return;
+	if (ASEENPCAIController* Brain = Cast<ASEENPCAIController>(NPCPawn->GetController()))
+	{
+		Brain->SetInDialogue(bInDialogue);
+	}
+}
+
+void ASEECharacter::GrantDialogueRewardItem(FName ItemID)
+{
+	if (ItemID.IsNone()) return;
+
+	// Authority (host/standalone): add directly to the authoritative bag — single
+	// player is unchanged. Guest: route to the server so the grant is authoritative
+	// (AddItem itself isn't authority-gated, so a client-side call would be clobbered
+	// by the next COND_OwnerOnly Slots replication).
+	if (HasAuthority())
+	{
+		if (InventoryComponent)
+		{
+			InventoryComponent->AddItem(ItemID, 1);
+		}
+	}
+	else
+	{
+		ServerGrantDialogueItem(ItemID);
+	}
+}
+
+bool ASEECharacter::ServerGrantDialogueItem_Validate(FName ItemID) { return true; }
+void ASEECharacter::ServerGrantDialogueItem_Implementation(FName ItemID)
+{
+	// Server: add to this player's authoritative inventory; replicates to the owner.
+	if (ItemID.IsNone() || !InventoryComponent) return;
+	InventoryComponent->AddItem(ItemID, 1);
 }
 
 void ASEECharacter::EquipWeaponByItemID(FName ItemID)

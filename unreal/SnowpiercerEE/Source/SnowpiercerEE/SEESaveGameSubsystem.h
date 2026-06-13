@@ -13,6 +13,46 @@
 
 class APawn;
 
+/**
+ * CO-OP: one connected player's per-player slice. The HOST's slice still lives in
+ * the flat Player* fields on USEESaveGameData below (so the single-player save
+ * format is byte-for-byte unchanged); additional connected players are captured
+ * into an array of these. Per-client RESTORE is deferred (see WriteToSlot notes) —
+ * this captures every player's state host-authoritatively so it isn't lost.
+ */
+USTRUCT()
+struct FSEEPlayerSaveEntry
+{
+    GENERATED_BODY()
+
+    UPROPERTY(SaveGame)
+    FTransform PlayerTransform;
+
+    UPROPERTY(SaveGame)
+    float PlayerHealth = 0.0f;
+
+    UPROPERTY(SaveGame)
+    float PlayerMaxHealth = 0.0f;
+
+    UPROPERTY(SaveGame)
+    float PlayerStamina = 0.0f;
+
+    UPROPERTY(SaveGame)
+    float PlayerMaxStamina = 0.0f;
+
+    UPROPERTY(SaveGame)
+    int32 PlayerXP = 0;
+
+    UPROPERTY(SaveGame)
+    int32 PlayerLevel = 1;
+
+    UPROPERTY(SaveGame)
+    TArray<FSEEItemSaveEntry> Inventory;
+
+    UPROPERTY(SaveGame)
+    TArray<FEquippedArmor> EquippedArmor;
+};
+
 UCLASS()
 class SNOWPIERCEREE_API USEESaveGameData : public USaveGame
 {
@@ -79,6 +119,15 @@ public:
 
     UPROPERTY(SaveGame)
     FSEEFactionSaveState FactionState;
+
+    // --- CO-OP: additional connected players (host-authoritative capture) ---
+    //
+    // The HOST's slice stays in the flat Player* fields above (single-player save
+    // format unchanged). In co-op the host also captures every OTHER connected
+    // player's slice here so their progress isn't lost. Empty in single-player.
+    // Per-client restore is deferred — documented in WriteToSlot/LoadFromSlot.
+    UPROPERTY(SaveGame)
+    TArray<FSEEPlayerSaveEntry> ConnectedPlayers;
 };
 
 UCLASS()
@@ -124,6 +173,16 @@ public:
 private:
     /** Capture the live player pawn's slice into SaveObj. Returns true if a pawn was found. */
     bool CapturePlayerState(USEESaveGameData* SaveObj);
+
+    /** True on the host (listen/dedicated server) or in standalone; false on a client. */
+    bool HasSaveAuthority() const;
+
+    /** Capture one pawn's per-player slice into an entry (shared by host + clients). */
+    static void CapturePawnEntry(APawn* Pawn, FSEEPlayerSaveEntry& OutEntry);
+
+    /** CO-OP: capture every connected player EXCEPT the host's pawn into
+        SaveObj->ConnectedPlayers (the host is captured into the flat fields). */
+    void CaptureConnectedPlayers(USEESaveGameData* SaveObj);
 
     /** Begin polling for the player pawn so the pending slice can be applied once it spawns. */
     void StartPendingRestorePoll();

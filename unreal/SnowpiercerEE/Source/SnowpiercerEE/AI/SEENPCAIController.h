@@ -11,6 +11,7 @@ class ACharacter;
 class APawn;
 class USEEAnimDriverComponent;
 class ASEEWeaponBase;
+class USEENPCDialogueComponent;
 
 /** High-level brain state for corridor NPCs. */
 UENUM(BlueprintType)
@@ -218,6 +219,11 @@ public:
 	/** Attach/refresh the health component, bind delegates and apply move speed. */
 	void ApplyConfiguration();
 
+	/** CO-OP: push the current entry id + talkable flag onto the pawn's replicated
+	    dialogue component so clients (which have no AI controller) can open dialogue.
+	    Idempotent; authority-only effect. */
+	void RefreshReplicatedDialogueState();
+
 private:
 	// --- Perception / decisions (0.25s timer) ---
 	void UpdatePerception();
@@ -308,6 +314,14 @@ private:
 
 	/** Attach + init the anim driver on the possessed pawn (idempotent). */
 	void EnsurePawnAnimDriver();
+
+	/** CO-OP: the replicated dialogue mirror attached to the possessed pawn so
+	    clients can resolve this NPC's conversation without the server-only brain. */
+	UPROPERTY()
+	TObjectPtr<USEENPCDialogueComponent> PawnDialogue;
+
+	/** Attach the replicated dialogue component to the possessed pawn (idempotent). */
+	void EnsurePawnDialogueComponent();
 
 	/** Visible weapon held in the pawn's hand (hostiles, or armed friendlies during
 	  * the revolt). Purely cosmetic — combat damage is routed by the controller. */

@@ -69,8 +69,30 @@ APawn* USEESaveGameSubsystem::GetPlayerPawn() const
 	return PC ? PC->GetPawn() : nullptr;
 }
 
+bool USEESaveGameSubsystem::HasSaveAuthority() const
+{
+	// CO-OP: the save is host-authoritative — only the host (listen/dedicated
+	// server) or a standalone game writes the slot. A connected client writing its
+	// local subsystem would persist a partial/bogus world snapshot over the shared
+	// save, so client WriteToSlot is a no-op.
+	const UGameInstance* GI = GetGameInstance();
+	const UWorld* World = GI ? GI->GetWorld() : nullptr;
+	if (!World)
+	{
+		return true; // no world yet — treat as authority (standalone boot / menu)
+	}
+	return World->GetNetMode() != NM_Client;
+}
+
 bool USEESaveGameSubsystem::WriteToSlot()
 {
+	// Host-authoritative: clients don't write the shared save. Standalone is
+	// authority, so single-player save behaves exactly as before.
+	if (!HasSaveAuthority())
+	{
+		return false;
+	}
+
 	USEESaveGameData* SaveObj = Cast<USEESaveGameData>(
 		UGameplayStatics::CreateSaveGameObject(USEESaveGameData::StaticClass()));
 
@@ -102,10 +124,60 @@ bool USEESaveGameSubsystem::WriteToSlot()
 		SaveObj->FactionState = Factions->GetSaveState();
 	}
 
-	// --- Player pawn slice (transform / health / stamina / inventory / armor / stats) ---
+	// --- Host player pawn slice (transform / health / stamina / inventory / armor / stats) ---
+	// CapturePlayerState uses GetPlayerPawn() = the local (player 0 / host) pawn, so
+	// the host's slice still lands in the flat Player* fields — single-player format
+	// is unchanged.
 	SaveObj->bHasPlayerState = CapturePlayerState(SaveObj);
 
+	// --- CO-OP: every OTHER connected player's slice (host-authoritative capture) ---
+	// No-op in single-player (only one controller, which is the host).
+	CaptureConnectedPlayers(SaveObj);
+
 	return UGameplayStatics::SaveGameToSlot(SaveObj, SaveSlotName, UserIndex);
+}
+
+void USEESaveGameSubsystem::CapturePawnEntry(APawn* Pawn, FSEEPlayerSaveEntry& OutEntry)
+{
+	if (!Pawn)
+	{
+		return;
+	}
+
+	OutEntry.PlayerTransform = Pawn->GetActorTransform();
+
+	// Health (component lookup is null-safe per slice).
+	if (USEEHealthComponent* Health = Pawn->FindComponentByClass<USEEHealthComponent>())
+	{
+		OutEntry.PlayerHealth = Health->GetCurrentHealth();
+		OutEntry.PlayerMaxHealth = Health->GetMaxHealth();
+	}
+
+	// Stamina lives on the character.
+	if (ASEECharacter* Character = Cast<ASEECharacter>(Pawn))
+	{
+		OutEntry.PlayerStamina = Character->GetStamina();
+		OutEntry.PlayerMaxStamina = Character->GetMaxStamina();
+	}
+
+	// Stats (XP / level).
+	if (USEEStatsComponent* Stats = Pawn->FindComponentByClass<USEEStatsComponent>())
+	{
+		OutEntry.PlayerXP = Stats->GetCurrentXP();
+		OutEntry.PlayerLevel = Stats->GetLevel();
+	}
+
+	// Inventory.
+	if (USEEInventoryComponent* Inventory = Pawn->FindComponentByClass<USEEInventoryComponent>())
+	{
+		OutEntry.Inventory = Inventory->GetSaveState();
+	}
+
+	// Equipped armor.
+	if (UArmorComponent* Armor = Pawn->FindComponentByClass<UArmorComponent>())
+	{
+		OutEntry.EquippedArmor = Armor->GetSaveState();
+	}
 }
 
 bool USEESaveGameSubsystem::CapturePlayerState(USEESaveGameData* SaveObj)
@@ -116,46 +188,76 @@ bool USEESaveGameSubsystem::CapturePlayerState(USEESaveGameData* SaveObj)
 		return false;
 	}
 
-	SaveObj->PlayerTransform = Pawn->GetActorTransform();
+	// Capture into a shared entry, then copy into the flat host fields. Keeping the
+	// flat fields preserves the existing single-player save format byte-for-byte.
+	FSEEPlayerSaveEntry Entry;
+	CapturePawnEntry(Pawn, Entry);
 
-	// Health (component lookup is null-safe per slice).
-	if (USEEHealthComponent* Health = Pawn->FindComponentByClass<USEEHealthComponent>())
-	{
-		SaveObj->PlayerHealth = Health->GetCurrentHealth();
-		SaveObj->PlayerMaxHealth = Health->GetMaxHealth();
-	}
-
-	// Stamina lives on the character.
-	if (ASEECharacter* Character = Cast<ASEECharacter>(Pawn))
-	{
-		SaveObj->PlayerStamina = Character->GetStamina();
-		SaveObj->PlayerMaxStamina = Character->GetMaxStamina();
-	}
-
-	// Stats (XP / level).
-	if (USEEStatsComponent* Stats = Pawn->FindComponentByClass<USEEStatsComponent>())
-	{
-		SaveObj->PlayerXP = Stats->GetCurrentXP();
-		SaveObj->PlayerLevel = Stats->GetLevel();
-	}
-
-	// Inventory.
-	if (USEEInventoryComponent* Inventory = Pawn->FindComponentByClass<USEEInventoryComponent>())
-	{
-		SaveObj->Inventory = Inventory->GetSaveState();
-	}
-
-	// Equipped armor.
-	if (UArmorComponent* Armor = Pawn->FindComponentByClass<UArmorComponent>())
-	{
-		SaveObj->EquippedArmor = Armor->GetSaveState();
-	}
+	SaveObj->PlayerTransform = Entry.PlayerTransform;
+	SaveObj->PlayerHealth = Entry.PlayerHealth;
+	SaveObj->PlayerMaxHealth = Entry.PlayerMaxHealth;
+	SaveObj->PlayerStamina = Entry.PlayerStamina;
+	SaveObj->PlayerMaxStamina = Entry.PlayerMaxStamina;
+	SaveObj->PlayerXP = Entry.PlayerXP;
+	SaveObj->PlayerLevel = Entry.PlayerLevel;
+	SaveObj->Inventory = Entry.Inventory;
+	SaveObj->EquippedArmor = Entry.EquippedArmor;
 
 	return true;
 }
 
+void USEESaveGameSubsystem::CaptureConnectedPlayers(USEESaveGameData* SaveObj)
+{
+	if (!SaveObj)
+	{
+		return;
+	}
+
+	UGameInstance* GI = GetGameInstance();
+	UWorld* World = GI ? GI->GetWorld() : nullptr;
+	if (!World)
+	{
+		return;
+	}
+
+	// The host's pawn is already captured into the flat fields (it is player 0 =
+	// World->GetFirstPlayerController()). Capture every OTHER connected player's
+	// pawn here. Iterating controllers (not just player 0) is what makes the save
+	// multi-player; in single-player there is only the host controller, so this
+	// adds nothing and the save is unchanged.
+	APlayerController* HostPC = World->GetFirstPlayerController();
+	const APawn* HostPawn = HostPC ? HostPC->GetPawn() : nullptr;
+
+	for (FConstPlayerControllerIterator It = World->GetPlayerControllerIterator(); It; ++It)
+	{
+		APlayerController* PC = It->Get();
+		if (!PC)
+		{
+			continue;
+		}
+		APawn* Pawn = PC->GetPawn();
+		if (!Pawn || Pawn == HostPawn)
+		{
+			continue; // host already captured into the flat fields
+		}
+
+		FSEEPlayerSaveEntry& Entry = SaveObj->ConnectedPlayers.AddDefaulted_GetRef();
+		CapturePawnEntry(Pawn, Entry);
+	}
+}
+
 bool USEESaveGameSubsystem::LoadFromSlot()
 {
+	// CO-OP: load is host-authoritative. The host loads the save and the restored
+	// world (car states, quests, factions, pawns) replicates to clients; a client
+	// loading its own local save would fight the replicated state. Standalone is
+	// authority, so single-player load runs exactly as before. (Per-client restore
+	// of each guest's own pawn slice from ConnectedPlayers is deferred — see report.)
+	if (!HasSaveAuthority())
+	{
+		return false;
+	}
+
 	if (!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
 	{
 		return false;

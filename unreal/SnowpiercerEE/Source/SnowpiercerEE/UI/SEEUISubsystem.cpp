@@ -13,6 +13,8 @@
 
 // Game data sources
 #include "SnowpiercerEE/AI/SEENPCAIController.h"
+#include "SnowpiercerEE/AI/SEENPCDialogueComponent.h"
+#include "SnowpiercerEE/SEECharacter.h"
 #include "SnowpiercerEE/SEEInventoryComponent.h"
 #include "SnowpiercerEE/SEEHealthComponent.h"
 #include "SnowpiercerEE/SEEStatsComponent.h"
@@ -165,14 +167,28 @@ void USEEUISubsystem::OpenDialogue(APawn* NPCPawn)
 	USEEDialogueManager* Dialogue = GetDialogueManager();
 	if (!Dialogue || Dialogue->IsInConversation()) return;
 
-	ASEENPCAIController* Brain = Cast<ASEENPCAIController>(NPCPawn->GetController());
-	if (!Brain || !Brain->CanStartDialogue()) return;
+	// CO-OP: resolve the entry node + talkability from the pawn's REPLICATED
+	// dialogue component (present on host, standalone AND clients) instead of the
+	// server-only AI controller. This is the single code path that lets guests talk.
+	USEENPCDialogueComponent* NPCDialogue = NPCPawn->FindComponentByClass<USEENPCDialogueComponent>();
+	if (!NPCDialogue || !NPCDialogue->bReplicatedCanStartDialogue) return;
 
-	// Start the conversation first: BuildScreenWidget pulls the current node.
-	if (!Dialogue->StartConversationAtNode(Brain->DialogueEntryNode)) return;
+	// Start the conversation first: BuildScreenWidget pulls the current node. The
+	// dialogue DataTable exists on every machine, so the tree renders locally.
+	if (!Dialogue->StartConversationAtNode(NPCDialogue->ReplicatedDialogueEntryId)) return;
 
 	DialogueNPCPawn = NPCPawn;
-	Brain->SetInDialogue(true);
+
+	// Tell the brain to stand still / face us while talking. On host/standalone the
+	// pawn IS authority so this applies directly; a guest routes it through a Server
+	// RPC on its own pawn so the server-side brain pauses for the conversation.
+	if (APawn* LocalPawn = GetLocalPawn())
+	{
+		if (ASEECharacter* LocalChar = Cast<ASEECharacter>(LocalPawn))
+		{
+			LocalChar->SetNPCInDialogue(NPCPawn, true);
+		}
+	}
 
 	OpenScreen(ESEEUIScreen::Dialogue);
 
@@ -741,9 +757,14 @@ void USEEUISubsystem::CleanupDialogueState()
 
 	if (DialogueNPCPawn.IsValid())
 	{
-		if (ASEENPCAIController* Brain = Cast<ASEENPCAIController>(DialogueNPCPawn->GetController()))
+		// Release the brain's "in dialogue" pause via the same host/guest path used
+		// to set it (direct on authority, Server RPC from a guest).
+		if (APawn* LocalPawn = GetLocalPawn())
 		{
-			Brain->SetInDialogue(false);
+			if (ASEECharacter* LocalChar = Cast<ASEECharacter>(LocalPawn))
+			{
+				LocalChar->SetNPCInDialogue(DialogueNPCPawn.Get(), false);
+			}
 		}
 	}
 	DialogueNPCPawn.Reset();

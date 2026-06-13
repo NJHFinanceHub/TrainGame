@@ -5,6 +5,7 @@
 #include "SEENPCHealthComponent.h"
 #include "SnowpiercerEE/SEECombatComponent.h"
 #include "SnowpiercerEE/Animation/SEEAnimDriverComponent.h"
+#include "SEENPCDialogueComponent.h"
 #include "Animation/AnimSequence.h"
 #include "SnowpiercerEE/SEEFactionManager.h"
 #include "SnowpiercerEE/SEEJackbootCharacter.h"
@@ -158,6 +159,12 @@ void ASEENPCAIController::ApplyConfiguration()
 	// Put a visible weapon in the hands of armed NPCs (jackboots/boss always;
 	// friendlies only if the revolt flagged them via bForceArmed). Idempotent.
 	EnsureHeldWeapon();
+
+	// CO-OP: attach the replicated dialogue mirror to the pawn and seed it now
+	// (DialogueEntryNode is resolved by this point), so clients can talk to this
+	// NPC even though they have no AI controller.
+	EnsurePawnDialogueComponent();
+	RefreshReplicatedDialogueState();
 }
 
 void ASEENPCAIController::EnsurePawnAnimDriver()
@@ -177,6 +184,36 @@ void ASEENPCAIController::EnsurePawnAnimDriver()
 	PawnAnimDriver = Driver;
 	// Mesh is already assigned on the placed pawn — resolve + take it single-node now.
 	Driver->InitDriver();
+}
+
+void ASEENPCAIController::EnsurePawnDialogueComponent()
+{
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn) return;
+
+	// Only the authority creates the component; it then replicates to clients. (The
+	// brain only ever exists/ticks on the server, so this is authority by nature —
+	// guard anyway in case a future caller runs it elsewhere.)
+	if (!ControlledPawn->HasAuthority()) return;
+
+	USEENPCDialogueComponent* Dialogue = ControlledPawn->FindComponentByClass<USEENPCDialogueComponent>();
+	if (!Dialogue)
+	{
+		Dialogue = NewObject<USEENPCDialogueComponent>(
+			ControlledPawn, USEENPCDialogueComponent::StaticClass(), TEXT("SEENPCDialogue"));
+		if (!Dialogue) return;
+		Dialogue->RegisterComponent();
+	}
+	PawnDialogue = Dialogue;
+}
+
+void ASEENPCAIController::RefreshReplicatedDialogueState()
+{
+	if (!PawnDialogue) return;
+
+	// Mirror the controller's authoritative entry id + talkable flag onto the
+	// replicated pawn component. Clients read these to open dialogue locally.
+	PawnDialogue->SetDialogueState(DialogueEntryNode, CanStartDialogue());
 }
 
 // ---------------------------------------------------------------------------
@@ -376,6 +413,12 @@ void ASEENPCAIController::UpdatePerception()
 			ClearFocus(EAIFocusPriority::Gameplay);
 		}
 	}
+
+	// CO-OP: keep the pawn's replicated dialogue mirror current. CanStartDialogue()
+	// depends on brain state / wind-up / faction standing, all of which can change
+	// here; this 0.25s server-side tick is the natural refresh point so clients see
+	// an accurate "can I talk" flag.
+	RefreshReplicatedDialogueState();
 }
 
 bool ASEENPCAIController::CanSeePlayer(const APawn* Player, bool bUseCone) const
@@ -1118,6 +1161,9 @@ void ASEENPCAIController::SetInDialogue(bool bNowInDialogue)
 			BrainState = ESEENPCBrainState::Idle;
 		}
 	}
+
+	// Keep the replicated dialogue mirror in step with the talking state.
+	RefreshReplicatedDialogueState();
 }
 
 // ---------------------------------------------------------------------------

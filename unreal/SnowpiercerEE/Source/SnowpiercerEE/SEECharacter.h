@@ -51,6 +51,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Interaction")
 	void Interact();
 
+	/** CO-OP dialogue: set/clear an NPC brain's "in dialogue" pause for the NPC this
+	    player is talking to. On authority (host/standalone) it applies directly to
+	    the server-side brain; on a guest it routes through ServerSetNPCInDialogue so
+	    the server-side brain pauses/faces correctly. Pure local conversation
+	    navigation stays client-side; this only touches the shared NPC actor. */
+	void SetNPCInDialogue(APawn* NPCPawn, bool bInDialogue);
+
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void StartRun();
 
@@ -144,7 +151,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	float MaxFOVImpulse = 20.0f;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	// CO-OP: MaxStamina replicates to the owning client so its HUD bar (which
+	// polls GetStamina()/GetMaxStamina() each tick) reads the right denominator.
+	// It is effectively constant today, but replicating it keeps the owner correct
+	// if it is ever changed server-side. COND_OwnerOnly — a pawn's survival state
+	// is private to its own player.
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "Stats")
 	float MaxStamina = 150.0f;
 
 	/** Base drain per second; sprint drains 1.5x this while moving (~14s of sprint from full) */
@@ -280,6 +292,14 @@ private:
 	UPROPERTY()
 	TObjectPtr<class UCameraComponent> ThirdPersonCamera;
 
+	// CO-OP: server-authoritative stamina. The drain/regen math in UpdateStamina
+	// runs on the server (authority); the result replicates to the OWNING client
+	// only (COND_OwnerOnly), where the HUD polls GetStamina() each tick. The
+	// locally-controlled owner ALSO runs UpdateStamina for zero-latency sprint
+	// feel (local prediction); the server's replicated value is the source of
+	// truth and overwrites the prediction whenever they diverge. Standalone is
+	// authority, so only the single existing path runs — single-player unchanged.
+	UPROPERTY(Replicated)
 	float CurrentStamina = 150.0f;
 	float StaminaRegenTimer = 0.0f;
 	bool bIsRunning = false;
@@ -341,6 +361,23 @@ private:
 
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerUnequipQuickSlotWeapon();
+
+	/** CO-OP dialogue: guest -> server request to pause/resume the NPC brain while
+	    this player talks to it. The server resolves the brain from the pawn's
+	    controller (server-only) and calls SetInDialogue. */
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerSetNPCInDialogue(APawn* NPCPawn, bool bInDialogue);
+
+public:
+	/** CO-OP dialogue: authoritatively grant a dialogue-reward item to THIS player.
+	    World/quest side-effects of dialogue (item gifts) must be server-authoritative;
+	    a guest's local dialogue routes the grant here so the server adds to the
+	    authoritative inventory and it replicates back. Host/standalone add directly. */
+	void GrantDialogueRewardItem(FName ItemID);
+
+private:
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerGrantDialogueItem(FName ItemID);
 
 	/** Weapon actor spawned by the quickslot equip flow (owned + destroyed by this character). */
 	UPROPERTY()

@@ -119,6 +119,22 @@ void USEEFactionManager::Initialize(FSubsystemCollectionBase& Collection)
 // Raw reputation
 // ============================================================================
 
+bool USEEFactionManager::HasReputationAuthority() const
+{
+	// Faction rep is host-authoritative global state. Only the host (listen
+	// server / dedicated) or a standalone game mutates the ledger; a connected
+	// client does not (it would desync a value the host owns).
+	const UGameInstance* GI = GetGameInstance();
+	const UWorld* World = GI ? GI->GetWorld() : nullptr;
+	if (!World)
+	{
+		// No world yet (very early boot) — treat as authority so Initialize-time
+		// defaults and standalone setup behave exactly as before.
+		return true;
+	}
+	return World->GetNetMode() != NM_Client;
+}
+
 void USEEFactionManager::ApplyDeltaInternal(ESEEFaction Faction, int32 Delta)
 {
 	if (Delta == 0 || Faction == ESEEFaction::Neutral) return;
@@ -138,12 +154,19 @@ void USEEFactionManager::ApplyDeltaInternal(ESEEFaction Faction, int32 Delta)
 
 void USEEFactionManager::ModifyReputation(ESEEFaction Faction, int32 Delta)
 {
+	// Host-authoritative: a client never mutates the shared faction ledger.
+	if (!HasReputationAuthority()) return;
+
 	ApplyDeltaInternal(Faction, Delta);
 	ApplyMutualExclusivity(Faction, Delta);
 }
 
 void USEEFactionManager::SetReputation(ESEEFaction Faction, int32 Value)
 {
+	// Host-authoritative direct set (gameplay callers). The host-authored save
+	// restore path (SetSaveState) bypasses this so it can seed a client.
+	if (!HasReputationAuthority()) return;
+
 	ApplyDeltaInternal(Faction, FMath::Clamp(Value, -100, 100) - GetReputation(Faction));
 }
 
@@ -268,6 +291,11 @@ bool USEEFactionManager::IsPlayerInstigator(const AActor* Instigator)
 
 void USEEFactionManager::ApplyReputationEvent(ESEEReputationEvent Event, ESEEFaction ContextFaction, AActor* Instigator)
 {
+	// Host-authoritative: kills/quests/goodwill only move the shared ledger on the
+	// host. (NotifyNPCKilled etc. fire from server-side AI/combat anyway; this guard
+	// covers any client-side caller so the ledger can't desync.)
+	if (!HasReputationAuthority()) return;
+
 	if (!IsPlayerInstigator(Instigator)) return;
 
 	// Fixed-matrix events (kills, helping civilians).
@@ -462,8 +490,12 @@ void USEEFactionManager::SetSaveState(const FSEEFactionSaveState& InState)
 {
 	if (InState.IsEmpty()) return; // pre-faction save: keep the Initialize() defaults
 
+	// Restore the host-authored snapshot. Routes through ApplyDeltaInternal (not the
+	// authority-gated SetReputation) so a connected client can also seed its local
+	// manager from a host save on load, while still broadcasting so any UI refreshes.
 	for (const TPair<ESEEFaction, int32>& Pair : InState.Reputations)
 	{
-		SetReputation(Pair.Key, Pair.Value); // routes through broadcasts so UI refreshes
+		const int32 Target = FMath::Clamp(Pair.Value, -100, 100);
+		ApplyDeltaInternal(Pair.Key, Target - GetReputation(Pair.Key));
 	}
 }

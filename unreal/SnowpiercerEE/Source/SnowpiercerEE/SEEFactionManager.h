@@ -142,6 +142,29 @@ public:
 private:
 	TMap<ESEEFaction, int32> FactionReputations;
 
+	/**
+	 * CO-OP: faction reputation is GLOBAL session state — the player party's
+	 * standing with each faction, shared by everyone in the session. It is
+	 * HOST-AUTHORITATIVE: only the host (listen server) mutates the ledger.
+	 *
+	 * USEEFactionManager is a UGameInstanceSubsystem, not a replicated actor, so it
+	 * can't replicate directly and has no client->server RPC channel. Rather than
+	 * add a GameState/PlayerState carrier (those files are out of scope this pass),
+	 * mutations are gated to authority: on a client ModifyReputation/SetReputation/
+	 * ApplyReputationEvent become no-ops, so clients never desync the ledger with
+	 * a local-only change. The reputation snapshot itself reaches clients through
+	 * the host-authoritative save (SetSaveState on load) — see the deferred note
+	 * for live in-session replication of mid-game rep changes to clients.
+	 *
+	 * Standalone is authority, so every mutation runs exactly as before
+	 * (single-player faction behavior is byte-for-byte unchanged).
+	 *
+	 * True on the host (listen server / dedicated) and in standalone; false on a
+	 * connected client. SetSaveState bypasses this so a host-authored save still
+	 * restores onto a client's local manager.
+	 */
+	bool HasReputationAuthority() const;
+
 	/** Clamp + store + broadcast, with no rivalry side effects (the event table owns ripples). */
 	void ApplyDeltaInternal(ESEEFaction Faction, int32 Delta);
 	void ApplyMutualExclusivity(ESEEFaction Faction, int32 Delta);
