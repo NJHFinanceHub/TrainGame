@@ -166,6 +166,40 @@ bool UArmorComponent::HasHeavyArmorPenalty() const
 	return Torso && !Torso->IsBroken() && Torso->Weight > HeavyArmorThreshold;
 }
 
+// --- Save / restore ---
+
+TArray<FEquippedArmor> UArmorComponent::GetSaveState() const
+{
+	TArray<FEquippedArmor> Out;
+	for (const auto& Pair : EquippedArmor)
+	{
+		if (Pair.Value.IsValid())
+		{
+			Out.Add(Pair.Value);
+		}
+	}
+	return Out;
+}
+
+void UArmorComponent::SetSaveState(const TArray<FEquippedArmor>& Pieces)
+{
+	// Clear every existing slot first (fires unequip delegates so listeners refresh).
+	TArray<EArmorSlot> Occupied;
+	EquippedArmor.GetKeys(Occupied);
+	for (EArmorSlot Slot : Occupied)
+	{
+		UnequipArmor(Slot);
+	}
+
+	for (const FEquippedArmor& Piece : Pieces)
+	{
+		if (Piece.IsValid())
+		{
+			EquipArmor(Piece);
+		}
+	}
+}
+
 bool UArmorComponent::EquipFromItem(FName ItemID, EArmorSlot Slot, const FSEEItemData& Data,
                                     FEquippedArmor& OutPrevious)
 {

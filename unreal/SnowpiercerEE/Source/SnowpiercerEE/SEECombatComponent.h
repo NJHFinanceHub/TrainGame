@@ -38,11 +38,23 @@ public:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	// Actions
+	// LightAttack/HeavyAttack are the input entry points. On a client they play
+	// immediate local cosmetic feedback and forward the authoritative swing to the
+	// server via the Server RPCs below; on authority (host/standalone) they run the
+	// full sweep+damage directly. DAMAGE is always applied server-side only.
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void LightAttack();
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void HeavyAttack();
+
+	/** Server-authoritative attack execution (validated). Clients call these via the
+	    LightAttack/HeavyAttack wrappers; the server runs the real sweep + damage. */
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerLightAttack();
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerHeavyAttack();
 
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void StartBlock();
@@ -273,6 +285,15 @@ private:
 
 	/** Apply a melee hit to one actor (damage pipeline + knockback + feedback). Returns true if it had a health component. */
 	bool ApplyMeleeHitTo(AActor* HitActor, float FinalDamage);
+
+	/** Authoritative attack bodies (run on the server, or directly on a host/standalone
+	    which is authority). These contain the combo/stamina logic and start the sweep. */
+	void ExecuteLightAttack();
+	void ExecuteHeavyAttack();
+
+	/** Owning-client immediate cosmetic feedback (swing sound) played the instant the
+	    input fires, so the local player isn't waiting on the server round-trip. No damage. */
+	void PlayLocalSwingFeedback();
 
 	void BeginAttack(bool bHeavy);
 	void OnAttackWindupComplete();

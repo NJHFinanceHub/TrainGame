@@ -21,6 +21,7 @@
 #include "SnowpiercerEE/SEESaveGameSubsystem.h"
 #include "SnowpiercerEE/SEETypes.h"
 #include "SnowpiercerEE/SnowpiercerEEGameMode.h"
+#include "SnowpiercerEE/Net/SEENetTravel.h"
 #include "TrainGame/Companions/CompanionRosterSubsystem.h"
 #include "TrainGame/UI/SEEHUDTypes.h"
 #include "SnowyEngine/Crafting/CraftingComponent.h"
@@ -376,6 +377,8 @@ TSharedPtr<SWidget> USEEUISubsystem::BuildScreenWidget(ESEEUIScreen Screen)
 			.bShowCredits(false)
 			.OnNewGame(FOnMenuAction::CreateUObject(this, &USEEUISubsystem::HandleMainMenuNewGame))
 			.OnContinue(FOnMenuAction::CreateUObject(this, &USEEUISubsystem::HandleMainMenuContinue))
+			.OnHostGame(FOnMenuAction::CreateUObject(this, &USEEUISubsystem::HandleMainMenuHostGame))
+			.OnJoinGame(FOnMenuJoinAction::CreateUObject(this, &USEEUISubsystem::HandleMainMenuJoinGame))
 			.OnSettings(FOnMenuAction::CreateUObject(this, &USEEUISubsystem::PushSettingsOverlay))
 			.OnQuit(FOnMenuAction::CreateUObject(this, &USEEUISubsystem::HandleQuitToDesktop));
 	}
@@ -528,6 +531,33 @@ void USEEUISubsystem::HandleMainMenuContinue()
 		SaveSub->LoadFromSlot();
 	}
 	CloseCurrentScreen();
+}
+
+void USEEUISubsystem::HandleMainMenuHostGame()
+{
+	OpenHostGame();
+}
+
+void USEEUISubsystem::HandleMainMenuJoinGame(const FString& Address)
+{
+	OpenJoinGame(Address);
+}
+
+void USEEUISubsystem::OpenHostGame()
+{
+	// Drop the menu (restores game input + unpauses) before the listen-server travel.
+	CloseCurrentScreen();
+
+	// Re-arm so the boot menu reappears if we ever quit back out, then travel.
+	bMainMenuShownThisSession = true; // we're entering gameplay, not the menu
+	USEENetTravel::HostListenServer(GetGameWorld());
+}
+
+void USEEUISubsystem::OpenJoinGame(const FString& IP)
+{
+	CloseCurrentScreen();
+	bMainMenuShownThisSession = true;
+	USEENetTravel::JoinByAddress(GetGameWorld(), IP);
 }
 
 void USEEUISubsystem::HandleQuitToDesktop()

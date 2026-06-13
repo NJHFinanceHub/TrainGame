@@ -57,18 +57,22 @@ else:
         for i in range(count):
             item_id, qty = LOOT[li % len(LOOT)]
             li += 1
-            # spread along car, alternate sides off the center aisle
+            # Spread along the car in the CLEAR WALK AISLE (|y|<650 is kept free
+            # of props by the dressing passes), so spawns never collide with bunks
+            # and the player walks right over the pickups.
             x = car_x - 4500.0 + (i + 1) * (9000.0 / (count + 1))
-            y = 950.0 if (i % 2 == 0) else -950.0
-            loc = unreal.Vector(x, y, 120.0)
+            y = 400.0 if (i % 2 == 0) else -400.0
+            loc = unreal.Vector(x, y, 110.0)
             try:
                 actor = unreal.EditorLevelLibrary.spawn_actor_from_class(
                     pickup_cls, loc, unreal.Rotator(0.0, float((i * 47) % 360), 0.0))
                 if not actor:
+                    unreal.log_warning(f"  spawn returned None car{car} {item_id}")
                     continue
                 actor.set_actor_label(f"LOOT_Car{car:02d}_{item_id}_{i}")
                 try:
-                    actor.set_editor_property("ItemID", unreal.Name(item_id))
+                    actor.modify()
+                    actor.set_editor_property("ItemID", item_id)  # str -> FName
                     actor.set_editor_property("Quantity", qty)
                 except Exception as e:
                     unreal.log_warning(f"  set props failed {item_id}: {e}")

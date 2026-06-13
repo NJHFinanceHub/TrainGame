@@ -58,6 +58,7 @@ public:
 	USEEHealthComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	float TakeDamage(float BaseDamage, ESEEDamageType DamageType, AActor* Instigator);
@@ -129,10 +130,12 @@ public:
 	FOnHealthChanged OnHealthChanged;
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Replicated, Category = "Health")
 	float MaxHealth = 100.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Health")
+	// ReplicatedUsing: clients run OnRep to drive damage/death feedback (the
+	// authoritative value is computed server-side in TakeDamage and replicates down).
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentHealth, Category = "Health")
 	float CurrentHealth = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
@@ -141,10 +144,26 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
 	float BleedingDrainRate = 2.0f;
 
+	// Replicated combat-life flags so clients can react (death screen, ragdoll feedback).
+	UPROPERTY(ReplicatedUsing = OnRep_IsDead)
+	bool bIsDead = false;
+
+	UPROPERTY(Replicated)
+	bool bIsDowned = false;
+
+	/** Client feedback: health changed (fires OnHealthChanged, and OnDamageTaken on a drop). */
+	UFUNCTION()
+	void OnRep_CurrentHealth();
+
+	/** Client feedback: death edge — fires OnDeath so clients ragdoll/show feedback. */
+	UFUNCTION()
+	void OnRep_IsDead();
+
 private:
 	TArray<FSEEInjury> ActiveInjuries;
 	TMap<ESEEDamageType, float> ArmorValues;
-	bool bIsDead = false;
-	bool bIsDowned = false;
 	float DownedTimer = 0.0f;
+
+	/** Last health value seen by OnRep_CurrentHealth, to detect damage vs heal on clients. */
+	float LastReplicatedHealth = 100.0f;
 };

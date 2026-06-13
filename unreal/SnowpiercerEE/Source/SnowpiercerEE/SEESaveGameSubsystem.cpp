@@ -1,85 +1,348 @@
 #include "SEESaveGameSubsystem.h"
 #include "Endings/SEELedgerSubsystem.h"
+#include "SEEFactionManager.h"
+#include "SEEHealthComponent.h"
+#include "SEEStatsComponent.h"
+#include "SEECharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/Pawn.h"
+#include "TimerManager.h"
+
+namespace
+{
+	// How often / how long the pending-restore timer polls for the player pawn.
+	constexpr float GPendingPollInterval = 0.25f;
+	constexpr int32 GPendingPollMaxAttempts = 80; // ~20s before giving up
+}
 
 void USEESaveGameSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-    Super::Initialize(Collection);
-    LoadFromSlot();
+	Super::Initialize(Collection);
+	LoadFromSlot();
+}
+
+void USEESaveGameSubsystem::Deinitialize()
+{
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		if (UWorld* World = GI->GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(PendingRestoreTimer);
+		}
+	}
+	Super::Deinitialize();
 }
 
 void USEESaveGameSubsystem::SetCarState(int32 CarIndex, const FSEECarState& State)
 {
-    if (CarIndex < 0)
-    {
-        return;
-    }
+	if (CarIndex < 0)
+	{
+		return;
+	}
 
-    RuntimeCarStates.Add(CarIndex, State);
+	RuntimeCarStates.Add(CarIndex, State);
 }
 
 bool USEESaveGameSubsystem::GetCarState(int32 CarIndex, FSEECarState& OutState) const
 {
-    if (const FSEECarState* Found = RuntimeCarStates.Find(CarIndex))
-    {
-        OutState = *Found;
-        return true;
-    }
+	if (const FSEECarState* Found = RuntimeCarStates.Find(CarIndex))
+	{
+		OutState = *Found;
+		return true;
+	}
 
-    return false;
+	return false;
+}
+
+bool USEESaveGameSubsystem::DoesSaveGameExist() const
+{
+	return UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex);
+}
+
+APawn* USEESaveGameSubsystem::GetPlayerPawn() const
+{
+	UGameInstance* GI = GetGameInstance();
+	UWorld* World = GI ? GI->GetWorld() : nullptr;
+	APlayerController* PC = World ? World->GetFirstPlayerController() : nullptr;
+	return PC ? PC->GetPawn() : nullptr;
 }
 
 bool USEESaveGameSubsystem::WriteToSlot()
 {
-    USEESaveGameData* SaveObj = Cast<USEESaveGameData>(
-        UGameplayStatics::CreateSaveGameObject(USEESaveGameData::StaticClass()));
+	USEESaveGameData* SaveObj = Cast<USEESaveGameData>(
+		UGameplayStatics::CreateSaveGameObject(USEESaveGameData::StaticClass()));
 
-    if (!SaveObj)
-    {
-        return false;
-    }
+	if (!SaveObj)
+	{
+		return false;
+	}
 
-    SaveObj->CarStates = RuntimeCarStates;
+	SaveObj->CarStates = RuntimeCarStates;
 
-    // Persist Ledger data
-    USEELedgerSubsystem* Ledger = GetGameInstance()->GetSubsystem<USEELedgerSubsystem>();
-    if (Ledger)
-    {
-        SaveObj->LedgerScores = Ledger->GetScoresForSave();
-        SaveObj->GlobalFlags = Ledger->GetGlobalFlagsForSave();
-        SaveObj->GlobalIntFlags = Ledger->GetGlobalIntFlagsForSave();
-        SaveObj->ChoiceHistory = Ledger->GetHistoryForSave();
-    }
+	// --- Ledger (choices / flags) ---
+	if (USEELedgerSubsystem* Ledger = GetGameInstance()->GetSubsystem<USEELedgerSubsystem>())
+	{
+		SaveObj->LedgerScores = Ledger->GetScoresForSave();
+		SaveObj->GlobalFlags = Ledger->GetGlobalFlagsForSave();
+		SaveObj->GlobalIntFlags = Ledger->GetGlobalIntFlagsForSave();
+		SaveObj->ChoiceHistory = Ledger->GetHistoryForSave();
+	}
 
-    return UGameplayStatics::SaveGameToSlot(SaveObj, SaveSlotName, UserIndex);
+	// --- Quests ---
+	if (USEEQuestManager* Quests = GetGameInstance()->GetSubsystem<USEEQuestManager>())
+	{
+		SaveObj->QuestStates = Quests->CaptureQuestSaveState();
+	}
+
+	// --- Factions ---
+	if (USEEFactionManager* Factions = GetGameInstance()->GetSubsystem<USEEFactionManager>())
+	{
+		SaveObj->FactionState = Factions->GetSaveState();
+	}
+
+	// --- Player pawn slice (transform / health / stamina / inventory / armor / stats) ---
+	SaveObj->bHasPlayerState = CapturePlayerState(SaveObj);
+
+	return UGameplayStatics::SaveGameToSlot(SaveObj, SaveSlotName, UserIndex);
+}
+
+bool USEESaveGameSubsystem::CapturePlayerState(USEESaveGameData* SaveObj)
+{
+	APawn* Pawn = GetPlayerPawn();
+	if (!Pawn || !SaveObj)
+	{
+		return false;
+	}
+
+	SaveObj->PlayerTransform = Pawn->GetActorTransform();
+
+	// Health (component lookup is null-safe per slice).
+	if (USEEHealthComponent* Health = Pawn->FindComponentByClass<USEEHealthComponent>())
+	{
+		SaveObj->PlayerHealth = Health->GetCurrentHealth();
+		SaveObj->PlayerMaxHealth = Health->GetMaxHealth();
+	}
+
+	// Stamina lives on the character.
+	if (ASEECharacter* Character = Cast<ASEECharacter>(Pawn))
+	{
+		SaveObj->PlayerStamina = Character->GetStamina();
+		SaveObj->PlayerMaxStamina = Character->GetMaxStamina();
+	}
+
+	// Stats (XP / level).
+	if (USEEStatsComponent* Stats = Pawn->FindComponentByClass<USEEStatsComponent>())
+	{
+		SaveObj->PlayerXP = Stats->GetCurrentXP();
+		SaveObj->PlayerLevel = Stats->GetLevel();
+	}
+
+	// Inventory.
+	if (USEEInventoryComponent* Inventory = Pawn->FindComponentByClass<USEEInventoryComponent>())
+	{
+		SaveObj->Inventory = Inventory->GetSaveState();
+	}
+
+	// Equipped armor.
+	if (UArmorComponent* Armor = Pawn->FindComponentByClass<UArmorComponent>())
+	{
+		SaveObj->EquippedArmor = Armor->GetSaveState();
+	}
+
+	return true;
 }
 
 bool USEESaveGameSubsystem::LoadFromSlot()
 {
-    if (!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
-    {
-        return false;
-    }
+	if (!UGameplayStatics::DoesSaveGameExist(SaveSlotName, UserIndex))
+	{
+		return false;
+	}
 
-    USEESaveGameData* SaveObj = Cast<USEESaveGameData>(
-        UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
+	USEESaveGameData* SaveObj = Cast<USEESaveGameData>(
+		UGameplayStatics::LoadGameFromSlot(SaveSlotName, UserIndex));
 
-    if (!SaveObj)
-    {
-        return false;
-    }
+	if (!SaveObj)
+	{
+		return false;
+	}
 
-    RuntimeCarStates = SaveObj->CarStates;
+	RuntimeCarStates = SaveObj->CarStates;
 
-    // Restore Ledger data
-    USEELedgerSubsystem* Ledger = GetGameInstance()->GetSubsystem<USEELedgerSubsystem>();
-    if (Ledger)
-    {
-        Ledger->LoadScoresFromSave(SaveObj->LedgerScores);
-        Ledger->LoadGlobalFlagsFromSave(SaveObj->GlobalFlags);
-        Ledger->LoadGlobalIntFlagsFromSave(SaveObj->GlobalIntFlags);
-        Ledger->LoadHistoryFromSave(SaveObj->ChoiceHistory);
-    }
+	// --- Ledger ---
+	if (USEELedgerSubsystem* Ledger = GetGameInstance()->GetSubsystem<USEELedgerSubsystem>())
+	{
+		Ledger->LoadScoresFromSave(SaveObj->LedgerScores);
+		Ledger->LoadGlobalFlagsFromSave(SaveObj->GlobalFlags);
+		Ledger->LoadGlobalIntFlagsFromSave(SaveObj->GlobalIntFlags);
+		Ledger->LoadHistoryFromSave(SaveObj->ChoiceHistory);
+	}
 
-    return true;
+	// --- Quests ---
+	if (USEEQuestManager* Quests = GetGameInstance()->GetSubsystem<USEEQuestManager>())
+	{
+		Quests->RestoreQuestSaveState(SaveObj->QuestStates);
+	}
+
+	// --- Factions ---
+	if (USEEFactionManager* Factions = GetGameInstance()->GetSubsystem<USEEFactionManager>())
+	{
+		Factions->SetSaveState(SaveObj->FactionState);
+	}
+
+	// --- Player slice: stash as pending; the pawn may not exist yet (main-menu load). ---
+	if (SaveObj->bHasPlayerState)
+	{
+		bHasPendingPlayerState = true;
+		PendingTransform = SaveObj->PlayerTransform;
+		PendingHealth = SaveObj->PlayerHealth;
+		PendingMaxHealth = SaveObj->PlayerMaxHealth;
+		PendingStamina = SaveObj->PlayerStamina;
+		PendingXP = SaveObj->PlayerXP;
+		PendingInventory = SaveObj->Inventory;
+		PendingArmor = SaveObj->EquippedArmor;
+
+		// Try immediately (in-level load), otherwise poll until the pawn spawns.
+		if (APawn* Pawn = GetPlayerPawn())
+		{
+			ApplyPendingPlayerStateToPawn(Pawn);
+		}
+		else
+		{
+			StartPendingRestorePoll();
+		}
+	}
+
+	return true;
+}
+
+void USEESaveGameSubsystem::StartPendingRestorePoll()
+{
+	UGameInstance* GI = GetGameInstance();
+	UWorld* World = GI ? GI->GetWorld() : nullptr;
+	if (!World)
+	{
+		return; // no world yet; the in-level LoadFromSlot path / BeginPlay hook still covers it
+	}
+
+	PendingRestorePolls = 0;
+	World->GetTimerManager().SetTimer(
+		PendingRestoreTimer, this, &USEESaveGameSubsystem::PollForPlayerPawn,
+		GPendingPollInterval, /*bLoop*/ true);
+}
+
+void USEESaveGameSubsystem::PollForPlayerPawn()
+{
+	++PendingRestorePolls;
+
+	if (!bHasPendingPlayerState)
+	{
+		// Already applied (e.g. via an external BeginPlay hook) — stop polling.
+		if (UWorld* World = GetGameInstance() ? GetGameInstance()->GetWorld() : nullptr)
+		{
+			World->GetTimerManager().ClearTimer(PendingRestoreTimer);
+		}
+		return;
+	}
+
+	if (APawn* Pawn = GetPlayerPawn())
+	{
+		ApplyPendingPlayerStateToPawn(Pawn); // clears the pending flag + timer
+		return;
+	}
+
+	if (PendingRestorePolls >= GPendingPollMaxAttempts)
+	{
+		if (UWorld* World = GetGameInstance() ? GetGameInstance()->GetWorld() : nullptr)
+		{
+			World->GetTimerManager().ClearTimer(PendingRestoreTimer);
+		}
+	}
+}
+
+void USEESaveGameSubsystem::ApplyPendingPlayerStateToPawn(APawn* Pawn)
+{
+	if (!bHasPendingPlayerState || !Pawn)
+	{
+		return;
+	}
+
+	// Transform.
+	Pawn->SetActorTransform(PendingTransform, /*bSweep*/ false, nullptr, ETeleportType::TeleportPhysics);
+
+	// Inventory.
+	if (USEEInventoryComponent* Inventory = Pawn->FindComponentByClass<USEEInventoryComponent>())
+	{
+		Inventory->SetSaveState(PendingInventory);
+	}
+
+	// Equipped armor.
+	if (UArmorComponent* Armor = Pawn->FindComponentByClass<UArmorComponent>())
+	{
+		Armor->SetSaveState(PendingArmor);
+	}
+
+	// Stats: only XP/level are persisted. No public setter exists, so re-derive
+	// XP by adding the saved total onto a fresh component (level 1 / 0 XP at
+	// spawn). AddXP drives level-ups internally so level falls out correctly.
+	if (USEEStatsComponent* Stats = Pawn->FindComponentByClass<USEEStatsComponent>())
+	{
+		const int32 XPDelta = PendingXP - Stats->GetCurrentXP();
+		if (XPDelta > 0)
+		{
+			Stats->AddXP(XPDelta);
+		}
+	}
+
+	// Health: the component has no direct setter. Heal up to the saved value;
+	// if the saved value is below the spawn health, knock it down with a
+	// non-typed (Environmental = no armor mitigation) damage tick. Guarded so a
+	// restore never drops the player to a lethal/zero state on load.
+	if (USEEHealthComponent* Health = Pawn->FindComponentByClass<USEEHealthComponent>())
+	{
+		if (PendingHealth > 0.0f)
+		{
+			const float Current = Health->GetCurrentHealth();
+			if (PendingHealth > Current)
+			{
+				Health->Heal(PendingHealth - Current);
+			}
+			else if (PendingHealth < Current)
+			{
+				// Leave at least 1 HP to avoid triggering death on load.
+				const float SafeTarget = FMath::Max(PendingHealth, 1.0f);
+				const float Reduce = Current - SafeTarget;
+				if (Reduce > 0.0f)
+				{
+					Health->TakeDamage(Reduce, ESEEDamageType::Environmental, nullptr);
+				}
+			}
+		}
+	}
+
+	// Stamina: ASEECharacter exposes ConsumeStamina (drain) but no restore. The
+	// pawn spawns at full stamina, so drain down to the saved value.
+	if (ASEECharacter* Character = Cast<ASEECharacter>(Pawn))
+	{
+		const float CurrentStamina = Character->GetStamina();
+		if (PendingStamina < CurrentStamina)
+		{
+			Character->ConsumeStamina(CurrentStamina - PendingStamina);
+		}
+	}
+
+	// Consume the pending blob and stop polling.
+	bHasPendingPlayerState = false;
+	PendingInventory.Reset();
+	PendingArmor.Reset();
+
+	if (UGameInstance* GI = GetGameInstance())
+	{
+		if (UWorld* World = GI->GetWorld())
+		{
+			World->GetTimerManager().ClearTimer(PendingRestoreTimer);
+		}
+	}
 }

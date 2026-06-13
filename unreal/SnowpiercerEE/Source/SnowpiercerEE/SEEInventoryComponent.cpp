@@ -303,6 +303,54 @@ bool USEEInventoryComponent::GetItemData(FName ItemID, FSEEItemData& OutData) co
 	return false;
 }
 
+TArray<FSEEItemSaveEntry> USEEInventoryComponent::GetSaveState() const
+{
+	TArray<FSEEItemSaveEntry> Out;
+	for (const FSEEInventorySlot& Slot : Slots)
+	{
+		if (!Slot.IsEmpty())
+		{
+			FSEEItemSaveEntry& Entry = Out.AddDefaulted_GetRef();
+			Entry.ItemID = Slot.ItemID;
+			Entry.Count = Slot.Quantity;
+			Entry.Durability = 0.0f; // slots don't track durability today
+		}
+	}
+	return Out;
+}
+
+void USEEInventoryComponent::SetSaveState(const TArray<FSEEItemSaveEntry>& Entries)
+{
+	EnsureSlots();
+
+	// Clear current contents (keep the array sized so the UI's slot grid is stable).
+	for (FSEEInventorySlot& Slot : Slots)
+	{
+		Slot.ItemID = NAME_None;
+		Slot.Quantity = 0;
+	}
+
+	// Restore preserving slot order; grow the array if a save carries more
+	// stacks than the default MaxSlots (e.g. capacity changed between versions).
+	int32 Index = 0;
+	for (const FSEEItemSaveEntry& Entry : Entries)
+	{
+		if (Entry.ItemID.IsNone() || Entry.Count <= 0)
+		{
+			continue;
+		}
+		if (Index >= Slots.Num())
+		{
+			Slots.SetNum(Index + 1);
+		}
+		Slots[Index].ItemID = Entry.ItemID;
+		Slots[Index].Quantity = Entry.Count;
+		++Index;
+	}
+
+	OnInventoryChanged.Broadcast();
+}
+
 int32 USEEInventoryComponent::FindSlotWithItem(FName ItemID) const
 {
 	for (int32 i = 0; i < Slots.Num(); i++)

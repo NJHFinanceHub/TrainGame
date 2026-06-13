@@ -23,6 +23,8 @@ struct FSlateBrush;
  */
 
 DECLARE_DELEGATE(FOnMenuAction);
+/** Join action carries the entered host IP/address. */
+DECLARE_DELEGATE_OneParam(FOnMenuJoinAction, const FString& /*Address*/);
 
 class SSEEMainMenu : public SCompoundWidget
 {
@@ -36,6 +38,10 @@ public:
 		SLATE_ARGUMENT(bool, bShowCredits)
 		SLATE_EVENT(FOnMenuAction, OnNewGame)
 		SLATE_EVENT(FOnMenuAction, OnContinue)
+		/** Co-op: open Zone1_Tail as a listen server. */
+		SLATE_EVENT(FOnMenuAction, OnHostGame)
+		/** Co-op: connect to a host by the address in the IP box. */
+		SLATE_EVENT(FOnMenuJoinAction, OnJoinGame)
 		SLATE_EVENT(FOnMenuAction, OnSettings)
 		SLATE_EVENT(FOnMenuAction, OnCredits)
 		SLATE_EVENT(FOnMenuAction, OnQuit)
@@ -63,9 +69,16 @@ private:
 	bool bShowCredits = true;
 	FOnMenuAction OnNewGame;
 	FOnMenuAction OnContinue;
+	FOnMenuAction OnHostGame;
+	FOnMenuJoinAction OnJoinGame;
 	FOnMenuAction OnSettings;
 	FOnMenuAction OnCredits;
 	FOnMenuAction OnQuit;
+
+	/** Current text in the JOIN ip box (defaults to 127.0.0.1 for local testing). */
+	FString JoinAddress = TEXT("127.0.0.1");
+	void HandleJoinAddressChanged(const FText& NewText);
+	void HandleJoinClicked();
 
 	/** Owns the backdrop texture wash brush for the widget's lifetime. */
 	TSharedPtr<FSlateBrush> BackdropTextureBrush;

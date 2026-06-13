@@ -24,11 +24,14 @@ UENUM(BlueprintType)
 enum class ESEEWeaponShape : uint8
 {
 	Pipe		UMETA(DisplayName = "Pipe"),		// thin cylinder
-	Shiv		UMETA(DisplayName = "Shiv"),		// small wedge cube
+	Shiv		UMETA(DisplayName = "Shiv"),		// short grip + small blade wedge
 	Wrench		UMETA(DisplayName = "Wrench"),		// cylinder + box head
-	Blade		UMETA(DisplayName = "Blade"),		// long flat cube (machete)
-	Bat			UMETA(DisplayName = "Bat"),			// thick cylinder
-	Baton		UMETA(DisplayName = "Baton")		// short slim cylinder
+	Blade		UMETA(DisplayName = "Blade"),		// short grip + long flat blade (machete)
+	Bat			UMETA(DisplayName = "Bat"),			// thick tapered club
+	Baton		UMETA(DisplayName = "Baton"),		// short slim cylinder
+	Axe			UMETA(DisplayName = "Axe"),			// long haft + box axe head (fire axe)
+	Rebar		UMETA(DisplayName = "Rebar"),		// thin ribbed bar, sharpened end
+	ChainWhip	UMETA(DisplayName = "ChainWhip")	// short grip + thin trailing length
 };
 
 UCLASS()
@@ -134,6 +137,14 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon|Visual")
 	FLinearColor MetalTint = FLinearColor(0.06f, 0.06f, 0.07f, 1.0f);
 
+	/** Darker tint for grips/handles/hafts (wood, tape, rubber) so blades read as metal. */
+	UPROPERTY(EditAnywhere, Category = "Weapon|Visual")
+	FLinearColor GripTint = FLinearColor(0.10f, 0.07f, 0.04f, 1.0f);
+
+	/** Brighter steel tint for sharpened edges (shiv/machete/axe/rebar). */
+	UPROPERTY(EditAnywhere, Category = "Weapon|Visual")
+	FLinearColor BladeTint = FLinearColor(0.55f, 0.57f, 0.60f, 1.0f);
+
 private:
 	// Engine basic shape assets resolved in the constructor (no project asset deps)
 	UPROPERTY()
@@ -145,5 +156,5 @@ private:
 	UPROPERTY()
 	TObjectPtr<UMaterialInterface> BasicShapeMaterial;
 
-	void ApplyMetalTint(UStaticMeshComponent* MeshComp);
+	void ApplyTint(UStaticMeshComponent* MeshComp, const FLinearColor& Color);
 };

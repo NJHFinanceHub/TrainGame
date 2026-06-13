@@ -5,6 +5,7 @@
 #include "SEEPlayerCharacter.h"
 #include "SEEHUD.h"
 #include "SEECarStreamingSubsystem.h"
+#include "Net/SEEGameState.h"
 #include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -14,8 +15,45 @@ ASnowpiercerEEGameMode::ASnowpiercerEEGameMode()
 	DefaultPawnClass = ASEEPlayerCharacter::StaticClass();
 	HUDClass = ASEEHUD::StaticClass();
 
+	// Co-op shared state replicates through our custom GameState. AGameModeBase
+	// itself lives only on the server (never replicates), which is fine — clients
+	// read shared session state from the GameState instead.
+	GameStateClass = ASEEGameState::StaticClass();
+
 	CurrentDifficulty = EDifficultyTier::Survivor;
 	InitDifficultyModifiers();
+}
+
+void ASnowpiercerEEGameMode::PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage)
+{
+	Super::PreLogin(Options, Address, UniqueId, ErrorMessage);
+
+	// Reject the join early (before a controller/pawn is created) when full.
+	// GetNumPlayers() counts everyone already admitted, including the host.
+	if (GetNumPlayers() >= ASEEGameState::MaxCoopPlayers)
+	{
+		ErrorMessage = TEXT("Session is full (max 4 players).");
+	}
+}
+
+void ASnowpiercerEEGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	if (ASEEGameState* SEEState = GetGameState<ASEEGameState>())
+	{
+		SEEState->RefreshConnectedPlayerCount();
+	}
+}
+
+void ASnowpiercerEEGameMode::Logout(AController* Exiting)
+{
+	Super::Logout(Exiting);
+
+	if (ASEEGameState* SEEState = GetGameState<ASEEGameState>())
+	{
+		SEEState->RefreshConnectedPlayerCount();
+	}
 }
 
 void ASnowpiercerEEGameMode::BeginPlay()

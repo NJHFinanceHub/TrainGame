@@ -28,6 +28,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	UFUNCTION(BlueprintCallable, Category = "Movement")
 	void MoveForward(float Value);
@@ -175,17 +176,17 @@ protected:
 	float FootstepMinSpeed = 60.0f;
 
 	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
-	float FootstepWalkVolume = 0.5f;
+	float FootstepWalkVolume = 0.22f;
 
 	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
-	float FootstepSprintVolume = 0.7f;
+	float FootstepSprintVolume = 0.32f;
 
 	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
-	float FootstepCrouchVolume = 0.25f;
+	float FootstepCrouchVolume = 0.12f;
 
 	/** Volume of the footstep played on landing */
 	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
-	float FootstepLandVolume = 0.9f;
+	float FootstepLandVolume = 0.4f;
 
 	/** Random pitch range applied per footstep (X = min, Y = max) */
 	UPROPERTY(EditAnywhere, Category = "Audio|Footsteps")
@@ -258,6 +259,16 @@ protected:
 	/** Train-motion feel: camera sway + looping rail clack ambient (player-controlled pawns only) */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USEETrainFeelComponent> TrainFeelComponent;
+
+	/** Currently-equipped quickslot weapon ItemID, replicated so remote pawns show the
+	    right weapon. NAME_None = unarmed. Set on the server by the equip flow. */
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeaponId, VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+	FName EquippedWeaponId;
+
+	/** Client hook: spawn/attach (or remove) the visible weapon actor to match the
+	    replicated EquippedWeaponId on remote/simulated pawns. */
+	UFUNCTION()
+	void OnRep_EquippedWeaponId();
 
 private:
 	UPROPERTY()

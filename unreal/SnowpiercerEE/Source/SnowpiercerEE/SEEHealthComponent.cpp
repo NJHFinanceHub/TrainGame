@@ -1,14 +1,54 @@
 #include "SEEHealthComponent.h"
+#include "Net/UnrealNetwork.h"
 
 USEEHealthComponent::USEEHealthComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 	CurrentHealth = MaxHealth;
+
+	// Health is server-authoritative and replicated to all clients.
+	SetIsReplicatedByDefault(true);
+}
+
+void USEEHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(USEEHealthComponent, CurrentHealth);
+	DOREPLIFETIME(USEEHealthComponent, MaxHealth);
+	DOREPLIFETIME(USEEHealthComponent, bIsDead);
+	DOREPLIFETIME(USEEHealthComponent, bIsDowned);
+}
+
+void USEEHealthComponent::OnRep_CurrentHealth()
+{
+	// Drive client-side feedback from replicated health changes. A drop = damage.
+	const float Delta = CurrentHealth - LastReplicatedHealth;
+	if (Delta < 0.0f)
+	{
+		// Instigator/damage-type aren't replicated through this path; clients get a
+		// generic feedback hit (HUD flash, FOV dip handlers key off this). Damage value
+		// is the magnitude of the drop.
+		OnDamageTaken.Broadcast(-Delta, ESEEDamageType::Blunt, nullptr);
+	}
+	LastReplicatedHealth = CurrentHealth;
+	OnHealthChanged.Broadcast(GetHealthPercent());
+}
+
+void USEEHealthComponent::OnRep_IsDead()
+{
+	if (bIsDead)
+	{
+		OnDeath.Broadcast();
+	}
 }
 
 void USEEHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Damage-over-time and the downed timer are authoritative; clients get the
+	// resulting health/flag changes via replication.
+	if (!GetOwner() || !GetOwner()->HasAuthority()) return;
 
 	if (bIsDead) return;
 
@@ -40,6 +80,12 @@ void USEEHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 float USEEHealthComponent::TakeDamage(float BaseDamage, ESEEDamageType DamageType, AActor* Instigator)
 {
+	// Server-authoritative: only authority mutates health. Clients receive the
+	// result via CurrentHealth/bIsDead replication + OnReps. Combat routes its
+	// hits through a Server RPC, so this naturally runs on the server (and on the
+	// listen-server host / standalone, which are authority).
+	if (GetOwner() && !GetOwner()->HasAuthority()) return 0.0f;
+
 	if (bIsDead || bIsDowned) return 0.0f;
 
 	float ArmorReduction = GetArmorReduction(DamageType);
@@ -91,6 +137,7 @@ float USEEHealthComponent::TakeDamage(float BaseDamage, ESEEDamageType DamageTyp
 
 void USEEHealthComponent::Heal(float Amount)
 {
+	if (GetOwner() && !GetOwner()->HasAuthority()) return;
 	if (bIsDead || bIsDowned) return;
 	CurrentHealth = FMath::Min(MaxHealth, CurrentHealth + Amount);
 	OnHealthChanged.Broadcast(GetHealthPercent());
@@ -98,6 +145,7 @@ void USEEHealthComponent::Heal(float Amount)
 
 void USEEHealthComponent::Revive(float HealthPercent)
 {
+	if (GetOwner() && !GetOwner()->HasAuthority()) return;
 	if (!bIsDowned || bIsDead) return;
 	bIsDowned = false;
 	DownedTimer = 0.0f;

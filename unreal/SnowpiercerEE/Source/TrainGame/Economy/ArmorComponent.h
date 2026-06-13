@@ -35,32 +35,34 @@ struct FEquippedArmor
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// SaveGame-tagged so USEESaveGameData can persist a TArray<FEquippedArmor>
+	// (the SaveGame archive only serializes fields carrying this flag).
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	FName ArmorItemID;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	EArmorSlot Slot = EArmorSlot::Torso;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	float DamageReduction = 0.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	float ColdResistance = 0.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	EArmorNoiseLevel NoiseLevel = EArmorNoiseLevel::Normal;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	float Weight = 0.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	float CurrentDurability = 100.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	float MaxDurability = 100.0f;
 
 	/** Shield block bonus (only for Shield slot) */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, SaveGame)
 	float BlockBonus = 0.0f;
 
 	bool IsValid() const { return !ArmorItemID.IsNone(); }
@@ -165,6 +167,16 @@ public:
 	// directly from C++ (the inventory screen), so plain C++ is all it needs.
 	bool EquipFromItem(FName ItemID, EArmorSlot Slot, const FSEEItemData& Data,
 	                   FEquippedArmor& OutPrevious);
+
+	// --- Save / restore (additive; used by USEESaveGameSubsystem) ---
+
+	/** Snapshot every occupied slot as a full runtime piece (preserves durability/DR/noise/weight). */
+	UFUNCTION(BlueprintPure, Category = "Armor|Save")
+	TArray<FEquippedArmor> GetSaveState() const;
+
+	/** Clear all slots and re-equip from a saved snapshot. */
+	UFUNCTION(BlueprintCallable, Category = "Armor|Save")
+	void SetSaveState(const TArray<FEquippedArmor>& Pieces);
 
 	// --- Delegates ---
 

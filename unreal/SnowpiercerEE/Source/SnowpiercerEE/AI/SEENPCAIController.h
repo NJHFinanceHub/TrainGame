@@ -10,6 +10,7 @@
 class ACharacter;
 class APawn;
 class USEEAnimDriverComponent;
+class ASEEWeaponBase;
 
 /** High-level brain state for corridor NPCs. */
 UENUM(BlueprintType)
@@ -173,6 +174,25 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Dialogue")
 	FName DialogueEntryNode;
 
+	// --- Held weapon (visual only — attacks deal damage through the controller) ---
+
+	/** Force this NPC to carry a visible weapon even if it is friendly. The revolt
+	  * mission flips this on for armed Tailies; default tailies/civilians stay
+	  * unarmed. Hostiles are always armed regardless of this flag. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Weapon")
+	bool bForceArmed = false;
+
+	/** Inventory ItemID of the held weapon. NAME_None lets the brain pick a default
+	  * by role (jackboot baton / boss reinforced bat). Set explicitly (e.g. a Tail
+	  * shiv/pipe in the revolt) to override the default. Must map to a weapon shape
+	  * in ASEEWeaponBase::SpawnWeaponForItem or nothing is held. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Weapon")
+	FName HeldWeaponOverride;
+
+	/** Treat this hostile as the boss (heavier default weapon). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "NPCBrain|Weapon")
+	bool bIsBoss = false;
+
 	// --- Queries / dialogue hooks ---
 
 	UFUNCTION(BlueprintPure, Category = "NPCBrain")
@@ -288,4 +308,20 @@ private:
 
 	/** Attach + init the anim driver on the possessed pawn (idempotent). */
 	void EnsurePawnAnimDriver();
+
+	/** Visible weapon held in the pawn's hand (hostiles, or armed friendlies during
+	  * the revolt). Purely cosmetic — combat damage is routed by the controller. */
+	UPROPERTY()
+	TObjectPtr<ASEEWeaponBase> HeldWeapon;
+
+	/** Spawn + attach the held weapon for armed NPCs (idempotent; no-op if the NPC
+	  * should be unarmed). Picks a default ItemID by role unless overridden. */
+	void EnsureHeldWeapon();
+
+	/** Destroy the held weapon and clear the reference (death / unpossess). */
+	void DestroyHeldWeapon();
+
+	/** Probe the pawn's skeletal mesh for a known hand socket; falls back to the
+	  * mesh root with a forward/right offset so the weapon still reads as held. */
+	void AttachWeaponToHand(ASEEWeaponBase* Weapon);
 };

@@ -16,6 +16,9 @@ USEECombatComponent::USEECombatComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
+	// Replicated so its Server RPCs (ServerLightAttack/ServerHeavyAttack) route.
+	SetIsReplicatedByDefault(true);
+
 	// 3-hit light combo with escalating damage
 	ComboDamageMultipliers = { 1.0f, 1.1f, 1.3f };
 }
@@ -103,6 +106,55 @@ void USEECombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 void USEECombatComponent::LightAttack()
 {
+	AActor* Owner = GetOwner();
+	const bool bAuthority = !Owner || Owner->HasAuthority();
+
+	if (bAuthority)
+	{
+		// Host / standalone: authority runs the real swing directly (single-player path intact).
+		ExecuteLightAttack();
+	}
+	else
+	{
+		// Owning client: immediate local cosmetic feedback, then ask the server to
+		// run the authoritative sweep + damage.
+		PlayLocalSwingFeedback();
+		ServerLightAttack();
+	}
+}
+
+void USEECombatComponent::HeavyAttack()
+{
+	AActor* Owner = GetOwner();
+	const bool bAuthority = !Owner || Owner->HasAuthority();
+
+	if (bAuthority)
+	{
+		ExecuteHeavyAttack();
+	}
+	else
+	{
+		PlayLocalSwingFeedback();
+		ServerHeavyAttack();
+	}
+}
+
+// --- Server RPCs (authoritative attack execution) ---
+
+bool USEECombatComponent::ServerLightAttack_Validate() { return true; }
+void USEECombatComponent::ServerLightAttack_Implementation()
+{
+	ExecuteLightAttack();
+}
+
+bool USEECombatComponent::ServerHeavyAttack_Validate() { return true; }
+void USEECombatComponent::ServerHeavyAttack_Implementation()
+{
+	ExecuteHeavyAttack();
+}
+
+void USEECombatComponent::ExecuteLightAttack()
+{
 	if (!CanAttack()) return;
 	if (EquippedWeapon && EquippedWeapon->IsBroken()) return;
 
@@ -125,7 +177,7 @@ void USEECombatComponent::LightAttack()
 	BeginAttack(false);
 }
 
-void USEECombatComponent::HeavyAttack()
+void USEECombatComponent::ExecuteHeavyAttack()
 {
 	if (!CanAttack()) return;
 	if (EquippedWeapon && EquippedWeapon->IsBroken()) return;
@@ -142,6 +194,18 @@ void USEECombatComponent::HeavyAttack()
 	ComboTimer = 0.0f;
 
 	BeginAttack(true);
+}
+
+void USEECombatComponent::PlayLocalSwingFeedback()
+{
+	// Immediate swing whoosh on the owning client (damage stays server-side).
+	EnsureFoleyLoaded();
+	AActor* Owner = GetOwner();
+	UWorld* World = GetWorld();
+	if (World && SwingSound && Owner)
+	{
+		UGameplayStatics::PlaySoundAtLocation(World, SwingSound, Owner->GetActorLocation(), 0.45f);
+	}
 }
 
 void USEECombatComponent::BeginAttack(bool bHeavy)

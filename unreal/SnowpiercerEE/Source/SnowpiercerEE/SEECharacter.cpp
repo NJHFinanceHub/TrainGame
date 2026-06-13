@@ -22,10 +22,21 @@
 #include "AI/SEENPCAIController.h"
 #include "UI/SEEUISubsystem.h"
 #include "Engine/GameInstance.h"
+#include "Net/UnrealNetwork.h"
 
 ASEECharacter::ASEECharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	// --- Networking ---
+	// ACharacter replicates its movement through the CharacterMovementComponent
+	// once the actor and movement are flagged to replicate. Owning-client camera/
+	// FOV/footstep logic is guarded by IsLocallyControlled() so remote proxies
+	// animate purely from replicated movement (which the anim driver reads).
+	bReplicates = true;
+	SetReplicateMovement(true);
+	SetNetUpdateFrequency(30.0f);
+	SetMinNetUpdateFrequency(10.0f);
 
 	GetCapsuleComponent()->InitCapsuleSize(35.0f, 88.0f);
 
@@ -94,12 +105,33 @@ void ASEECharacter::BeginPlay()
 	CurrentStamina = MaxStamina;
 }
 
+void ASEECharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ASEECharacter, EquippedWeaponId);
+}
+
+void ASEECharacter::OnRep_EquippedWeaponId()
+{
+	// Cosmetic-only on remote/simulated proxies: the owning client and the server
+	// already spawned the weapon through the quickslot path. Base ASEECharacter has
+	// no remote-equip visuals wired up this iteration, so this is a hook point —
+	// remote weapon-mesh replication is deferred to the inventory/equipment pass.
+}
+
 void ASEECharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Camera/FOV is purely cosmetic for the owning player's view — remote proxies
+	// (other players' pawns on this machine) must not run it. Stamina/footsteps are
+	// safe everywhere: stamina only drains under sprint/run flags the owner sets,
+	// and footsteps are 3D positional cues everyone should hear.
 	UpdateStamina(DeltaTime);
-	UpdateCameraFOV(DeltaTime);
+	if (IsLocallyControlled())
+	{
+		UpdateCameraFOV(DeltaTime);
+	}
 	UpdateFootsteps(DeltaTime);
 }
 
@@ -667,6 +699,13 @@ void ASEECharacter::EquipWeaponByItemID(FName ItemID)
 	AttachWeaponActorToHand(NewWeapon);
 
 	QuickSlotWeapon = NewWeapon;
+
+	// Publish the equipped weapon to remotes (authority drives the replicated id).
+	if (HasAuthority())
+	{
+		EquippedWeaponId = ItemID;
+	}
+
 	UE_LOG(LogTemp, Log, TEXT("%s equipped '%s' (dmg %.0f, speed %.1f)"),
 		*GetName(), *ItemID.ToString(), NewWeapon->GetBaseDamage(), NewWeapon->GetAttackSpeed());
 }
@@ -686,6 +725,11 @@ void ASEECharacter::UnequipQuickSlotWeapon()
 	UE_LOG(LogTemp, Log, TEXT("%s unequipped '%s'"), *GetName(), *QuickSlotWeapon->GetSourceItemID().ToString());
 	QuickSlotWeapon->Destroy();
 	QuickSlotWeapon = nullptr;
+
+	if (HasAuthority())
+	{
+		EquippedWeaponId = NAME_None;
+	}
 }
 
 void ASEECharacter::AttachWeaponActorToHand(AActor* WeaponActor)

@@ -37,6 +37,17 @@ public:
 	    fall back to the C++ pawn when generated content is absent. */
 	virtual UClass* GetDefaultPawnClassForController_Implementation(AController* InController) override;
 
+	// --- Networking / co-op (iteration 1) ---
+
+	/** Refuse joins once the co-op cap (ASEEGameState::MaxCoopPlayers) is reached. */
+	virtual void PreLogin(const FString& Options, const FString& Address, const FUniqueNetIdRepl& UniqueId, FString& ErrorMessage) override;
+
+	/** Keep the replicated player count current as players connect. */
+	virtual void PostLogin(APlayerController* NewPlayer) override;
+
+	/** Keep the replicated player count current as players disconnect. */
+	virtual void Logout(AController* Exiting) override;
+
 	// --- Game Phase ---
 
 	UFUNCTION(BlueprintCallable, Category = "GameMode")

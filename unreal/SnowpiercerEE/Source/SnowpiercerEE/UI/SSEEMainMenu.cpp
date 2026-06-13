@@ -8,6 +8,7 @@
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Text/STextBlock.h"
+#include "Widgets/Input/SEditableTextBox.h"
 #include "Widgets/Images/SImage.h"
 
 void SSEEMainMenu::Construct(const FArguments& InArgs)
@@ -16,6 +17,8 @@ void SSEEMainMenu::Construct(const FArguments& InArgs)
 	bShowCredits = InArgs._bShowCredits;
 	OnNewGame = InArgs._OnNewGame;
 	OnContinue = InArgs._OnContinue;
+	OnHostGame = InArgs._OnHostGame;
+	OnJoinGame = InArgs._OnJoinGame;
 	OnSettings = InArgs._OnSettings;
 	OnCredits = InArgs._OnCredits;
 	OnQuit = InArgs._OnQuit;
@@ -248,6 +251,16 @@ FReply SSEEMainMenu::OnKeyDown(const FGeometry& MyGeometry, const FKeyEvent& InK
 	return FReply::Handled();
 }
 
+void SSEEMainMenu::HandleJoinAddressChanged(const FText& NewText)
+{
+	JoinAddress = NewText.ToString();
+}
+
+void SSEEMainMenu::HandleJoinClicked()
+{
+	OnJoinGame.ExecuteIfBound(JoinAddress);
+}
+
 TSharedRef<SWidget> SSEEMainMenu::MakeMenuButtons()
 {
 	constexpr float ButtonWidth = 340.0f;
@@ -269,6 +282,45 @@ TSharedRef<SWidget> SSEEMainMenu::MakeMenuButtons()
 			.bEnabled(bHasSaveGame)
 			.OnClicked(FSimpleDelegate::CreateLambda([this]() { OnContinue.ExecuteIfBound(); }))
 		]
+		// --- Co-op (iteration 1) ---
+		+ SVerticalBox::Slot().AutoHeight().Padding(0.0f, 0.0f, 0.0f, 10.0f)
+		[
+			SNew(SSEEMenuButton)
+			.Text(NSLOCTEXT("HUD", "HostGame", "HOST CO-OP"))
+			.Width(ButtonWidth).Height(ButtonHeight)
+			.OnClicked(FSimpleDelegate::CreateLambda([this]() { OnHostGame.ExecuteIfBound(); }))
+		]
+
+		// JOIN row: an IP box + a JOIN button (default 127.0.0.1 for local testing).
+		+ SVerticalBox::Slot().AutoHeight().Padding(0.0f, 0.0f, 0.0f, 10.0f)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+			.FillWidth(1.0f)
+			.VAlign(VAlign_Center)
+			.Padding(0.0f, 0.0f, 8.0f, 0.0f)
+			[
+				SNew(SBox)
+				.HeightOverride(ButtonHeight)
+				[
+					SNew(SEditableTextBox)
+					.Text(FText::FromString(JoinAddress))
+					.HintText(NSLOCTEXT("HUD", "JoinIPHint", "Host IP (e.g. 127.0.0.1)"))
+					.OnTextChanged(this, &SSEEMainMenu::HandleJoinAddressChanged)
+				]
+			]
+
+			+ SHorizontalBox::Slot()
+			.AutoWidth()
+			[
+				SNew(SSEEMenuButton)
+				.Text(NSLOCTEXT("HUD", "JoinGame", "JOIN"))
+				.Width(120.0f).Height(ButtonHeight)
+				.OnClicked(FSimpleDelegate::CreateSP(this, &SSEEMainMenu::HandleJoinClicked))
+			]
+		]
+
 		+ SVerticalBox::Slot().AutoHeight().Padding(0.0f, 0.0f, 0.0f, 10.0f)
 		[
 			SNew(SSEEMenuButton)

@@ -9,6 +9,7 @@
 #include "SnowpiercerEE/SEEFactionManager.h"
 #include "SnowpiercerEE/SEEJackbootCharacter.h"
 #include "SnowpiercerEE/SEECivilianCharacter.h"
+#include "SnowpiercerEE/SEEWeaponBase.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/World.h"
@@ -94,6 +95,9 @@ void ASEENPCAIController::OnUnPossess()
 	GetWorldTimerManager().ClearTimer(WanderTimerHandle);
 	GetWorldTimerManager().ClearTimer(AttackWindupTimerHandle);
 
+	// Don't leave a held weapon attached to a pawn we're letting go of.
+	DestroyHeldWeapon();
+
 	if (PawnHealth)
 	{
 		PawnHealth->OnDamageTaken.RemoveDynamic(this, &ASEENPCAIController::HandlePawnDamaged);
@@ -150,6 +154,10 @@ void ASEENPCAIController::ApplyConfiguration()
 	// Animate adopted plain-ACharacter NPCs: the placed BP_NPC_* pawns carry no
 	// driver, so we attach one and resolve their model's anim set on possess.
 	EnsurePawnAnimDriver();
+
+	// Put a visible weapon in the hands of armed NPCs (jackboots/boss always;
+	// friendlies only if the revolt flagged them via bForceArmed). Idempotent.
+	EnsureHeldWeapon();
 }
 
 void ASEENPCAIController::EnsurePawnAnimDriver()
@@ -169,6 +177,105 @@ void ASEENPCAIController::EnsurePawnAnimDriver()
 	PawnAnimDriver = Driver;
 	// Mesh is already assigned on the placed pawn — resolve + take it single-node now.
 	Driver->InitDriver();
+}
+
+// ---------------------------------------------------------------------------
+// Held weapon (visual only — damage is dealt by DeliverAttack, not by touch)
+// ---------------------------------------------------------------------------
+
+void ASEENPCAIController::EnsureHeldWeapon()
+{
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn) return;
+
+	// Who carries a weapon: every hostile (jackboots, boss), plus any friendly the
+	// revolt mission armed (bForceArmed). Default tailies/civilians/merchant hold
+	// nothing.
+	const bool bShouldBeArmed = bHostile || bForceArmed;
+	if (!bShouldBeArmed)
+	{
+		DestroyHeldWeapon(); // in case a previous config armed it, then disarmed
+		return;
+	}
+
+	// Pick the weapon ItemID: explicit override wins (Tail shiv/pipe in the revolt),
+	// otherwise default by role — the boss swings a heavier reinforced bat, regular
+	// jackboots carry the standard baton.
+	FName WeaponItem = HeldWeaponOverride;
+	if (WeaponItem.IsNone())
+	{
+		WeaponItem = bIsBoss ? FName(TEXT("Item_ReinforcedBat")) : FName(TEXT("Item_JackbootBaton"));
+	}
+
+	// Already holding the right weapon — nothing to do (re-config pass).
+	if (IsValid(HeldWeapon) && HeldWeapon->GetSourceItemID() == WeaponItem)
+	{
+		return;
+	}
+	DestroyHeldWeapon();
+
+	ASEEWeaponBase* Weapon = ASEEWeaponBase::SpawnWeaponForItem(GetWorld(), WeaponItem, ControlledPawn);
+	if (!Weapon)
+	{
+		// Unknown/unmapped ItemID — hold nothing rather than a default box.
+		return;
+	}
+
+	// Purely visual: the pawn's swings already deal damage through DeliverAttack,
+	// so the held mesh never collides or applies touch damage (constructor already
+	// sets NoCollision on the meshes; keep the actor from generating overlaps too).
+	Weapon->SetActorEnableCollision(false);
+
+	AttachWeaponToHand(Weapon);
+	HeldWeapon = Weapon;
+}
+
+void ASEENPCAIController::AttachWeaponToHand(ASEEWeaponBase* Weapon)
+{
+	if (!IsValid(Weapon)) return;
+
+	ACharacter* PawnChar = GetPawnCharacter();
+	USkeletalMeshComponent* Mesh = PawnChar ? PawnChar->GetMesh() : nullptr;
+	if (!Mesh)
+	{
+		return; // no mesh to hang it on; leave the weapon free-standing (rare)
+	}
+
+	const FAttachmentTransformRules Rules(EAttachmentRule::SnapToTarget, true);
+
+	// Probe common right-hand socket/bone names across rigs (Quaternius, UE
+	// mannequin, Mixamo). First match wins; otherwise fall back to the mesh root.
+	static const TCHAR* HandSockets[] = {
+		TEXT("hand_r"), TEXT("weapon_r"), TEXT("RightHand"),
+		TEXT("hand.R"), TEXT("mixamorig:RightHand"), TEXT("Hand_R"),
+		TEXT("R_Hand"), TEXT("RightHandIndex1")
+	};
+
+	for (const TCHAR* SocketName : HandSockets)
+	{
+		const FName Socket(SocketName);
+		if (Mesh->DoesSocketExist(Socket))
+		{
+			Weapon->AttachToComponent(Mesh, Rules, Socket);
+			Weapon->SetActorRelativeRotation(FRotator::ZeroRotator);
+			return;
+		}
+	}
+
+	// No known hand socket — attach to the mesh root and offset forward/right and
+	// up to roughly hand height so it still reads as carried.
+	Weapon->AttachToComponent(Mesh, Rules);
+	Weapon->SetActorRelativeLocation(FVector(20.0f, 18.0f, 110.0f));
+	Weapon->SetActorRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+}
+
+void ASEENPCAIController::DestroyHeldWeapon()
+{
+	if (IsValid(HeldWeapon))
+	{
+		HeldWeapon->Destroy();
+	}
+	HeldWeapon = nullptr;
 }
 
 void ASEENPCAIController::Tick(float DeltaTime)

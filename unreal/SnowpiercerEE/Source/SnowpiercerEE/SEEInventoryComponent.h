@@ -9,6 +9,27 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemAdded, FName, ItemID, int32,
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnItemRemoved, FName, ItemID, int32, Quantity);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnInventoryChanged);
 
+/**
+ * One serialized inventory stack for save games. Mirrors FSEEInventorySlot
+ * (ItemID + Count); Durability is reserved for item types that track it
+ * (0 == not tracked). Lives here so both the inventory and the save subsystem
+ * can share it without a dependency cycle.
+ */
+USTRUCT(BlueprintType)
+struct FSEEItemSaveEntry
+{
+	GENERATED_BODY()
+
+	UPROPERTY(SaveGame, EditAnywhere, BlueprintReadWrite)
+	FName ItemID;
+
+	UPROPERTY(SaveGame, EditAnywhere, BlueprintReadWrite)
+	int32 Count = 0;
+
+	UPROPERTY(SaveGame, EditAnywhere, BlueprintReadWrite)
+	float Durability = 0.0f;
+};
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class SNOWPIERCEREE_API USEEInventoryComponent : public UActorComponent
 {
@@ -60,6 +81,16 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Inventory")
 	bool GetItemData(FName ItemID, FSEEItemData& OutData) const;
+
+	// --- Save / restore (additive; used by USEESaveGameSubsystem) ---
+
+	/** Snapshot every non-empty slot into save entries (ItemID + Count). */
+	UFUNCTION(BlueprintPure, Category = "Inventory|Save")
+	TArray<FSEEItemSaveEntry> GetSaveState() const;
+
+	/** Replace the inventory contents from a saved snapshot. Resizes slots as needed and broadcasts a change. */
+	UFUNCTION(BlueprintCallable, Category = "Inventory|Save")
+	void SetSaveState(const TArray<FSEEItemSaveEntry>& Entries);
 
 	UPROPERTY(BlueprintAssignable, Category = "Inventory")
 	FOnItemAdded OnItemAdded;

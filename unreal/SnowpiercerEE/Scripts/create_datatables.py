@@ -493,6 +493,211 @@ ITEMS = [
         "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
         "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
     },
+
+    # =====================================================================
+    # EXPANDED ITEM SET — Fallout x Skyrim x Snowpiercer
+    # (consumables/food, medical, crafting junk, improvised weapons,
+    #  lore/quest/valuables). Snowpiercer in-world tone.
+    # =====================================================================
+
+    # --- Consumables / food ---
+    {
+        "RowName": "Item_ChikkinBlock", "ItemID": "Item_ChikkinBlock",
+        "DisplayName": "Chikkin Block", "Description": "First-class ration block, stamped with a cartoon hen. Tastes almost like the word on the label.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.3, "MaxStackSize": 15, "Value": 14,
+        "HealthRestore": 5.0, "HungerRestore": 40.0, "StaminaRestore": 8.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_ScavengedRations", "ItemID": "Item_ScavengedRations",
+        "DisplayName": "Scavenged Rations", "Description": "A wax-paper bundle pried from a dead bunk. Half-eaten, still food. Out here that's a feast.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.4, "MaxStackSize": 10, "Value": 6,
+        "HealthRestore": 0.0, "HungerRestore": 30.0, "StaminaRestore": 4.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_CleanWater", "ItemID": "Item_CleanWater",
+        "DisplayName": "Clean Water", "Description": "Filtered front-car water, clear as glass. Worth more than its weight in scrap back here.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.5, "MaxStackSize": 10, "Value": 18,
+        "HealthRestore": 5.0, "HungerRestore": 5.0, "StaminaRestore": 30.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_DirtyWater", "ItemID": "Item_DirtyWater",
+        "DisplayName": "Dirty Water", "Description": "Runoff caught in a tin. It wets your throat and turns your gut. A gamble you'll keep taking.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.5, "MaxStackSize": 10, "Value": 2,
+        "HealthRestore": -5.0, "HungerRestore": 2.0, "StaminaRestore": 18.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_StimShot", "ItemID": "Item_StimShot",
+        "DisplayName": "Stimulant Shot", "Description": "A jury-rigged adrenaline jab. Your heart slams, the cold forgets you — for a while.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.1, "MaxStackSize": 8, "Value": 30,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 60.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_HerbalPoultice", "ItemID": "Item_HerbalPoultice",
+        "DisplayName": "Herbal Poultice", "Description": "Mashed greenhouse cuttings bound in cloth. The Order swears by it. So do the desperate.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.15, "MaxStackSize": 10, "Value": 12,
+        "HealthRestore": 20.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_Cigarettes", "ItemID": "Item_Cigarettes",
+        "DisplayName": "Cigarettes", "Description": "Hand-rolled, half stale. Nobody smokes them — they're currency. A pack opens more doors than a key.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.05, "MaxStackSize": 20, "Value": 20,
+        "HealthRestore": -2.0, "HungerRestore": -3.0, "StaminaRestore": 10.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+
+    # --- Medical ---
+    {
+        "RowName": "Item_Splint", "ItemID": "Item_Splint",
+        "DisplayName": "Splint", "Description": "Two slats and a strap of cloth. Sets a break the hard way. Bite down on something first.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.3, "MaxStackSize": 5, "Value": 14,
+        "HealthRestore": 30.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_StrongPainkillers", "ItemID": "Item_StrongPainkillers",
+        "DisplayName": "Front-Car Painkillers", "Description": "Real pharmaceuticals, not the chalk they ration to the Tail. Two of these and you'd walk on a broken leg.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Rare"], "Weight": 0.05, "MaxStackSize": 8, "Value": 45,
+        "HealthRestore": 25.0, "HungerRestore": 0.0, "StaminaRestore": 25.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_BloodStim", "ItemID": "Item_BloodStim",
+        "DisplayName": "Blood-Stim", "Description": "A Sickbay transfusion pack with a rusted needle. Floods you back from the brink. Used once, never forgotten.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Rare"], "Weight": 0.2, "MaxStackSize": 5, "Value": 60,
+        "HealthRestore": 50.0, "HungerRestore": 0.0, "StaminaRestore": 10.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_Antitoxin", "ItemID": "Item_Antitoxin",
+        "DisplayName": "Antitoxin", "Description": "A bitter draught that drags poison out of the blood. Mostly. Keep one for the day the water turns.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.1, "MaxStackSize": 5, "Value": 35,
+        "HealthRestore": 15.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+
+    # --- Crafting / junk (Fallout-style scrap for crafting) ---
+    {
+        "RowName": "Item_CopperWire", "ItemID": "Item_CopperWire",
+        "DisplayName": "Copper Wire", "Description": "A tangle of bright copper stripped from a wall conduit. Conducts, binds, garottes. Useful three ways.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.2, "MaxStackSize": 30, "Value": 5,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_CeramicShard", "ItemID": "Item_CeramicShard",
+        "DisplayName": "Ceramic Shard", "Description": "Broken pieces of a first-class dinner plate. Holds an edge, holds a grudge against the people who ate off it.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.15, "MaxStackSize": 30, "Value": 3,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_RubberHose", "ItemID": "Item_RubberHose",
+        "DisplayName": "Rubber Hose", "Description": "A length of cracked coolant hose. Seals, lashes, and makes a passable cosh in a pinch.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.3, "MaxStackSize": 20, "Value": 4,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_FuelCell", "ItemID": "Item_FuelCell",
+        "DisplayName": "Fuel Cell", "Description": "A sealed power cell, still warm. Half the Tail would kill for the charge inside. Handle gently.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Rare"], "Weight": 1.0, "MaxStackSize": 10, "Value": 40,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_Gears", "ItemID": "Item_Gears",
+        "DisplayName": "Gears & Cogs", "Description": "A fistful of toothed brass and steel. The Engine is made of a billion of these. So is everything you'll build.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.5, "MaxStackSize": 30, "Value": 6,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_ClothBolt", "ItemID": "Item_ClothBolt",
+        "DisplayName": "Bolt of Cloth", "Description": "An uncut roll of grey fabric, untouched by the Tail's wear. Armor, bandages, or barter — your choice.",
+        "Category": ITEM_CATEGORY["Crafting"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 1.0, "MaxStackSize": 15, "Value": 12,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+
+    # --- Weapons (improvised melee; each gets a shape in SpawnWeaponForItem) ---
+    {
+        "RowName": "Item_FireAxe", "ItemID": "Item_FireAxe",
+        "DisplayName": "Fire Axe", "Description": "Pulled off an emergency bracket nobody's checked in a decade. Heavy haft, hungry edge. Opens doors and arguments.",
+        "Category": ITEM_CATEGORY["Weapon"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 3.2, "MaxStackSize": 1, "Value": 45,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_SharpenedRebar", "ItemID": "Item_SharpenedRebar",
+        "DisplayName": "Sharpened Rebar", "Description": "A ribbed steel rod ground to a needle on a grinding wheel. Long reach, ugly wounds. The spear of the poor.",
+        "Category": ITEM_CATEGORY["Weapon"], "Rarity": ITEM_RARITY["Common"], "Weight": 1.6, "MaxStackSize": 1, "Value": 12,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_ChainWhip", "ItemID": "Item_ChainWhip",
+        "DisplayName": "Chain Whip", "Description": "A length of drive chain bolted to a taped grip. Keeps three Jackboots at arm's length and takes the eye off the boldest.",
+        "Category": ITEM_CATEGORY["Weapon"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 1.1, "MaxStackSize": 1, "Value": 28,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+
+    # --- Lore / quest / valuables ---
+    {
+        "RowName": "Item_TrainTicket", "ItemID": "Item_TrainTicket",
+        "DisplayName": "Boarding Ticket", "Description": "An original ticket from the day the world ended. The ink has faded; the promise it made never came true. Priceless, and worthless.",
+        "Category": ITEM_CATEGORY["Quest"], "Rarity": ITEM_RARITY["Legendary"], "Weight": 0.01, "MaxStackSize": 1, "Value": 0,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_Photograph", "ItemID": "Item_Photograph",
+        "DisplayName": "Faded Photograph", "Description": "A creased photo of a green field under an open sky. Some people in the Tail have never believed it was real.",
+        "Category": ITEM_CATEGORY["Quest"], "Rarity": ITEM_RARITY["Rare"], "Weight": 0.01, "MaxStackSize": 1, "Value": 0,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_FactionToken", "ItemID": "Item_FactionToken",
+        "DisplayName": "Network Token", "Description": "A stamped brass chit the Kronole Network uses to mark a debt paid. Show it to the right people and doors open. Show it to the wrong ones and they close forever.",
+        "Category": ITEM_CATEGORY["Quest"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.02, "MaxStackSize": 5, "Value": 25,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_PropagandaLeaflet", "ItemID": "Item_PropagandaLeaflet",
+        "DisplayName": "Wilford Leaflet", "Description": "\"THE ENGINE IS ETERNAL. THE ENGINE IS JUST.\" Printed on real paper, dropped car to car. Good tinder, better evidence.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Common"], "Weight": 0.02, "MaxStackSize": 20, "Value": 1,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_MusicBox", "ItemID": "Item_MusicBox",
+        "DisplayName": "Music Box", "Description": "Wind the key and it plays eight notes of a song nobody alive remembers the words to. The children gather when it sounds.",
+        "Category": ITEM_CATEGORY["Quest"], "Rarity": ITEM_RARITY["Rare"], "Weight": 0.6, "MaxStackSize": 1, "Value": 70,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_OldWorldCurrency", "ItemID": "Item_OldWorldCurrency",
+        "DisplayName": "Old-World Banknotes", "Description": "A thick fold of pre-Freeze cash. Once it bought houses. Now it buys nothing — except a bitter laugh from anyone old enough to remember.",
+        "Category": ITEM_CATEGORY["Junk"], "Rarity": ITEM_RARITY["Uncommon"], "Weight": 0.1, "MaxStackSize": 10, "Value": 0,
+        "HealthRestore": 0.0, "HungerRestore": 0.0, "StaminaRestore": 0.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
+    {
+        "RowName": "Item_KronoleVial", "ItemID": "Item_KronoleVial",
+        "DisplayName": "Kronole Vial", "Description": "A sealed glass vial of refined kronole — purer than the street pinch. The Network's hard currency, and a bomb in a bottle if you know the trick.",
+        "Category": ITEM_CATEGORY["Consumable"], "Rarity": ITEM_RARITY["Rare"], "Weight": 0.06, "MaxStackSize": 10, "Value": 80,
+        "HealthRestore": -15.0, "HungerRestore": 0.0, "StaminaRestore": 55.0,
+        "BluntArmor": 0.0, "BladedArmor": 0.0, "PiercingArmor": 0.0, "ColdResistance": 0.0,
+    },
 ]
 
 

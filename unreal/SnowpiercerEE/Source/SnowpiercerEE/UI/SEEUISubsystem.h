@@ -79,6 +79,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "UI")
 	void NotifyPlayerDeath(const FText& Cause);
 
+	// --- Co-op host/join (iteration 1) ---
+
+	/** Host: travel into Zone1_Tail as a listen server, then drop the menu. */
+	UFUNCTION(BlueprintCallable, Category = "Net")
+	void OpenHostGame();
+
+	/** Join: client-travel to the host at the given IP (blank -> 127.0.0.1). */
+	UFUNCTION(BlueprintCallable, Category = "Net")
+	void OpenJoinGame(const FString& IP);
+
 	/** Start a conversation with an NPC pawn (uses the entry node stored on its
 	 *  ASEENPCAIController brain) and open the dialogue panel over gameplay. */
 	UFUNCTION(BlueprintCallable, Category = "UI")
@@ -102,6 +112,8 @@ private:
 	// --- Menu actions ---
 	void HandleMainMenuNewGame();
 	void HandleMainMenuContinue();
+	void HandleMainMenuHostGame();
+	void HandleMainMenuJoinGame(const FString& Address);
 	void HandleQuitToDesktop();
 	void HandlePauseResume();
 	void HandlePauseSave();
