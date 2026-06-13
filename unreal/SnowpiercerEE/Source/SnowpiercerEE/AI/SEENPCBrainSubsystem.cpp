@@ -3,6 +3,7 @@
 #include "SEENPCBrainSubsystem.h"
 
 #include "SEENPCAIController.h"
+#include "AIController.h"
 #include "SnowpiercerEE/SEECharacter.h"
 #include "SnowpiercerEE/SEECompanionCharacter.h"
 #include "SnowpiercerEE/SEEHealthComponent.h"
@@ -22,10 +23,18 @@ void USEENPCBrainSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
+	UE_LOG(LogTemp, Warning, TEXT("SEENPCBrain: OnWorldBeginPlay world=%s gameworld=%d"),
+		*InWorld.GetName(), InWorld.IsGameWorld() ? 1 : 0);
+
 	if (!InWorld.IsGameWorld()) return;
 
-	// Repeating scan: catches both the initially placed NPCs and any pawns
-	// that stream in later with their train car.
+	// The boot main menu pauses the game almost immediately, and paused
+	// worlds freeze ALL timers — so adopt the initially placed NPCs RIGHT
+	// NOW, synchronously, before any pause can land.
+	ScanForUnpossessedNPCs();
+
+	// Repeating scan: catches pawns that stream in later with their car.
+	// (Frozen while paused; resumes on unpause.)
 	InWorld.GetTimerManager().SetTimer(ScanTimerHandle, this,
 		&USEENPCBrainSubsystem::ScanForUnpossessedNPCs, GScanInterval, true, GFirstScanDelay);
 }
@@ -44,12 +53,46 @@ void USEENPCBrainSubsystem::ScanForUnpossessedNPCs()
 	UWorld* World = GetWorld();
 	if (!World) return;
 
+	int32 Seen = 0, WithController = 0, Rejected = 0;
+	for (TActorIterator<ACharacter> CountIt(World); CountIt; ++CountIt)
+	{
+		++Seen;
+		if (CountIt->GetController()) ++WithController;
+		else if (!ShouldAdoptPawn(*CountIt)) ++Rejected;
+	}
+	static int32 ScanCount = 0;
+	if (++ScanCount <= 3)
+	{
+		UE_LOG(LogTemp, Warning,
+			TEXT("SEENPCBrain: scan %d — %d Characters seen, %d controlled, %d rejected by filter"),
+			ScanCount, Seen, WithController, Rejected);
+	}
+
 	for (TActorIterator<ACharacter> It(World); It; ++It)
 	{
 		ACharacter* PawnChar = *It;
 		if (!IsValid(PawnChar)) continue;
-		if (PawnChar->GetController() != nullptr) continue; // player, brain, or other AI already owns it
-		if (!ShouldAdoptPawn(PawnChar)) continue;
+
+		// Placed Characters auto-possess with a vanilla AAIController (engine
+		// default AutoPossessAI) — that stock controller has no brain, so it
+		// must be evicted, not respected. Only players, our own brain, and
+		// derived AI controllers count as real owners.
+		if (AController* Existing = PawnChar->GetController())
+		{
+			if (Existing->IsPlayerController() ||
+				Existing->IsA<ASEENPCAIController>() ||
+				Existing->GetClass() != AAIController::StaticClass())
+			{
+				continue;
+			}
+			if (!ShouldAdoptPawn(PawnChar)) continue;
+			Existing->UnPossess();
+			Existing->Destroy();
+		}
+		else if (!ShouldAdoptPawn(PawnChar))
+		{
+			continue;
+		}
 
 		// Never adopt a corpse (the brain unpossesses on death; downed == dead for NPCs).
 		if (const USEEHealthComponent* Health = PawnChar->FindComponentByClass<USEEHealthComponent>())
