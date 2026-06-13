@@ -113,10 +113,13 @@ void ASEECharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 
 void ASEECharacter::OnRep_EquippedWeaponId()
 {
-	// Cosmetic-only on remote/simulated proxies: the owning client and the server
-	// already spawned the weapon through the quickslot path. Base ASEECharacter has
-	// no remote-equip visuals wired up this iteration, so this is a hook point —
-	// remote weapon-mesh replication is deferred to the inventory/equipment pass.
+	// Iteration 3: the held weapon is now a REPLICATED ASEEWeaponBase actor — the
+	// server spawns + attaches it and the actor (plus its server-side attachment)
+	// replicates to every client, so remote/simulated proxies already see the right
+	// held weapon without spawning a cosmetic copy here. EquippedWeaponId remains
+	// replicated as the authoritative toggle/equip state (used by
+	// TryToggleWeaponQuickSlot to decide equip-vs-unequip on the owning client) and
+	// as a hook for any future UI binding. No cosmetic spawn needed.
 }
 
 void ASEECharacter::Tick(float DeltaTime)
@@ -665,15 +668,48 @@ bool ASEECharacter::TryToggleWeaponQuickSlot(int32 WeaponOrdinal)
 		return false;
 	}
 
-	// Same weapon already equipped -> toggle off
-	if (QuickSlotWeapon && QuickSlotWeapon->GetSourceItemID() == TargetItemID)
+	// CO-OP: the held weapon is a server-authoritative replicated actor. The toggle
+	// state is read from the replicated EquippedWeaponId (set on the owning client by
+	// replication, on the host directly) so toggle-off works on both client and host.
+	// Same weapon already equipped -> toggle off.
+	if (EquippedWeaponId == TargetItemID)
 	{
-		UnequipQuickSlotWeapon();
+		if (HasAuthority())
+		{
+			UnequipQuickSlotWeapon();
+		}
+		else
+		{
+			ServerUnequipQuickSlotWeapon();
+		}
 		return true;
 	}
 
-	EquipWeaponByItemID(TargetItemID);
+	if (HasAuthority())
+	{
+		// Host / standalone: spawn + equip directly (single-player path intact).
+		EquipWeaponByItemID(TargetItemID);
+	}
+	else
+	{
+		// Client: the server performs the authoritative spawn + equip; the replicated
+		// weapon actor appears here (and on every client) and EquippedWeaponId updates.
+		ServerEquipWeaponByItemID(TargetItemID);
+	}
 	return true; // handled even if the spawn failed (don't consume the item as a consumable)
+}
+
+bool ASEECharacter::ServerEquipWeaponByItemID_Validate(FName ItemID) { return true; }
+void ASEECharacter::ServerEquipWeaponByItemID_Implementation(FName ItemID)
+{
+	// Authority: real spawn + equip + replicated EquippedWeaponId.
+	EquipWeaponByItemID(ItemID);
+}
+
+bool ASEECharacter::ServerUnequipQuickSlotWeapon_Validate() { return true; }
+void ASEECharacter::ServerUnequipQuickSlotWeapon_Implementation()
+{
+	UnequipQuickSlotWeapon();
 }
 
 void ASEECharacter::EquipWeaponByItemID(FName ItemID)
@@ -712,6 +748,15 @@ void ASEECharacter::EquipWeaponByItemID(FName ItemID)
 
 void ASEECharacter::UnequipQuickSlotWeapon()
 {
+	// CO-OP: unequip is server-authoritative (it destroys the replicated weapon actor
+	// and clears the replicated EquippedWeaponId). A client BlueprintCallable call
+	// forwards to the server; authority (host/standalone) runs it directly.
+	if (!HasAuthority())
+	{
+		ServerUnequipQuickSlotWeapon();
+		return;
+	}
+
 	if (!QuickSlotWeapon)
 	{
 		return;

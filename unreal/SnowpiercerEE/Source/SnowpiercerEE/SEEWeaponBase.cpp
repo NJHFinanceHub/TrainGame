@@ -48,6 +48,17 @@ ASEEWeaponBase::ASEEWeaponBase()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	// CO-OP REPLICATION: held weapons are server-authoritative actors. The server
+	// spawns + attaches them (player quickslot equip and NPC EnsureHeldWeapon); a
+	// replicated actor attached on the server replicates its attach-parent + socket
+	// to clients automatically, so every client sees both player- and NPC-held
+	// weapons at the right hand. ReplicateMovement stays OFF: the weapon never moves
+	// independently — it rides its attach parent (the holder's mesh), and enabling
+	// movement replication would fight the attachment. Standalone is authority, so
+	// single-player spawns/attaches exactly as before (replication is a no-op there).
+	bReplicates = true;
+	SetReplicateMovement(false);
+
 	// Scene root so the visible mesh can be offset relative to the attach point (grip at origin)
 	USceneComponent* WeaponRoot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponRoot"));
 	RootComponent = WeaponRoot;

@@ -2,7 +2,10 @@
 #include "SEEStatsComponent.h"
 #include "SEEHealthComponent.h"
 #include "SEEHungerComponent.h"
+#include "Actors/SEEPickupActor.h"
 #include "Engine/DataTable.h"
+#include "Engine/World.h"
+#include "GameFramework/Actor.h"
 #include "Net/UnrealNetwork.h"
 
 namespace
@@ -168,22 +171,63 @@ bool USEEInventoryComponent::RemoveItem(FName ItemID, int32 Quantity)
 	return true;
 }
 
+bool USEEInventoryComponent::IsOwnerAuthority() const
+{
+	const AActor* Owner = GetOwner();
+	// No owner (test stub) or actual authority both run the mutation directly.
+	return !Owner || Owner->HasAuthority();
+}
+
 void USEEInventoryComponent::DropItem(int32 SlotIndex)
 {
+	// CO-OP: on a client, ask the server to perform the authoritative drop; the
+	// replicated Slots array + OnRep_Slots refresh this client's UI, and the
+	// server-spawned ASEEPickupActor replicates to everyone. Authority (host /
+	// standalone) drops directly — single-player path unchanged.
+	if (!IsOwnerAuthority())
+	{
+		ServerDropItem(SlotIndex);
+		return;
+	}
+
 	if (SlotIndex < 0 || SlotIndex >= Slots.Num()) return;
 	if (Slots[SlotIndex].IsEmpty()) return;
 
 	const FSEEItemData* Data = GetItemDataPtr(Slots[SlotIndex].ItemID);
 	if (Data && Data->Category == ESEEItemCategory::Quest) return; // Can't drop quest items
 
-	OnItemRemoved.Broadcast(Slots[SlotIndex].ItemID, Slots[SlotIndex].Quantity);
+	const FName DroppedItemID = Slots[SlotIndex].ItemID;
+	const int32 DroppedQuantity = Slots[SlotIndex].Quantity;
+
+	OnItemRemoved.Broadcast(DroppedItemID, DroppedQuantity);
 	Slots[SlotIndex].ItemID = NAME_None;
 	Slots[SlotIndex].Quantity = 0;
 	OnInventoryChanged.Broadcast();
+
+	// Spawn the dropped stack as a world pickup so it can be re-collected. Authority
+	// only (the pickup actor replicates down to clients); standalone runs it inline.
+	SpawnDroppedPickup(DroppedItemID, DroppedQuantity);
+}
+
+bool USEEInventoryComponent::ServerDropItem_Validate(int32 SlotIndex) { return true; }
+void USEEInventoryComponent::ServerDropItem_Implementation(int32 SlotIndex)
+{
+	// Runs on the server with authority — the wrapper's authority branch performs
+	// the real mutation + pickup spawn.
+	DropItem(SlotIndex);
 }
 
 bool USEEInventoryComponent::UseItem(int32 SlotIndex)
 {
+	// CO-OP: clients forward to the server; the heal/eat applies through the
+	// server-authoritative health/hunger components and replicates, and the
+	// consumed slot replicates back to refresh this client's UI.
+	if (!IsOwnerAuthority())
+	{
+		ServerUseItem(SlotIndex);
+		return true; // optimistic: the authoritative result arrives via replication
+	}
+
 	if (SlotIndex < 0 || SlotIndex >= Slots.Num()) return false;
 	if (Slots[SlotIndex].IsEmpty()) return false;
 
@@ -240,10 +284,59 @@ void USEEInventoryComponent::SetQuickSlot(int32 QuickSlotIndex, int32 InventoryS
 void USEEInventoryComponent::UseQuickSlot(int32 QuickSlotIndex)
 {
 	if (QuickSlotIndex < 0 || QuickSlotIndex >= 4) return;
-	int32 SlotIdx = QuickSlots[QuickSlotIndex];
+
+	// The quickslot -> inventory-slot mapping (QuickSlots) is a per-client binding
+	// set locally via SetQuickSlot, so the server doesn't share it. Resolve to the
+	// concrete inventory slot index HERE, then route through UseItem — which itself
+	// branches to ServerUseItem on a client. This keeps the server authoritative on
+	// the actual consume while honoring the local quickslot binding.
+	const int32 SlotIdx = QuickSlots[QuickSlotIndex];
 	if (SlotIdx != INDEX_NONE)
 	{
 		UseItem(SlotIdx);
+	}
+}
+
+bool USEEInventoryComponent::ServerUseItem_Validate(int32 SlotIndex) { return true; }
+void USEEInventoryComponent::ServerUseItem_Implementation(int32 SlotIndex)
+{
+	// Authority: run the real consume (heal/eat + slot decrement). The wrapper's
+	// authority branch does exactly this.
+	UseItem(SlotIndex);
+}
+
+bool USEEInventoryComponent::ServerUseQuickSlot_Validate(int32 QuickSlotIndex) { return true; }
+void USEEInventoryComponent::ServerUseQuickSlot_Implementation(int32 QuickSlotIndex)
+{
+	// Provided for completeness / Blueprint callers. The server's QuickSlots
+	// mapping may differ from the client's local binding, so prefer the
+	// UseQuickSlot path (which resolves the slot client-side then calls ServerUseItem).
+	UseQuickSlot(QuickSlotIndex);
+}
+
+void USEEInventoryComponent::SpawnDroppedPickup(FName ItemID, int32 Quantity)
+{
+	if (ItemID.IsNone() || Quantity <= 0) return;
+
+	AActor* Owner = GetOwner();
+	UWorld* World = GetWorld();
+	if (!Owner || !World) return;
+
+	// Drop in front of and below the owner so it lands ahead of their feet. Far
+	// enough (forward 180cm vs the pickup's 100cm overlap sphere) that the dropper
+	// isn't standing inside it — otherwise BeginPlay's initial-overlap sweep would
+	// instantly re-grant the just-dropped stack.
+	const FVector DropLoc = Owner->GetActorLocation()
+		+ Owner->GetActorForwardVector() * 180.0f
+		+ FVector(0.0f, 0.0f, -40.0f);
+
+	FActorSpawnParameters Params;
+	Params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	ASEEPickupActor* Pickup = World->SpawnActor<ASEEPickupActor>(
+		ASEEPickupActor::StaticClass(), DropLoc, FRotator::ZeroRotator, Params);
+	if (Pickup)
+	{
+		Pickup->InitPickup(ItemID, Quantity);
 	}
 }
 

@@ -56,6 +56,21 @@ public:
 	UFUNCTION(Server, Reliable, WithValidation)
 	void ServerHeavyAttack();
 
+	// --- CO-OP combat audio (so players hear each other fight) ---
+	//
+	// The server fires these multicasts when a swing starts / a hit lands; every
+	// connected client plays the positional 3D sound at Loc. Unreliable: a dropped
+	// SFX packet is harmless. On standalone (authority, no remotes) a multicast
+	// simply runs once locally, so single-player audio is unchanged. To avoid the
+	// host hearing a swing twice, the host does NOT also play local swing feedback
+	// (PlayLocalSwingFeedback is owning-client-only) and ExecuteAttack/ApplyMeleeHitTo
+	// no longer play the sound inline — the multicast is the single play site.
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastSwingSound(FVector Loc);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHitSound(FVector Loc);
+
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void StartBlock();
 

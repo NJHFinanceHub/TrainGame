@@ -58,6 +58,25 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void UseQuickSlot(int32 QuickSlotIndex);
 
+	// --- CO-OP item actions (server-authoritative) ---
+	//
+	// UseItem/DropItem/UseQuickSlot are input entry points. On authority
+	// (host/standalone) they mutate the bag directly so single-player is
+	// unchanged; on a client they forward to these Server RPCs so the server
+	// performs the real mutation (remove item, heal via the server-authoritative
+	// health component, spawn a dropped pickup) and the replicated Slots +
+	// OnRep_Slots refresh the owning client's UI. WithValidation guards bad
+	// indices off the wire.
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerUseItem(int32 SlotIndex);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerDropItem(int32 SlotIndex);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerUseQuickSlot(int32 QuickSlotIndex);
+
 	UFUNCTION(BlueprintPure, Category = "Inventory")
 	bool HasItem(FName ItemID, int32 Quantity = 1) const;
 
@@ -134,6 +153,13 @@ private:
 
 	int32 FindSlotWithItem(FName ItemID) const;
 	int32 FindEmptySlot() const;
+
+	/** Spawn a world pickup in front of the owner for a dropped stack (authority only). */
+	void SpawnDroppedPickup(FName ItemID, int32 Quantity);
+
+	/** True when the owner has net authority (or there is no owner) — the mutation
+	    runs directly; otherwise the public action forwards to the matching Server RPC. */
+	bool IsOwnerAuthority() const;
 
 	/** Sizes the slot array (idempotent) - AddItem may run before BeginPlay. */
 	void EnsureSlots();

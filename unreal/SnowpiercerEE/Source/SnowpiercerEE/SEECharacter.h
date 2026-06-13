@@ -329,6 +329,19 @@ private:
 	/** Spawn + equip a weapon for the given inventory ItemID, replacing any previous one. */
 	void EquipWeaponByItemID(FName ItemID);
 
+	// --- CO-OP quickslot weapon equip (server-authoritative) ---
+	//
+	// On a client, the quickslot equip/unequip routes to the server via these RPCs:
+	// the server spawns the replicated ASEEWeaponBase + attaches it (the actor's
+	// replication shows the held weapon on every client) and sets the replicated
+	// EquippedWeaponId. Authority (host/standalone) calls EquipWeaponByItemID /
+	// UnequipQuickSlotWeapon directly, so single-player is unchanged.
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerEquipWeaponByItemID(FName ItemID);
+
+	UFUNCTION(Server, Reliable, WithValidation)
+	void ServerUnequipQuickSlotWeapon();
+
 	/** Weapon actor spawned by the quickslot equip flow (owned + destroyed by this character). */
 	UPROPERTY()
 	TObjectPtr<ASEEWeaponBase> QuickSlotWeapon;

@@ -153,6 +153,39 @@ void USEECombatComponent::ServerHeavyAttack_Implementation()
 	ExecuteHeavyAttack();
 }
 
+// --- CO-OP combat audio multicasts ---
+
+void USEECombatComponent::MulticastSwingSound_Implementation(FVector Loc)
+{
+	EnsureFoleyLoaded();
+	UWorld* World = GetWorld();
+	if (!World || !SwingSound) return;
+
+	// The owning client already played an immediate local swing whoosh on input
+	// (PlayLocalSwingFeedback) — don't double up for that player. That local path
+	// only ran on a NON-authority owning client, so the host (authority) DOES play
+	// here, and so do all other clients hearing this player's swing.
+	const APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (OwnerPawn && OwnerPawn->IsLocallyControlled() && !OwnerPawn->HasAuthority())
+	{
+		return;
+	}
+
+	UGameplayStatics::PlaySoundAtLocation(World, SwingSound, Loc, 0.45f);
+}
+
+void USEECombatComponent::MulticastHitSound_Implementation(FVector Loc)
+{
+	EnsureFoleyLoaded();
+	if (UWorld* World = GetWorld())
+	{
+		if (HitSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(World, HitSound, Loc, 0.8f);
+		}
+	}
+}
+
 void USEECombatComponent::ExecuteLightAttack()
 {
 	if (!CanAttack()) return;
@@ -495,12 +528,12 @@ void USEECombatComponent::PerformWeaponTrace(float DamageMultiplier)
 
 	float FinalDamage = BaseDamage * DamageMultiplier * StrengthMod * InjuryMod;
 
-	EnsureFoleyLoaded();
+	// CO-OP: the active swing fires here on the server (this runs in the windup
+	// completion, which is authority — clients route attacks via Server RPCs). Play
+	// the swing whoosh on every client via multicast so all players hear it. On
+	// standalone the multicast just runs once locally (single-player unchanged).
+	MulticastSwingSound(Owner->GetActorLocation());
 	UWorld* World = GetWorld();
-	if (World && SwingSound)
-	{
-		UGameplayStatics::PlaySoundAtLocation(World, SwingSound, Owner->GetActorLocation(), 0.45f);
-	}
 
 	// Weapon trace from character forward
 	const FVector Start = Owner->GetActorLocation() + FVector(0, 0, 48.0f);
@@ -598,15 +631,16 @@ bool USEECombatComponent::ApplyMeleeHitTo(AActor* HitActor, float FinalDamage)
 		}
 	}
 
-	// Feedback: hit sound at the victim + a timestamp the HUD reads for the hitmarker
+	// Feedback: hit sound at the victim + a timestamp the HUD reads for the hitmarker.
+	// CO-OP: the hit lands on the server (ApplyMeleeHitTo is authority-side) — multicast
+	// the impact sound so every player hears the clash. On standalone the multicast runs
+	// once locally. LastHitLandedTime stays local: it only drives the attacker's own HUD
+	// hitmarker, which is meaningful on the machine that owns this combat component.
 	if (UWorld* World = GetWorld())
 	{
 		LastHitLandedTime = World->GetTimeSeconds();
-		if (HitSound)
-		{
-			UGameplayStatics::PlaySoundAtLocation(World, HitSound, HitActor->GetActorLocation(), 0.8f);
-		}
 	}
+	MulticastHitSound(HitActor->GetActorLocation());
 
 	TriggerHitStop();
 	OnAttackHit.Broadcast(HitActor, ProcessedDamage);
