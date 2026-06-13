@@ -1,4 +1,9 @@
 #include "SEEDialogueManager.h"
+#include "SEEInventoryComponent.h"
+#include "Engine/GameInstance.h"
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
+#include "GameFramework/Pawn.h"
 
 void USEEDialogueManager::Initialize(FSubsystemCollectionBase& Collection)
 {
@@ -93,7 +98,37 @@ TArray<FSEEDialogueChoice> USEEDialogueManager::GetAvailableChoices() const
 
 void USEEDialogueManager::SetFlag(FName FlagName, bool Value)
 {
+	const bool bWasSet = GetFlag(FlagName);
 	ConversationFlags.FindOrAdd(FlagName) = Value;
+
+	// Dialogue-direct item gifts: a node that sets "Reward_<Item>" hands the
+	// player Item_<Item> the first time the flag goes true. Quest-completion
+	// rewards are handled separately by the quest manager, so anything a quest
+	// already grants is excluded here to avoid a double-grant.
+	if (Value && !bWasSet && FlagName.ToString().StartsWith(TEXT("Reward_")))
+	{
+		static const TSet<FName> QuestHandledRewards = { FName(TEXT("Reward_TinStar")) };
+		if (!QuestHandledRewards.Contains(FlagName))
+		{
+			const FString ItemSuffix = FlagName.ToString().RightChop(7); // after "Reward_"
+			GrantRewardItem(FName(*(FString(TEXT("Item_")) + ItemSuffix)));
+		}
+	}
+}
+
+void USEEDialogueManager::GrantRewardItem(FName ItemID)
+{
+	if (ItemID.IsNone()) return;
+	const UGameInstance* GI = GetGameInstance();
+	const UWorld* World = GI ? GI->GetWorld() : nullptr;
+	APlayerController* PC = World ? World->GetFirstPlayerController() : nullptr;
+	APawn* Pawn = PC ? PC->GetPawn() : nullptr;
+	if (!Pawn) return;
+	if (USEEInventoryComponent* Inv = Pawn->FindComponentByClass<USEEInventoryComponent>())
+	{
+		Inv->AddItem(ItemID, 1);
+		UE_LOG(LogTemp, Log, TEXT("Dialogue reward granted: %s"), *ItemID.ToString());
+	}
 }
 
 bool USEEDialogueManager::GetFlag(FName FlagName) const

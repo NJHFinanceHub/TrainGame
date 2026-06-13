@@ -3,7 +3,9 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SEEHealthComponent.h"
+#include "SEECombatComponent.h"
 #include "SEECharacterAnimInstance.h"
+#include "Animation/SEEAnimDriverComponent.h"
 #include "SnowpiercerEEGameMode.h"
 
 ASEEPlayerCharacter::ASEEPlayerCharacter()
@@ -11,7 +13,11 @@ ASEEPlayerCharacter::ASEEPlayerCharacter()
 	// Player uses a visible skeletal mesh (assign in Blueprint)
 	GetMesh()->SetRelativeLocation(FVector(0.0f, 0.0f, -88.0f));
 	GetMesh()->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
-	GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
+	// Code-driven animation (no AnimBlueprint): the driver flips the mesh to
+	// single-node mode at init and swaps clips per frame from movement state.
+	GetMesh()->SetAnimationMode(EAnimationMode::AnimationSingleNode);
+
+	AnimDriver = CreateDefaultSubobject<USEEAnimDriverComponent>(TEXT("AnimDriver"));
 }
 
 void ASEEPlayerCharacter::BeginPlay()
@@ -23,6 +29,20 @@ void ASEEPlayerCharacter::BeginPlay()
 	{
 		HealthComponent->OnDamageTaken.AddDynamic(this, &ASEEPlayerCharacter::OnDamageTaken);
 		HealthComponent->OnDeath.AddDynamic(this, &ASEEPlayerCharacter::ActivateDeathRagdoll);
+	}
+
+	// Drive the attack one-shot from combat state changes.
+	if (CombatComponent)
+	{
+		CombatComponent->OnCombatStateChanged.AddDynamic(this, &ASEEPlayerCharacter::OnCombatStateChanged);
+	}
+}
+
+void ASEEPlayerCharacter::OnCombatStateChanged(ESEECombatState NewState)
+{
+	if (NewState == ESEECombatState::Attacking && AnimDriver)
+	{
+		AnimDriver->PlayAction(ESEEAnimAction::Attack);
 	}
 }
 
@@ -83,7 +103,14 @@ void ASEEPlayerCharacter::ApplyHitReaction(ESEEHitReactionType ReactionType, FVe
 
 	bInHitReaction = true;
 
-	// Notify anim instance
+	// Code-driven hit reaction one-shot.
+	if (AnimDriver)
+	{
+		AnimDriver->PlayAction(ESEEAnimAction::HitReact);
+	}
+
+	// Legacy AnimInstance path: harmless no-op under single-node mode (cast is
+	// null), kept so an AnimBlueprint-driven mesh would still react if assigned.
 	USEECharacterAnimInstance* AnimInst = Cast<USEECharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInst)
 	{
@@ -118,6 +145,14 @@ void ASEEPlayerCharacter::ActivateDeathRagdoll()
 {
 	bInHitReaction = true;
 
+	// Play the death one-shot first so the driver stops driving locomotion;
+	// it holds the last frame and yields the moment physics starts simulating.
+	if (AnimDriver)
+	{
+		AnimDriver->PlayAction(ESEEAnimAction::Death);
+	}
+
+	// Legacy AnimInstance path: harmless no-op under single-node mode.
 	USEECharacterAnimInstance* AnimInst = Cast<USEECharacterAnimInstance>(GetMesh()->GetAnimInstance());
 	if (AnimInst)
 	{

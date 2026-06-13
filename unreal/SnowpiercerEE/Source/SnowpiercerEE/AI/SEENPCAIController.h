@@ -9,6 +9,7 @@
 
 class ACharacter;
 class APawn;
+class USEEAnimDriverComponent;
 
 /** High-level brain state for corridor NPCs. */
 UENUM(BlueprintType)
@@ -279,4 +280,12 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<USEEHealthComponent> PawnHealth;
+
+	/** Code-driven animation for the possessed pawn (locomotion + one-shots).
+	 *  Spawned and initialized on possess so adopted plain-ACharacter NPCs animate. */
+	UPROPERTY()
+	TObjectPtr<USEEAnimDriverComponent> PawnAnimDriver;
+
+	/** Attach + init the anim driver on the possessed pawn (idempotent). */
+	void EnsurePawnAnimDriver();
 };

@@ -159,7 +159,10 @@ public:
 	 *   < 2 kg → Silent, < 4 kg → Quiet, < 7 kg → Normal, >= 7 kg → Loud.
 	 * BlockBonus is set only for Shield slot items (uses BluntArmor field as proxy).
 	 */
-	UFUNCTION(BlueprintCallable, Category = "Armor")
+	// NOT a UFUNCTION: FSEEItemData lives in the SnowpiercerEE module, which
+	// TrainGame cannot link against (SnowpiercerEE depends on TrainGame, not the
+	// reverse). Reflecting the param would emit an unresolved external. Called
+	// directly from C++ (the inventory screen), so plain C++ is all it needs.
 	bool EquipFromItem(FName ItemID, EArmorSlot Slot, const FSEEItemData& Data,
 	                   FEquippedArmor& OutPrevious);
 

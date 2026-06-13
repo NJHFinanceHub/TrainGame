@@ -3,8 +3,11 @@
 #include "CoreMinimal.h"
 #include "SEECharacter.h"
 #include "SEEHealthComponent.h"
+#include "SEECombatComponent.h"
 #include "SEECharacterAnimInstance.h"
 #include "SEEPlayerCharacter.generated.h"
+
+class USEEAnimDriverComponent;
 
 /**
  * Player character with skeletal mesh, weapon socket, and hit reaction support.
@@ -64,6 +67,14 @@ protected:
 	// Dynamic-delegate handler (bound via AddDynamic) — must be a UFUNCTION
 	UFUNCTION()
 	void OnDamageTaken(float Damage, ESEEDamageType DamageType, AActor* DamageInstigator);
+
+	// Code-driven animation: combat-state -> attack one-shot (bound via AddDynamic)
+	UFUNCTION()
+	void OnCombatStateChanged(ESEECombatState NewState);
+
+	/** Code-driven, AnimBlueprint-free animation driver (locomotion + one-shots). */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<USEEAnimDriverComponent> AnimDriver;
 
 	/** Knockback impulse strength */
 	UPROPERTY(EditDefaultsOnly, Category = "HitReaction")

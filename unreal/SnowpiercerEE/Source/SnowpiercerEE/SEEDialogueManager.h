@@ -144,6 +144,9 @@ private:
 	void ProcessNode(FName NodeID);
 	const FSEEDialogueNode* FindNode(FName NodeID) const;
 
+	/** Add a one-shot dialogue-gift item (Item_<X>) to the player's inventory. */
+	void GrantRewardItem(FName ItemID);
+
 	/** Lazy-loads the Zone 1 dialogue DataTable asset. */
 	UDataTable* GetZone1DialogueTable();
 

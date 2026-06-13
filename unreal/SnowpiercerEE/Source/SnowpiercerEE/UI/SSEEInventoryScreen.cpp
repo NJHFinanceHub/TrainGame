@@ -9,6 +9,7 @@
 #include "Widgets/SSEEMenuButton.h"
 #include "Widgets/SSEEArmorSlotWidget.h"
 #include "Widgets/SSEEArmorDragDropOp.h"
+#include "Widgets/SSEEArmorDragHandle.h"
 
 #include "GameFramework/Actor.h"
 #include "InputCoreTypes.h"
@@ -261,7 +262,10 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeArmorPanel()
 				SAssignNew(HeadSlotWidget, SSEEArmorSlotWidget)
 				.Slot(EArmorSlot::Head)
 				.ArmorComponent(GetArmorComponent())
-				.OnDrop(FOnArmorSlotDrop::CreateSP(this, &SSEEInventoryScreen::EquipArmorItem))
+				.OnDrop(FOnArmorSlotDrop::CreateLambda([this](EArmorSlot DropSlot, FName DropItemID)
+				{
+					EquipArmorItem(DropItemID, DropSlot); // delegate is (Slot, ItemID); method is (ItemID, Slot)
+				}))
 				.OnUnequip(FOnArmorSlotUnequip::CreateSP(this, &SSEEInventoryScreen::UnequipArmorSlot))
 			]
 
@@ -273,7 +277,10 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeArmorPanel()
 				SAssignNew(TorsoSlotWidget, SSEEArmorSlotWidget)
 				.Slot(EArmorSlot::Torso)
 				.ArmorComponent(GetArmorComponent())
-				.OnDrop(FOnArmorSlotDrop::CreateSP(this, &SSEEInventoryScreen::EquipArmorItem))
+				.OnDrop(FOnArmorSlotDrop::CreateLambda([this](EArmorSlot DropSlot, FName DropItemID)
+				{
+					EquipArmorItem(DropItemID, DropSlot); // delegate is (Slot, ItemID); method is (ItemID, Slot)
+				}))
 				.OnUnequip(FOnArmorSlotUnequip::CreateSP(this, &SSEEInventoryScreen::UnequipArmorSlot))
 			]
 
@@ -285,7 +292,10 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeArmorPanel()
 				SAssignNew(ShieldSlotWidget, SSEEArmorSlotWidget)
 				.Slot(EArmorSlot::Shield)
 				.ArmorComponent(GetArmorComponent())
-				.OnDrop(FOnArmorSlotDrop::CreateSP(this, &SSEEInventoryScreen::EquipArmorItem))
+				.OnDrop(FOnArmorSlotDrop::CreateLambda([this](EArmorSlot DropSlot, FName DropItemID)
+				{
+					EquipArmorItem(DropItemID, DropSlot); // delegate is (Slot, ItemID); method is (ItemID, Slot)
+				}))
 				.OnUnequip(FOnArmorSlotUnequip::CreateSP(this, &SSEEInventoryScreen::UnequipArmorSlot))
 			]
 
@@ -662,33 +672,20 @@ void SSEEInventoryScreen::RebuildList()
 					]
 				]
 
-				// Invisible drag-detector overlay for armor rows only.
-				// It passes clicks through (return Unhandled for non-drag events)
-				// so the SButton row behind it still handles selection/click.
+				// Drag-detector overlay for armor rows only — a custom handle widget
+				// (UE 5.7 SBorder/SButton don't expose declarative drag args).
 				+ SOverlay::Slot()
 				[
 					SNew(SBox)
 					.Visibility(bCapturedIsArmor ? EVisibility::Visible : EVisibility::Collapsed)
 					[
-						// SBorder with no background used as a transparent hit-test area.
-						// OnMouseButtonDown begins the drag; OnDragDetected fires the op.
-						SNew(SBorder)
-						.BorderImage(FCoreStyle::Get().GetBrush("NoBrush"))
-						.OnMouseButtonDown_Lambda([this, EntryIndex](const FGeometry&, const FPointerEvent& Event) -> FReply
+						SNew(SSEEArmorDragHandle)
+						.ItemID(CapturedItemID)
+						.DisplayName(CapturedName)
+						.OnPressed(FOnArmorDragHandlePressed::CreateLambda([this, EntryIndex]()
 						{
-							if (Event.GetEffectingButton() == EKeys::LeftMouseButton)
-							{
-								SelectEntry(EntryIndex);
-								// Request drag detection; Slate calls OnDragDetected when threshold met.
-								return FReply::Handled().DetectDrag(SharedThis(this), EKeys::LeftMouseButton);
-							}
-							return FReply::Unhandled();
-						})
-						.OnDragDetected_Lambda([this, CapturedItemID, CapturedName](const FGeometry&, const FPointerEvent&) -> FReply
-						{
-							TSharedRef<SSEEArmorDragDropOp> DragOp = SSEEArmorDragDropOp::New(CapturedItemID, CapturedName);
-							return FReply::Handled().BeginDragDrop(DragOp);
-						})
+							SelectEntry(EntryIndex);
+						}))
 					]
 				]
 			];

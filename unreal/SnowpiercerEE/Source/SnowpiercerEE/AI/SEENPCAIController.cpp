@@ -4,6 +4,8 @@
 
 #include "SEENPCHealthComponent.h"
 #include "SnowpiercerEE/SEECombatComponent.h"
+#include "SnowpiercerEE/Animation/SEEAnimDriverComponent.h"
+#include "Animation/AnimSequence.h"
 #include "SnowpiercerEE/SEEFactionManager.h"
 #include "SnowpiercerEE/SEEJackbootCharacter.h"
 #include "SnowpiercerEE/SEECivilianCharacter.h"
@@ -144,6 +146,29 @@ void ASEENPCAIController::ApplyConfiguration()
 	}
 
 	SetMoveSpeed(WalkSpeed);
+
+	// Animate adopted plain-ACharacter NPCs: the placed BP_NPC_* pawns carry no
+	// driver, so we attach one and resolve their model's anim set on possess.
+	EnsurePawnAnimDriver();
+}
+
+void ASEENPCAIController::EnsurePawnAnimDriver()
+{
+	APawn* ControlledPawn = GetPawn();
+	if (!ControlledPawn) return;
+
+	USEEAnimDriverComponent* Driver = ControlledPawn->FindComponentByClass<USEEAnimDriverComponent>();
+	if (!Driver)
+	{
+		Driver = NewObject<USEEAnimDriverComponent>(
+			ControlledPawn, USEEAnimDriverComponent::StaticClass(), TEXT("SEENPCAnimDriver"));
+		if (!Driver) return;
+		Driver->RegisterComponent();
+	}
+
+	PawnAnimDriver = Driver;
+	// Mesh is already assigned on the placed pawn — resolve + take it single-node now.
+	Driver->InitDriver();
 }
 
 void ASEENPCAIController::Tick(float DeltaTime)
@@ -862,6 +887,12 @@ void ASEENPCAIController::HandlePawnDamaged(float Damage, ESEEDamageType DamageT
 {
 	if (BrainState == ESEENPCBrainState::Dead) return;
 
+	// Flinch on every hit (one-shot over locomotion; suppressed once dead).
+	if (PawnAnimDriver)
+	{
+		PawnAnimDriver->PlayAction(ESEEAnimAction::HitReact);
+	}
+
 	// Taking damage is instant aggro for hostiles, regardless of facing.
 	if (bHostile)
 	{
@@ -895,8 +926,41 @@ void ASEENPCAIController::HandlePawnDeath()
 		USkeletalMeshComponent* Mesh = PawnChar->GetMesh();
 		if (Mesh && Mesh->GetSkeletalMeshAsset())
 		{
+			// Play the Death anim first so the corpse doesn't snap straight to
+			// ragdoll from a T-pose; the driver marks itself dead (locomotion
+			// off) and yields the instant physics starts simulating. Delay the
+			// ragdoll by the death clip length so the keyframed death reads, then
+			// the limp body settles.
+			float RagdollDelay = 0.0f;
+			if (PawnAnimDriver)
+			{
+				PawnAnimDriver->PlayAction(ESEEAnimAction::Death);
+				if (const UAnimSequence* DeathSeq = PawnAnimDriver->GetDeathAnim())
+				{
+					RagdollDelay = FMath::Clamp(DeathSeq->GetPlayLength(), 0.0f, 2.5f);
+				}
+			}
+
 			Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
-			Mesh->SetSimulatePhysics(true);
+			if (RagdollDelay > 0.0f)
+			{
+				// Ragdoll after the death animation has played out.
+				FTimerHandle RagdollTimer;
+				TWeakObjectPtr<USkeletalMeshComponent> WeakMesh(Mesh);
+				GetWorldTimerManager().SetTimer(RagdollTimer,
+					[WeakMesh]()
+					{
+						if (USkeletalMeshComponent* M = WeakMesh.Get())
+						{
+							M->SetSimulatePhysics(true);
+						}
+					}, RagdollDelay, false);
+			}
+			else
+			{
+				// No death clip resolved — ragdoll immediately (old behavior).
+				Mesh->SetSimulatePhysics(true);
+			}
 		}
 		else
 		{

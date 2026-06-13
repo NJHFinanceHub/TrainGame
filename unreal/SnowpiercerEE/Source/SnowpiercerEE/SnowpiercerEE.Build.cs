@@ -27,7 +27,8 @@ public class SnowpiercerEE : ModuleRules
             "GameplayTasks",
             "TrainGame",
             "SnowyEngine",
-            "Niagara"
+            "Niagara",
+            "AssetRegistry"
         });
 
         PrivateDependencyModuleNames.AddRange(new string[]
