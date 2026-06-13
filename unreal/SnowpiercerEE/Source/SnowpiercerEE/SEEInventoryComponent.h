@@ -38,6 +38,8 @@ class SNOWPIERCEREE_API USEEInventoryComponent : public UActorComponent
 public:
 	USEEInventoryComponent();
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	bool AddItem(FName ItemID, int32 Quantity = 1);
 
@@ -115,7 +117,19 @@ protected:
 	TObjectPtr<UDataTable> ItemDataTable;
 
 private:
+	// CO-OP REPLICATION: inventory contents are server-authoritative and replicate
+	// to the OWNING client only (COND_OwnerOnly) — each player sees just their own
+	// bag, never the other co-op players'. AddItem (pickups) now runs on the
+	// server and writes here; the change replicates down and OnRep_Slots fires
+	// OnInventoryChanged so the owning client's inventory UI refreshes. Standalone
+	// is authority, so the local single-player path is unchanged (OnRep never runs
+	// on authority; the authority path broadcasts OnInventoryChanged inline).
+	UPROPERTY(ReplicatedUsing = OnRep_Slots)
 	TArray<FSEEInventorySlot> Slots;
+
+	UFUNCTION()
+	void OnRep_Slots();
+
 	TArray<int32> QuickSlots; // Maps quick slot 0-3 -> inventory slot index
 
 	int32 FindSlotWithItem(FName ItemID) const;

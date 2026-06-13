@@ -28,6 +28,14 @@ void USEENPCBrainSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 
 	if (!InWorld.IsGameWorld()) return;
 
+	// SERVER-ONLY: the brain runs exclusively on the authority. A WorldSubsystem
+	// is created on both the listen-server host AND every joined client, so
+	// without this guard each client would spawn its own controllers, double-
+	// possess the replicated NPC pawns and fight the server for control. Clients
+	// just receive the replicated pawns/health/movement. Standalone is authority,
+	// so single-player is unchanged. NM_Client is the only non-authoritative mode.
+	if (InWorld.GetNetMode() == NM_Client) return;
+
 	// The boot main menu pauses the game almost immediately, and paused
 	// worlds freeze ALL timers — so adopt the initially placed NPCs RIGHT
 	// NOW, synchronously, before any pause can land.
@@ -52,6 +60,11 @@ void USEENPCBrainSubsystem::ScanForUnpossessedNPCs()
 {
 	UWorld* World = GetWorld();
 	if (!World) return;
+
+	// Authority-only (defensive): possess/eviction is server-side. The timer that
+	// drives this is only ever started on authority in OnWorldBeginPlay, but guard
+	// here too so a future caller can never make a client spawn controllers.
+	if (World->GetNetMode() == NM_Client) return;
 
 	int32 Seen = 0, WithController = 0, Rejected = 0;
 	for (TActorIterator<ACharacter> CountIt(World); CountIt; ++CountIt)
@@ -125,6 +138,26 @@ void USEENPCBrainSubsystem::AdoptPawn(ACharacter* PawnChar)
 {
 	UWorld* World = GetWorld();
 	if (!World) return;
+
+	// CO-OP REPLICATION (server-only — AdoptPawn runs solely on authority): the
+	// placed BP_NPC_* pawns derive from plain ACharacter and do NOT replicate by
+	// default, so joined clients would never see them. Turn replication on here,
+	// before possession, so the server's authoritative transform + AI-driven
+	// movement stream down to every client.
+	//   - SetReplicates(true): the actor (and its components, incl. the runtime
+	//     USEENPCHealthComponent attached on possess) now replicate to clients.
+	//   - SetReplicateMovement(true): replicates the pawn's location/rotation/
+	//     velocity each net update — this is what makes clients SEE the NPCs
+	//     move/chase as the server drives them. ACharacter's CharacterMovement
+	//     component handles its own move replication once the actor replicates.
+	//   - Net update frequency kept in line with the player pawn (30/10 Hz) so
+	//     crowd NPCs update smoothly without flooding the channel.
+	// Level-placed actors with bReplicates already get their server transform on
+	// clients; SetReplicateMovement is what propagates the ongoing AI movement.
+	PawnChar->SetReplicates(true);
+	PawnChar->SetReplicateMovement(true);
+	PawnChar->SetNetUpdateFrequency(30.0f);
+	PawnChar->SetMinNetUpdateFrequency(10.0f);
 
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;

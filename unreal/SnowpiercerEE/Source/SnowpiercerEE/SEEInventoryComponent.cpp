@@ -3,6 +3,7 @@
 #include "SEEHealthComponent.h"
 #include "SEEHungerComponent.h"
 #include "Engine/DataTable.h"
+#include "Net/UnrealNetwork.h"
 
 namespace
 {
@@ -14,6 +15,29 @@ USEEInventoryComponent::USEEInventoryComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
 	QuickSlots.Init(INDEX_NONE, 4);
+
+	// Server-authoritative inventory; replicates the Slots array to the owning
+	// client so co-op pickups show up in that player's UI (see Slots/OnRep_Slots).
+	SetIsReplicatedByDefault(true);
+}
+
+void USEEInventoryComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	// COND_OwnerOnly: a player's bag replicates only to the client that owns the
+	// pawn, never to the other co-op players. The server (and standalone) already
+	// has the authoritative array; this pushes server-side AddItem results down to
+	// the right player's owning client.
+	DOREPLIFETIME_CONDITION(USEEInventoryComponent, Slots, COND_OwnerOnly);
+}
+
+void USEEInventoryComponent::OnRep_Slots()
+{
+	// Clients learned the server mutated the bag (a pickup grant, a use, a drop):
+	// refresh the inventory UI. Runs only on the owning client; authority drives
+	// the same broadcast inline from each mutating call so single-player is intact.
+	OnInventoryChanged.Broadcast();
 }
 
 void USEEInventoryComponent::BeginPlay()

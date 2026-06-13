@@ -36,6 +36,14 @@ ASEEPickupActor::ASEEPickupActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	// CO-OP REPLICATION: the pickup is server-authoritative. Replicating the actor
+	// means the server spawns it (via the fixup subsystem / LOOT_ scatter) and it
+	// appears on every client at the replicated transform; when the server grants
+	// it and Destroy()s it, that destruction replicates so all clients see it
+	// vanish at once. Standalone is authority, so single-player is unchanged.
+	bReplicates = true;
+	SetReplicateMovement(false); // static loot — transform set once, never moves
+
 	VisualMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("VisualMesh"));
 	SetRootComponent(VisualMesh);
 	VisualMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -141,6 +149,20 @@ bool ASEEPickupActor::TryPickup(AActor* Picker)
 		return false;
 	}
 
+	// SERVER-AUTHORITATIVE GRANT: only the authority grants items and destroys the
+	// pickup. On a listen server the overlap fires on both host and clients, but
+	// clients must NOT mutate inventory or destroy the actor — they receive the
+	// granted item via the owning player's replicated inventory and see the actor
+	// vanish via replicated destruction. Standalone is authority, so the
+	// single-player overlap path runs exactly as before.
+	if (!HasAuthority())
+	{
+		return false;
+	}
+
+	// Resolve the grant to the OVERLAPPING player's own inventory: AddItem now runs
+	// on the server but writes into the specific picker's component, and the
+	// component replicates that change down to that player's owning client only.
 	USEEInventoryComponent* Inventory = Picker->FindComponentByClass<USEEInventoryComponent>();
 	if (!Inventory)
 	{
@@ -197,6 +219,16 @@ void ASEEPickupActor::HandleOverlapBegin(
 void USEEPickupFixupSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
+
+	// SERVER-ONLY: spawning the real ASEEPickupActor replacements is authority
+	// work. This WorldSubsystem is created on both the listen-server host and
+	// every joined client; without this guard each client would spawn its own
+	// (now-replicated) pickups on top of the server's, producing duplicate loot.
+	// Clients receive the server's replicated pickup actors instead. Standalone
+	// is authority, so single-player rescue runs exactly as before. The inert
+	// BP_Pickup_* stubs are themselves level actors that exist on clients, but
+	// only the server destroys them (below) and that destruction replicates.
+	if (InWorld.GetNetMode() == NM_Client) return;
 
 	int32 RescuedCount = 0;
 

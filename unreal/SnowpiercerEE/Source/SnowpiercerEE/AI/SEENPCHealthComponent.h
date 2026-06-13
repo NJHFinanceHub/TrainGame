@@ -29,7 +29,26 @@ class SNOWPIERCEREE_API USEENPCHealthComponent : public USEEHealthComponent
 public:
 	USEENPCHealthComponent();
 
+	virtual void BeginPlay() override;
+
 	/** Set max health and refill. Call once right after attaching, before damage flows. */
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void InitHealth(float InMaxHealth);
+
+private:
+	/**
+	 * CO-OP DEATH REPLICATION (client-side ragdoll).
+	 *
+	 * The ragdoll/death visuals normally run inside ASEENPCAIController::
+	 * HandlePawnDeath, but that controller exists ONLY on the server — joined
+	 * clients never spawn it, so without this they would see a dead NPC frozen
+	 * upright in its last replicated pose. This component replicates (base sets
+	 * SetIsReplicatedByDefault + DOREPLIFETIME(bIsDead)), so its inherited
+	 * OnRep_IsDead fires OnDeath on every client. We bind this handler to OnDeath
+	 * and, on non-authority only, collapse the owner pawn's mesh into ragdoll so
+	 * clients see the NPC die the same way the server does. On authority this is a
+	 * no-op (the AI controller already handled the full death sequence there).
+	 */
+	UFUNCTION()
+	void HandleClientDeathRagdoll();
 };
