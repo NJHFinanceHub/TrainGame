@@ -84,8 +84,13 @@ void USEEDialogueManager::EndConversation()
 
 TArray<FSEEDialogueChoice> USEEDialogueManager::GetAvailableChoices() const
 {
+	return FilterAvailableChoices(CurrentNode);
+}
+
+TArray<FSEEDialogueChoice> USEEDialogueManager::FilterAvailableChoices(const FSEEDialogueNode& Node) const
+{
 	TArray<FSEEDialogueChoice> Available;
-	for (const FSEEDialogueChoice& Choice : CurrentNode.Choices)
+	for (const FSEEDialogueChoice& Choice : Node.Choices)
 	{
 		// Check required flag
 		if (!Choice.RequiredFlag.IsNone() && !GetFlag(Choice.RequiredFlag))
@@ -95,6 +100,59 @@ TArray<FSEEDialogueChoice> USEEDialogueManager::GetAvailableChoices() const
 		Available.Add(Choice);
 	}
 	return Available;
+}
+
+const FSEEDialogueNode* USEEDialogueManager::GetFollowOnChoiceNode() const
+{
+	// Only NPC lines fold their responses forward; choice nodes already carry them.
+	if (!bInConversation || CurrentNode.NodeType != ESEEDialogueNodeType::NPCLine)
+	{
+		return nullptr;
+	}
+	if (CurrentNode.NextNodeID.IsNone())
+	{
+		return nullptr;
+	}
+
+	const FSEEDialogueNode* Next = FindNode(CurrentNode.NextNodeID);
+	if (Next && Next->NodeType == ESEEDialogueNodeType::PlayerChoice)
+	{
+		return Next;
+	}
+	return nullptr;
+}
+
+TArray<FSEEDialogueChoice> USEEDialogueManager::GetUpcomingChoices() const
+{
+	if (const FSEEDialogueNode* ChoiceNode = GetFollowOnChoiceNode())
+	{
+		return FilterAvailableChoices(*ChoiceNode);
+	}
+	return TArray<FSEEDialogueChoice>();
+}
+
+bool USEEDialogueManager::HasUpcomingChoices() const
+{
+	return GetUpcomingChoices().Num() > 0;
+}
+
+void USEEDialogueManager::AdvanceAndSelectChoice(int32 ChoiceIndex)
+{
+	if (!bInConversation) return;
+
+	// Move from the NPC line to its PlayerChoice node first. ProcessNode broadcasts
+	// the choice node (so quest tracking sees it), then SelectChoice validates
+	// against it and routes to the picked branch.
+	const FSEEDialogueNode* ChoiceNode = GetFollowOnChoiceNode();
+	if (!ChoiceNode)
+	{
+		// Current node already carries the choices (or none) — select directly.
+		SelectChoice(ChoiceIndex);
+		return;
+	}
+
+	ProcessNode(CurrentNode.NextNodeID);
+	SelectChoice(ChoiceIndex);
 }
 
 void USEEDialogueManager::SetFlag(FName FlagName, bool Value)

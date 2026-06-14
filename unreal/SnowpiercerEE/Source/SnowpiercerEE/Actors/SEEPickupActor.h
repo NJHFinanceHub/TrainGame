@@ -5,10 +5,13 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Subsystems/WorldSubsystem.h"
+#include "SnowpiercerEE/SEEItemBase.h"
 #include "SEEPickupActor.generated.h"
 
 class UPrimitiveComponent;
+class UStaticMesh;
 class UStaticMeshComponent;
+class UMaterialInterface;
 class USphereComponent;
 class USEEInventoryComponent;
 
@@ -45,6 +48,21 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	/**
+	 * Build a category-representative visible mesh from engine basic shapes
+	 * (Cube/Cylinder/Sphere — no project asset dependencies, same idiom as
+	 * ASEEWeaponBase::ConfigureShape and the train-dressing passes). The shape is
+	 * chosen from the resolved DT_Items Category so consumables read as a can/
+	 * bottle, weapons as a bar/blade, crafting/junk as a scrap crate, armor as a
+	 * folded plate, and quest items as a small glowing curio. The mesh is built so
+	 * its BOTTOM sits at the actor origin (Z=0), which lets the snap-to-floor trace
+	 * rest the actor cleanly on the ground.
+	 */
+	void BuildPickupVisual();
+
+	/** Authority-side downward trace that drops the pickup so its base rests on the floor. */
+	void SnapToFloor();
+
 	UFUNCTION()
 	void HandleOverlapBegin(
 		UPrimitiveComponent* OverlappedComponent,
@@ -56,6 +74,10 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<UStaticMeshComponent> VisualMesh;
+
+	/** Secondary accent piece (bottle neck, blade, crate lid...). Hidden for single-shape pickups. */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UStaticMeshComponent> AccentMesh;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	TObjectPtr<USphereComponent> OverlapSphere;
@@ -72,8 +94,35 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
 	bool bDestroyOnPickup = true;
 
+	/** Snap the pickup down onto the floor at BeginPlay (fixes floating scatter/dropped loot). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	bool bSnapToFloorOnBeginPlay = true;
+
+	/** Max distance the snap-to-floor trace searches downward (clamps absurd drops). */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+	float MaxFloorSnapDistance = 600.0f;
+
 private:
 	bool bConsumed = false;
+
+	/** Resolve the DT_Items category for an ItemID (raw or "Item_"-prefixed), without an inventory. */
+	static ESEEItemCategory ResolveItemCategory(FName InItemID);
+
+	/** Engine basic shape assets, resolved in the constructor (no project asset deps). */
+	UPROPERTY()
+	TObjectPtr<UStaticMesh> CubeShape;
+
+	UPROPERTY()
+	TObjectPtr<UStaticMesh> CylinderShape;
+
+	UPROPERTY()
+	TObjectPtr<UStaticMesh> SphereShape;
+
+	UPROPERTY()
+	TObjectPtr<UMaterialInterface> BasicShapeMaterial;
+
+	/** Tint a basic-shape mesh component via a dynamic instance of the engine BasicShapeMaterial. */
+	void TintMesh(UStaticMeshComponent* MeshComp, const FLinearColor& Color);
 };
 
 /**

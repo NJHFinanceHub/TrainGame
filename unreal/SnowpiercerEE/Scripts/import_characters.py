@@ -189,8 +189,13 @@ def assign_mesh_to_bp(bp_path, skel_mesh, idle_anim):
             pass
         mesh_comp.set_editor_property(
             "relative_location", unreal.Vector(0.0, 0.0, -88.0))
+        # unreal.Rotator positional args are (pitch, yaw, roll). The character
+        # must be turned about the vertical axis to face +X -> Yaw = -90, with
+        # Pitch and Roll left at 0. The old value (0, 0, -90) set ROLL -90, which
+        # tipped every NPC onto its side (the "laying down at spawn" bug) and made
+        # the death ragdoll explode from an interpenetrating side-lying pose.
         mesh_comp.set_editor_property(
-            "relative_rotation", unreal.Rotator(0.0, 0.0, -90.0))
+            "relative_rotation", unreal.Rotator(0.0, -90.0, 0.0))
         mesh_comp.set_editor_property(
             "relative_scale3d", unreal.Vector(scale, scale, scale))
         if idle_anim:

@@ -61,6 +61,10 @@ void USEENPCHealthComponent::HandleClientDeathRagdoll()
 	{
 		Mesh->SetCollisionProfileName(TEXT("Ragdoll"));
 		Mesh->SetSimulatePhysics(true);
+		// Drop the corpse where it stands — clear any residual body velocity so a
+		// just-killed, still-moving NPC doesn't get flung across the car.
+		Mesh->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+		Mesh->SetAllPhysicsAngularVelocityInRadians(FVector::ZeroVector);
 	}
 	else
 	{

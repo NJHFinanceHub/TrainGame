@@ -62,7 +62,13 @@ else:
             # and the player walks right over the pickups.
             x = car_x - 4500.0 + (i + 1) * (9000.0 / (count + 1))
             y = 400.0 if (i % 2 == 0) else -400.0
-            loc = unreal.Vector(x, y, 110.0)
+            # FLOATING FIX: spawn just above the aisle floor (Z=0) rather than the
+            # old Z=110 (which left the mesh hovering ~1m up). ASEEPickupActor also
+            # runs an authority-side snap-to-floor line trace at BeginPlay, so this
+            # only needs to be roughly right — the trace rests the mesh base on the
+            # actual floor at play time. A small positive Z keeps the spawn above the
+            # floor so that downward trace has somewhere to start.
+            loc = unreal.Vector(x, y, 20.0)
             try:
                 actor = unreal.EditorLevelLibrary.spawn_actor_from_class(
                     pickup_cls, loc, unreal.Rotator(0.0, float((i * 47) % 360), 0.0))

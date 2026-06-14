@@ -159,11 +159,20 @@ void ASEEPlayerCharacter::ActivateDeathRagdoll()
 		AnimInst->PlayHitReaction(ESEEHitReactionType::DeathRagdoll);
 	}
 
-	// Enable ragdoll physics
-	GetMesh()->SetSimulatePhysics(true);
-	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	// Stop the pawn before ragdolling so the corpse doesn't inherit a launch
+	// velocity (a mesh that imported lying down + leftover movement velocity is
+	// what made bodies fly across the car). Disable capsule collision and movement
+	// first, then enable physics on an already-still mesh so it settles in place.
+	GetCharacterMovement()->StopMovementImmediately();
 	GetCharacterMovement()->DisableMovement();
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	// Enable ragdoll physics, then zero any residual body velocities so the limp
+	// body drops where it stands instead of being flung.
+	GetMesh()->SetCollisionProfileName(TEXT("Ragdoll"));
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+	GetMesh()->SetAllPhysicsAngularVelocityInRadians(FVector::ZeroVector);
 }
 
 void ASEEPlayerCharacter::AttachToWeaponSocket(AActor* ActorToAttach)

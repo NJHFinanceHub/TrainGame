@@ -186,22 +186,24 @@ def cleanup():
 # 1. BASELINE FILL -- SkyLight (find-or-modify; cool + dim)
 # ---------------------------------------------------------------------------
 #
-# Why these values:
-#   intensity 0.25  -- bright enough to lift shadows off pure black so the
-#                      player can navigate every car, dim enough that the
-#                      warm practical POOLS (800-1500 cd point lights) still
-#                      dominate and read as the light sources.  At 0.25 the
-#                      fill never competes with a barrel fire.
-#   colour ~ cool blue-grey (0.34, 0.40, 0.52 linear) -- the "cold blue
-#                      creeping at the edges"; shadows go steel-blue, not
-#                      muddy grey, so warm pools pop by contrast.
+# Why these values (RETUNED -- playtest: "too dark, train very blue"):
+#   intensity 0.75  -- raised from 0.25.  The old fill barely lifted shadows
+#                      off black, so the aisle wasn't navigable.  0.75 makes
+#                      every car clearly readable while still sitting well
+#                      below the warm practical POOLS (800-1500 cd point
+#                      lights) so the bulbs still read as the light sources.
+#   colour ~ desaturated cool-grey (0.62, 0.65, 0.72 linear) -- was a
+#                      saturated cold-blue (0.34/0.40/0.52) which made the
+#                      whole train read monochrome-blue.  Now a near-neutral
+#                      grey with only a slight cool tint: cold ATMOSPHERE, not
+#                      "everything is blue", and the warm bulbs stay warm.
 #   SLS_SPECIFIED_CUBEMAP would need an asset; we keep SLS_CAPTURED_SCENE
 #   (the build_zone1 default) but drive the look with lower_hemisphere colour
-#   so even down-facing fill is cold, and a tight occlusion so it stays moody.
+#   so even down-facing fill reads, and a mild occlusion so it stays moody.
 
-SKY_INTENSITY = 0.25
-SKY_COLOR = unreal.LinearColor(0.34, 0.40, 0.52, 1.0)   # cool blue-grey
-SKY_LOWER_HEMI = unreal.LinearColor(0.10, 0.12, 0.16, 1.0)  # darker floor fill
+SKY_INTENSITY = 0.75
+SKY_COLOR = unreal.LinearColor(0.62, 0.65, 0.72, 1.0)   # desaturated cool-grey
+SKY_LOWER_HEMI = unreal.LinearColor(0.30, 0.31, 0.34, 1.0)  # brighter neutral floor fill
 
 
 def _configure_skylight_component(sc, source):
@@ -218,12 +220,13 @@ def _configure_skylight_component(sc, source):
     # just make the hemisphere/occlusion cold + contrasty.
     _try_set(sc, "lower_hemisphere_color", SKY_LOWER_HEMI, "skylight ")
     _try_set(sc, "lower_hemisphere_is_black", False, "skylight ")
-    # Mild occlusion so the flat ambient still gives shape to clutter.
+    # Mild occlusion so the flat ambient still gives shape to clutter, but
+    # lower contrast than before so occluded aisle corners don't crush dark.
     _try_set(sc, "occlusion_max_distance", 1500.0, "skylight ")
-    _try_set(sc, "contrast", 0.30, "skylight ")
-    _note(f"SkyLight ({source}): intensity={SKY_INTENSITY}, "
-          f"color=cool blue-grey {SKY_COLOR.r:.2f}/{SKY_COLOR.g:.2f}/{SKY_COLOR.b:.2f}, "
-          f"lower-hemi darkened")
+    _try_set(sc, "contrast", 0.15, "skylight ")
+    _note(f"SkyLight ({source}): intensity={SKY_INTENSITY} (raised for navigability), "
+          f"color=desaturated cool-grey {SKY_COLOR.r:.2f}/{SKY_COLOR.g:.2f}/{SKY_COLOR.b:.2f} "
+          f"(de-blued), lower-hemi lifted, contrast softened")
 
 
 def setup_skylight():
@@ -276,41 +279,53 @@ def setup_skylight():
 # 2. POST-PROCESS -- unbound volume (find-or-modify; clamp + grade)
 # ---------------------------------------------------------------------------
 #
-# Exposure: a TIGHT auto-exposure window so the camera neither blooms out in a
-#   barrel-lit car nor crushes to black in the Dark Car.  Histogram metering,
-#   min EV 0.25 / max EV 1.25 (1 stop of travel) + a small -0.25 bias to keep
-#   the Tail reading dark.  Fast-ish adaptation so doorway-to-doorway swings
-#   settle without a long pump.
-# Grade (cool shadows / warm highlights, slightly desaturated, gentle lift):
-#   color_saturation 0.80  -- desaturated grime, not monochrome.
-#   color_contrast   1.08  -- gentle contrast lift.
-#   color_gain       (1.0,0.99,0.97) -- a hair of warmth in the midtones/highs.
-#   shadows tint cool (0.92,0.97,1.10) + highlights warm (1.06,1.0,0.92) ->
-#     the teal-orange split: cold steel shadows, warm practical highlights.
-# Bloom 0.30 (subtle, practicals glow without smearing).
-# Vignette 0.45 (claustrophobia, not a black tunnel).
-# Film grain 0.18 (grime; low enough not to crawl).
+# Exposure (RETUNED -- playtest "too dark"): the old window (min 0.25 / max
+#   1.25, bias -0.25) metered the Tail far too dark to navigate.  We RAISE and
+#   WIDEN it -- min EV 0.8 / max EV 2.3 -- so dim aisle sections brighten while
+#   barrel-lit cars still don't bloom out, and we drop the negative bias to 0.0
+#   so nothing is pushed darker than metered.  Histogram metering, fast-ish
+#   adaptation so doorway-to-doorway swings settle without a long pump.
+# Grade (RETUNED -- playtest "very blue"): the old grade pushed a teal split
+#   (cool shadows / warm highlights) AND desaturated, which combined with the
+#   blue skylight/fog to read monochrome-blue.  Now:
+#   white_balance_temp 6300K -- near-neutral (was effectively cold via tints);
+#     lets the warm practical bulbs read warm instead of being pulled blue.
+#   color_saturation 0.92  -- only a light desaturation (was 0.80) so the warm
+#     bulbs keep their colour; grime without going grey-monochrome.
+#   color_contrast   1.05  -- gentle contrast lift, slightly softened.
+#   color_gain       (1.0,0.995,0.99) -- a whisper of warmth, near-neutral.
+#   shadows: teal push REMOVED.  Shadow tint is now near-neutral
+#     (1.00,1.005,1.02) -- a hint of cool, not a steel-blue dye -- and shadow
+#     saturation lifted to 0.95 so shadows aren't a flat blue wash.
+#   highlights: keep a mild warmth (1.04,1.00,0.96) so practicals read warm,
+#     but don't fight the now-neutral white balance.
+# Bloom 0.25 (subtle, practicals glow without smearing or hiding geometry).
+# Vignette 0.35 (claustrophobia, not a black tunnel -- lowered for visibility).
+# Film grain 0.15 (grime; low enough not to crawl or crush visibility).
 
 PP = {
-    # auto-exposure (histogram, clamped)
+    # auto-exposure (histogram, raised + widened for navigability)
     "auto_exposure_method": unreal.AutoExposureMethod.AEM_HISTOGRAM,
-    "auto_exposure_min_brightness": 0.25,
-    "auto_exposure_max_brightness": 1.25,
-    "auto_exposure_bias": -0.25,
+    "auto_exposure_min_brightness": 0.80,
+    "auto_exposure_max_brightness": 2.30,
+    "auto_exposure_bias": 0.0,
     "auto_exposure_speed_up": 3.0,
     "auto_exposure_speed_down": 1.5,
+    # white balance -- neutral, so the train isn't dyed cold
+    "white_temp": 6300.0,
+    "white_tint": 0.0,
     # grade
-    "color_saturation": unreal.Vector4(0.80, 0.80, 0.80, 1.0),
-    "color_contrast": unreal.Vector4(1.08, 1.08, 1.08, 1.0),
-    "color_gain": unreal.Vector4(1.00, 0.99, 0.97, 1.0),
-    # teal-orange split (cool shadows / warm highlights)
-    "color_saturation_shadows": unreal.Vector4(0.78, 0.80, 0.86, 1.0),
-    "color_gain_shadows": unreal.Vector4(0.92, 0.97, 1.10, 1.0),
-    "color_gain_highlights": unreal.Vector4(1.06, 1.00, 0.92, 1.0),
+    "color_saturation": unreal.Vector4(0.92, 0.92, 0.92, 1.0),
+    "color_contrast": unreal.Vector4(1.05, 1.05, 1.05, 1.0),
+    "color_gain": unreal.Vector4(1.00, 0.995, 0.99, 1.0),
+    # near-neutral shadows (teal push removed) + warm highlights for the bulbs
+    "color_saturation_shadows": unreal.Vector4(0.95, 0.95, 0.95, 1.0),
+    "color_gain_shadows": unreal.Vector4(1.00, 1.005, 1.02, 1.0),
+    "color_gain_highlights": unreal.Vector4(1.04, 1.00, 0.96, 1.0),
     # lens
-    "bloom_intensity": 0.30,
-    "vignette_intensity": 0.45,
-    "film_grain_intensity": 0.18,
+    "bloom_intensity": 0.25,
+    "vignette_intensity": 0.35,
+    "film_grain_intensity": 0.15,
 }
 
 
@@ -373,9 +388,10 @@ def setup_postprocess():
 
     _disable_collision(ppv)
     _note(f"PostProcess ({source}): unbound=True, "
-          f"auto-exposure histogram min=0.25/max=1.25 EV bias=-0.25, "
-          f"saturation 0.80, contrast 1.08, cool shadows / warm highlights, "
-          f"bloom 0.30, vignette 0.45, grain 0.18 ({applied}/{len(PP)} props)")
+          f"auto-exposure histogram min=0.80/max=2.30 EV bias=0.0 (brighter), "
+          f"white_temp=6300K neutral, saturation 0.92, contrast 1.05, "
+          f"shadows de-blued (near-neutral) / highlights mildly warm, "
+          f"bloom 0.25, vignette 0.35, grain 0.15 ({applied}/{len(PP)} props)")
 
 
 # ---------------------------------------------------------------------------
@@ -385,21 +401,25 @@ def setup_postprocess():
 # build_zone1.py already drops a *local* "Fog_Z1_DarkCar" tuned for car 10 --
 # we leave that alone.  Here we add ONE global, train-wide fog for depth down
 # the 13000-unit-apart cars so distant cars haze out instead of reading flat.
-#   density 0.03        -- mid of the 0.02-0.04 ask: visible haze, not a
-#                          pea-souper; you can still see car-to-car.
+#   density 0.025       -- slightly lowered (was 0.03): visible depth haze but
+#                          it tints/darkens the scene less, helping navigability.
 #   height_falloff 0.20 -- low, so the haze fills the full 3000-unit-tall
 #                          interior rather than pooling at the floor.
-#   inscattering cool   -- (0.018, 0.022, 0.032) faint cold blue-grey, matches
-#                          the SkyLight edge-blue; uses fog_inscattering_luminance.
-#   max_opacity 0.65    -- keeps far cars readable; never fully white-out.
+#   inscattering (RETUNED -- playtest "very blue"): was a cold blue-grey
+#                          (0.018,0.022,0.032) -- the blue channel dominated and
+#                          dyed every distant car blue.  Now a near-neutral dark
+#                          grey with only a faint cool tint (0.026,0.027,0.030):
+#                          the blue is pulled way down so haze reads as grimy
+#                          air, not blue gas.  Uses fog_inscattering_luminance.
+#   max_opacity 0.60    -- keeps far cars readable; never fully white-out.
 #   start_distance 200  -- the player's own car stays crisp; haze builds with
 #                          distance for depth.
 # Spawned as LX_ (idempotent) rather than reusing the dark-car local fog.
 
-FOG_DENSITY = 0.03
+FOG_DENSITY = 0.025
 FOG_HEIGHT_FALLOFF = 0.20
-FOG_INSCATTER = unreal.LinearColor(0.018, 0.022, 0.032, 1.0)  # faint cold
-FOG_MAX_OPACITY = 0.65
+FOG_INSCATTER = unreal.LinearColor(0.026, 0.027, 0.030, 1.0)  # near-neutral dark grey, faint cool
+FOG_MAX_OPACITY = 0.60
 FOG_START_DISTANCE = 200.0
 
 
@@ -551,10 +571,14 @@ def run():
     for line in _log:
         unreal.log(f"  - {line}")
     unreal.log("")
-    unreal.log("  Cars 10 (Dark) & 11 (Freezer) intentionally left moodier: the")
-    unreal.log("  0.25 cool SkyLight keeps them barely-navigable cold-blue and")
-    unreal.log("  the clamped exposure stops them crushing to pure black.")
-    unreal.log("  Per-car practicals (TI_/FD_/TAIL_/Light_Z1_*) untouched.")
+    unreal.log("  Retune (playtest: too dark / too blue): SkyLight 0.25->0.75 &")
+    unreal.log("  de-blued to cool-grey, exposure raised+widened (0.80-2.30, bias 0),")
+    unreal.log("  white balance neutral 6300K, shadow teal push removed, fog blue")
+    unreal.log("  pulled to near-neutral grey.  Cars 10 (Dark) & 11 (Freezer) still")
+    unreal.log("  read moodier (relative) but stay navigable, not pure black.")
+    unreal.log("  Warm pools come from per-car practicals (TI_/FD_/TAIL_/Light_Z1_*),")
+    unreal.log("  left UNTOUCHED & not duplicated; the neutral grade now lets them")
+    unreal.log("  read warm instead of being dyed blue.")
     unreal.log("")
 
 

@@ -167,6 +167,10 @@ private:
 	FText LastDialogueText;
 	bool bDialogueDelegatesBound = false;
 
+	/** True when the currently shown choices were folded forward from the NPC
+	 *  line's follow-on PlayerChoice node (so selecting one must advance first). */
+	bool bChoicesAreFolded = false;
+
 	/** Inventory component the open inventory screen is bound to (for delegate cleanup). */
 	UPROPERTY()
 	TWeakObjectPtr<USEEInventoryComponent> BoundInventoryComp;

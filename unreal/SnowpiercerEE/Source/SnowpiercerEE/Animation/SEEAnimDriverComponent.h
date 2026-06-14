@@ -121,6 +121,13 @@ protected:
 	TObjectPtr<UAnimSequence> DeathAnim;
 
 private:
+	/** Put the resolved mesh into a clean standing state before driving anim:
+	 *  upright orientation (Yaw -90 to face +X), feet at the capsule base, and
+	 *  physics off with a walking collision profile. Corrects models that
+	 *  imported lying on their side or a BP CDO left simulating physics. Skips a
+	 *  deliberate death ragdoll. */
+	void FixupMeshForStanding();
+
 	/** Find the owner's skeletal mesh component (the Character's GetMesh()). */
 	USkeletalMeshComponent* ResolveMeshComponent() const;
 

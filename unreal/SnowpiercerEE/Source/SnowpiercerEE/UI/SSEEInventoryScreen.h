@@ -70,6 +70,8 @@ private:
 	};
 
 	TSharedRef<SWidget> MakeHeader();
+	/** Column-label strip ("ITEM / EQ / QTY / WT") above the scrolling item list. */
+	TSharedRef<SWidget> MakeListColumnHeader();
 	TSharedRef<SWidget> MakeCategoryTabs();
 	TSharedRef<SWidget> MakeTab(const FText& Label, uint8 CategoryValue);
 	TSharedRef<SWidget> MakeDetailPanel();
@@ -109,6 +111,10 @@ private:
 	void RefreshEquippedItemID();
 
 	bool HasSelection() const { return Entries.IsValidIndex(SelectedIndex); }
+
+	/** Sum of (item Value * quantity) over every carried stack ("scrip value"). Read-only. */
+	int32 GetTotalCarriedValue() const;
+
 	const FSEEItemData* GetData(FName ItemID) const;
 	const FSEEItemData* GetSelectedData() const;
 

@@ -668,7 +668,16 @@ void USEEUISubsystem::HandleDialogueChoiceSelected(FName ChoiceID)
 	const int32 ChoiceIndex = FCString::Atoi(*ChoiceID.ToString());
 	if (USEEDialogueManager* Dialogue = GetDialogueManager())
 	{
-		Dialogue->SelectChoice(ChoiceIndex);
+		// Folded choices live on the NPC line's follow-on node: advance to it
+		// first, then select. Otherwise the manager is already on the choice node.
+		if (bChoicesAreFolded)
+		{
+			Dialogue->AdvanceAndSelectChoice(ChoiceIndex);
+		}
+		else
+		{
+			Dialogue->SelectChoice(ChoiceIndex);
+		}
 	}
 }
 
@@ -692,6 +701,8 @@ void USEEUISubsystem::PushNodeToDialoguePanel(const FSEEDialogueNode& Node)
 {
 	if (!DialoguePanelWidget.IsValid()) return;
 
+	USEEDialogueManager* Dialogue = GetDialogueManager();
+
 	FDialogueLine Line;
 
 	// Choice nodes in DT_Dialogue_Zone1 have empty speaker/text — keep the
@@ -709,21 +720,27 @@ void USEEUISubsystem::PushNodeToDialoguePanel(const FSEEDialogueNode& Node)
 		LastDialogueText = Node.DialogueText;
 	}
 
-	if (Node.NodeType == ESEEDialogueNodeType::PlayerChoice)
+	// FOLD: an NPC line whose NextNodeID is a PlayerChoice node carries the
+	// player's responses on the very next node (the greeting-then-choices pattern).
+	// Present the NPC line AND those responses together so the options show on the
+	// first interaction instead of after an extra "continue" press. The conversation
+	// stays on the NPC line; selecting a choice advances to the choice node first
+	// (AdvanceAndSelectChoice) so node broadcasts / quest tracking stay intact.
+	const TArray<FSEEDialogueChoice> ChoiceSource =
+		(Node.NodeType == ESEEDialogueNodeType::PlayerChoice)
+			? (Dialogue ? Dialogue->GetAvailableChoices() : TArray<FSEEDialogueChoice>())
+			: (Dialogue ? Dialogue->GetUpcomingChoices() : TArray<FSEEDialogueChoice>());
+
+	bChoicesAreFolded = (Node.NodeType == ESEEDialogueNodeType::NPCLine) && ChoiceSource.Num() > 0;
+
+	for (int32 i = 0; i < ChoiceSource.Num(); ++i)
 	{
-		if (USEEDialogueManager* Dialogue = GetDialogueManager())
-		{
-			const TArray<FSEEDialogueChoice> Available = Dialogue->GetAvailableChoices();
-			for (int32 i = 0; i < Available.Num(); ++i)
-			{
-				FDialogueChoice Choice;
-				Choice.ChoiceText = FText::Format(NSLOCTEXT("HUD", "DialogueChoiceFmt", "{0}. {1}"),
-					FText::AsNumber(i + 1), Available[i].ChoiceText);
-				Choice.ChoiceID = FName(*FString::FromInt(i));
-				Choice.bIsAvailable = true;
-				Line.Choices.Add(MoveTemp(Choice));
-			}
-		}
+		FDialogueChoice Choice;
+		Choice.ChoiceText = FText::Format(NSLOCTEXT("HUD", "DialogueChoiceFmt", "{0}. {1}"),
+			FText::AsNumber(i + 1), ChoiceSource[i].ChoiceText);
+		Choice.ChoiceID = FName(*FString::FromInt(i));
+		Choice.bIsAvailable = true;
+		Line.Choices.Add(MoveTemp(Choice));
 	}
 
 	DialoguePanelWidget->SetDialogueLine(Line);

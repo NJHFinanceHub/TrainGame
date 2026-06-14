@@ -1103,6 +1103,10 @@ void ASEENPCAIController::HandlePawnDeath()
 						if (USkeletalMeshComponent* M = WeakMesh.Get())
 						{
 							M->SetSimulatePhysics(true);
+							// Drop the corpse in place — don't inherit the pawn's
+							// walk/wander velocity, which launches the ragdoll.
+							M->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+							M->SetAllPhysicsAngularVelocityInRadians(FVector::ZeroVector);
 						}
 					}, RagdollDelay, false);
 			}
@@ -1110,6 +1114,8 @@ void ASEENPCAIController::HandlePawnDeath()
 			{
 				// No death clip resolved — ragdoll immediately (old behavior).
 				Mesh->SetSimulatePhysics(true);
+				Mesh->SetAllPhysicsLinearVelocity(FVector::ZeroVector);
+				Mesh->SetAllPhysicsAngularVelocityInRadians(FVector::ZeroVector);
 			}
 		}
 		else

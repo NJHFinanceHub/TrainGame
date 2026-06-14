@@ -124,6 +124,28 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Dialogue")
 	TArray<FSEEDialogueChoice> GetAvailableChoices() const;
 
+	/**
+	 * If the current node is an NPC line that flows straight into a PlayerChoice
+	 * node (the standard "greeting then responses" pattern in DT_Dialogue_Zone1),
+	 * return that follow-on node's available choices so the UI can present the
+	 * NPC line and its responses together on first display. Returns empty when the
+	 * current node has no such follow-on (the player still presses to continue).
+	 */
+	UFUNCTION(BlueprintPure, Category = "Dialogue")
+	TArray<FSEEDialogueChoice> GetUpcomingChoices() const;
+
+	/** True when GetUpcomingChoices() would yield a folded PlayerChoice node. */
+	UFUNCTION(BlueprintPure, Category = "Dialogue")
+	bool HasUpcomingChoices() const;
+
+	/**
+	 * Select a choice that was presented "folded" onto the preceding NPC line:
+	 * advance from the current NPC line to its PlayerChoice node, then pick the
+	 * choice. Keeps node broadcasts (and quest tracking) intact for both nodes.
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void AdvanceAndSelectChoice(int32 ChoiceIndex);
+
 	// Flag system (NPC memory)
 	UFUNCTION(BlueprintCallable, Category = "Dialogue")
 	void SetFlag(FName FlagName, bool Value);
@@ -143,6 +165,12 @@ public:
 private:
 	void ProcessNode(FName NodeID);
 	const FSEEDialogueNode* FindNode(FName NodeID) const;
+
+	/** Filter a node's choices by their RequiredFlag against the flag store. */
+	TArray<FSEEDialogueChoice> FilterAvailableChoices(const FSEEDialogueNode& Node) const;
+
+	/** The PlayerChoice node the current NPC line flows into, or null. */
+	const FSEEDialogueNode* GetFollowOnChoiceNode() const;
 
 	/** Add a one-shot dialogue-gift item (Item_<X>) to the player's inventory. */
 	void GrantRewardItem(FName ItemID);

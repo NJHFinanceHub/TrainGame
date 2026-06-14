@@ -3,6 +3,7 @@
 #include "SEEAnimDriverComponent.h"
 
 #include "Animation/AnimSequence.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMesh.h"
 #include "GameFramework/Character.h"
@@ -49,6 +50,12 @@ void USEEAnimDriverComponent::InitDriver()
 		return;
 	}
 
+	// Guarantee a sane, upright, non-ragdolling pose BEFORE we start driving anim.
+	// This is the single runtime chokepoint that covers the player AND every
+	// runtime-possessed NPC, so a model that imported lying on its side (or a BP
+	// CDO left simulating physics) is corrected uniformly.
+	FixupMeshForStanding();
+
 	// Take ownership of the mesh: single-node mode replaces the static idle the
 	// import set (and any AnimBlueprint mode the player ctor set).
 	MeshComp->SetAnimationMode(EAnimationMode::AnimationSingleNode);
@@ -60,6 +67,54 @@ void USEEAnimDriverComponent::InitDriver()
 	// Kick off the resting clip immediately so we never sit on a T-pose.
 	CurrentLoopingAnim = nullptr;
 	PlayLooping(IdleAnim ? IdleAnim : WalkAnim);
+}
+
+void USEEAnimDriverComponent::FixupMeshForStanding()
+{
+	if (!MeshComp)
+	{
+		return;
+	}
+
+	// A dead pawn whose mesh is intentionally ragdolling must be left alone — the
+	// death path owns the mesh then. (InitDriver only runs on spawn/possess of a
+	// live pawn, but guard anyway so a re-init never stands a corpse back up.)
+	if (bDeathPlayed)
+	{
+		return;
+	}
+
+	// A live pawn must NOT be simulating physics at spawn. If a BP CDO left the
+	// mesh ragdolling, the character collapses on the floor at spawn — turn it off
+	// and restore the standard walking collision profile before standing it up.
+	if (MeshComp->IsSimulatingPhysics())
+	{
+		MeshComp->SetSimulatePhysics(false);
+		MeshComp->SetCollisionProfileName(TEXT("CharacterMesh"));
+	}
+
+	// Re-attach to the owning Character's capsule so the mesh rides the pawn
+	// (a BP that detached it, or a stray world-attach, would otherwise float).
+	// Orient upright: Quaternius GLBs import facing +Y, so Yaw -90 turns them to
+	// face the capsule's +X forward; feet sit at the capsule base (Z = -half height).
+	if (ACharacter* Char = Cast<ACharacter>(GetOwner()))
+	{
+		if (UCapsuleComponent* Capsule = Char->GetCapsuleComponent())
+		{
+			if (MeshComp->GetAttachParent() != Capsule)
+			{
+				MeshComp->AttachToComponent(
+					Capsule, FAttachmentTransformRules::KeepRelativeTransform);
+			}
+
+			const float HalfHeight = Capsule->GetScaledCapsuleHalfHeight();
+			MeshComp->SetRelativeLocation(FVector(0.0f, 0.0f, -HalfHeight));
+		}
+	}
+
+	// The import script rolled NPC meshes onto their side (Roll instead of Yaw);
+	// force the canonical standing orientation regardless of the baked CDO value.
+	MeshComp->SetRelativeRotation(FRotator(0.0f, -90.0f, 0.0f));
 }
 
 USkeletalMeshComponent* USEEAnimDriverComponent::ResolveMeshComponent() const

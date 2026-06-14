@@ -10,12 +10,14 @@
 #include "Widgets/SSEEArmorSlotWidget.h"
 #include "Widgets/SSEEArmorDragDropOp.h"
 #include "Widgets/SSEEArmorDragHandle.h"
+#include "Widgets/SSEEItemRowCell.h"
 
 #include "GameFramework/Actor.h"
 #include "InputCoreTypes.h"
 
 #include "Widgets/SBoxPanel.h"
 #include "Widgets/SOverlay.h"
+#include "Widgets/SNullWidget.h"
 #include "Widgets/Layout/SBox.h"
 #include "Widgets/Layout/SBorder.h"
 #include "Widgets/Layout/SScrollBox.h"
@@ -75,17 +77,55 @@ void SSEEInventoryScreen::Construct(const FArguments& InArgs)
 						// --- Item list ---
 						+ SHorizontalBox::Slot()
 						.FillWidth(0.45f)
-						.Padding(0, 0, 8, 0)
+						.Padding(0, 0, 10, 0)
 						[
+							// Rivet-line framed panel for clear region separation.
 							SNew(SBorder)
 							.BorderImage(SEEUIStyle::WhiteBrush())
-							.BorderBackgroundColor(SEEUIStyle::PanelDark)
-							.Padding(4.0f)
+							.BorderBackgroundColor(SEEUIStyle::RivetLine)
+							.Padding(FMargin(1.0f))
 							[
-								SAssignNew(ListScrollBox, SScrollBox)
-								+ SScrollBox::Slot()
+								SNew(SBorder)
+								.BorderImage(SEEUIStyle::WhiteBrush())
+								.BorderBackgroundColor(SEEUIStyle::SteelBlack)
+								.Padding(FMargin(6.0f, 6.0f, 6.0f, 6.0f))
 								[
-									SAssignNew(ListBox, SVerticalBox)
+									SNew(SVerticalBox)
+
+									// Column header strip
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0, 0, 0, 4)
+									[
+										MakeListColumnHeader()
+									]
+
+									// Thin divider rule under the header
+									+ SVerticalBox::Slot()
+									.AutoHeight()
+									.Padding(0, 0, 0, 4)
+									[
+										SNew(SBox)
+										.HeightOverride(1.0f)
+										[
+											SNew(SBorder)
+											.BorderImage(SEEUIStyle::WhiteBrush())
+											.BorderBackgroundColor(SEEUIStyle::RivetLine)
+											.Padding(FMargin(0.0f))
+											[ SNullWidget::NullWidget ]
+										]
+									]
+
+									// Scrolling item rows
+									+ SVerticalBox::Slot()
+									.FillHeight(1.0f)
+									[
+										SAssignNew(ListScrollBox, SScrollBox)
+										+ SScrollBox::Slot()
+										[
+											SAssignNew(ListBox, SVerticalBox)
+										]
+									]
 								]
 							]
 						]
@@ -106,10 +146,26 @@ void SSEEInventoryScreen::Construct(const FArguments& InArgs)
 						]
 					]
 
-					// Footer: weight capacity bar + key hints
+					// Divider rule above the footer
 					+ SVerticalBox::Slot()
 					.AutoHeight()
 					.Padding(0, 10, 0, 0)
+					[
+						SNew(SBox)
+						.HeightOverride(1.0f)
+						[
+							SNew(SBorder)
+							.BorderImage(SEEUIStyle::WhiteBrush())
+							.BorderBackgroundColor(SEEUIStyle::RivetLine)
+							.Padding(FMargin(0.0f))
+							[ SNullWidget::NullWidget ]
+						]
+					]
+
+					// Footer: weight capacity bar (left) + scrip/items + key hints (right)
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0, 8, 0, 0)
 					[
 						SNew(SHorizontalBox)
 
@@ -124,10 +180,54 @@ void SSEEInventoryScreen::Construct(const FArguments& InArgs)
 						.FillWidth(0.55f)
 						.VAlign(VAlign_Bottom)
 						[
-							SNew(STextBlock)
-							.Text(NSLOCTEXT("HUD", "InvHints", "Up/Down select   Enter use   E equip   Del drop   Esc close"))
-							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
-							.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
+							SNew(SVerticalBox)
+
+							// Scrip value + carried item count
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							.Padding(0, 0, 0, 3)
+							[
+								SNew(SHorizontalBox)
+
+								+ SHorizontalBox::Slot()
+								.AutoWidth()
+								.Padding(0, 0, 16, 0)
+								[
+									SNew(STextBlock)
+									.Text_Lambda([this]()
+									{
+										return FText::Format(
+											NSLOCTEXT("HUD", "InvScrip", "Scrip value: {0}"),
+											FText::AsNumber(GetTotalCarriedValue()));
+									})
+									.Font(FCoreStyle::GetDefaultFontStyle("Bold", 10))
+									.ColorAndOpacity(FSlateColor(SEEUIStyle::EngineAmber))
+								]
+
+								+ SHorizontalBox::Slot()
+								.AutoWidth()
+								[
+									SNew(STextBlock)
+									.Text_Lambda([this]()
+									{
+										const int32 MaxSlots = InventoryComp.IsValid() ? InventoryComp->GetSlotCount() : 0;
+										return FText::Format(
+											NSLOCTEXT("HUD", "InvItemsCarried", "Items: {0} / {1}"),
+											FText::AsNumber(OccupiedSlotCount), FText::AsNumber(MaxSlots));
+									})
+									.Font(FCoreStyle::GetDefaultFontStyle("Regular", 10))
+									.ColorAndOpacity(FSlateColor(SEEUIStyle::TextDim))
+								]
+							]
+
+							+ SVerticalBox::Slot()
+							.AutoHeight()
+							[
+								SNew(STextBlock)
+								.Text(NSLOCTEXT("HUD", "InvHints", "Up/Down select   Enter use   E equip   Del drop   Esc close"))
+								.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
+								.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
+							]
 						]
 					]
 				]
@@ -219,20 +319,41 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeArmorPanel()
 {
 	return SNew(SBorder)
 		.BorderImage(SEEUIStyle::WhiteBrush())
-		.BorderBackgroundColor(SEEUIStyle::PanelDark)
+		.BorderBackgroundColor(SEEUIStyle::RivetLine)
+		.Padding(FMargin(1.0f))
+		[
+		SNew(SBorder)
+		.BorderImage(SEEUIStyle::WhiteBrush())
+		.BorderBackgroundColor(SEEUIStyle::Gunmetal)
 		.Padding(12.0f)
 		[
 			SNew(SVerticalBox)
 
-			// Panel title
+			// Panel title + amber underline
 			+ SVerticalBox::Slot()
 			.AutoHeight()
-			.Padding(0, 0, 0, 6)
 			[
 				SNew(STextBlock)
-				.Text(NSLOCTEXT("HUD", "ArmorPanelTitle", "EQUIPPED ARMOR"))
+				.Text(NSLOCTEXT("HUD", "ArmorPanelTitle", "PAPER DOLL"))
 				.Font(SEEUIStyle::CaptionFont(11))
 				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextHeader))
+			]
+
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.HAlign(HAlign_Left)
+			.Padding(0, 4, 0, 8)
+			[
+				SNew(SBox)
+				.HeightOverride(2.0f)
+				.WidthOverride(46.0f)
+				[
+					SNew(SBorder)
+					.BorderImage(SEEUIStyle::WhiteBrush())
+					.BorderBackgroundColor(SEEUIStyle::EngineAmber)
+					.Padding(FMargin(0.0f))
+					[ SNullWidget::NullWidget ]
+				]
 			]
 
 			// Aggregate stats: DR% + Cold resist
@@ -309,6 +430,7 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeArmorPanel()
 				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
 				.AutoWrapText(true)
 			]
+		]
 		];
 }
 
@@ -415,6 +537,92 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeHeader()
 			})
 			.Font(FCoreStyle::GetDefaultFontStyle("Regular", 11))
 			.ColorAndOpacity(FSlateColor(SEEUIStyle::TextDim))
+		];
+}
+
+TSharedRef<SWidget> SSEEInventoryScreen::MakeListColumnHeader()
+{
+	const FSlateFontInfo HeaderFont = SEEUIStyle::CaptionFont(8);
+	const FSlateColor    HeaderColor(SEEUIStyle::TextFaint);
+
+	return SNew(SHorizontalBox)
+
+		// Aligns with the row's category badge column (3px accent + paddings + 22px badge).
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(VAlign_Center)
+		.Padding(11, 0, 8, 0)
+		[
+			SNew(SBox)
+			.WidthOverride(22.0f)
+			[
+				SNew(STextBlock)
+				.Text(NSLOCTEXT("HUD", "ColType", "TYPE"))
+				.Font(HeaderFont)
+				.ColorAndOpacity(HeaderColor)
+			]
+		]
+
+		// Name column
+		+ SHorizontalBox::Slot()
+		.FillWidth(1.0f)
+		.VAlign(VAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(NSLOCTEXT("HUD", "ColItem", "ITEM"))
+			.Font(HeaderFont)
+			.ColorAndOpacity(HeaderColor)
+		]
+
+		// Equip column
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(VAlign_Center)
+		.Padding(0, 0, 10, 0)
+		[
+			SNew(SBox)
+			.WidthOverride(58.0f)
+			.HAlign(HAlign_Center)
+			[
+				SNew(STextBlock)
+				.Text(NSLOCTEXT("HUD", "ColEquip", "EQ"))
+				.Font(HeaderFont)
+				.ColorAndOpacity(HeaderColor)
+			]
+		]
+
+		// Quantity column
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(VAlign_Center)
+		.Padding(0, 0, 12, 0)
+		[
+			SNew(SBox)
+			.WidthOverride(28.0f)
+			.HAlign(HAlign_Right)
+			[
+				SNew(STextBlock)
+				.Text(NSLOCTEXT("HUD", "ColQty", "QTY"))
+				.Font(HeaderFont)
+				.ColorAndOpacity(HeaderColor)
+			]
+		]
+
+		// Weight column
+		+ SHorizontalBox::Slot()
+		.AutoWidth()
+		.VAlign(VAlign_Center)
+		.Padding(0, 0, 8, 0)
+		[
+			SNew(SBox)
+			.WidthOverride(64.0f)
+			.HAlign(HAlign_Right)
+			[
+				SNew(STextBlock)
+				.Text(NSLOCTEXT("HUD", "ColWt", "WT"))
+				.Font(HeaderFont)
+				.ColorAndOpacity(HeaderColor)
+			]
 		];
 }
 
@@ -556,10 +764,13 @@ void SSEEInventoryScreen::RebuildList()
 		const FText CapturedName      = Name;
 		const bool  bCapturedIsArmor  = bIsArmor;
 
+		const FLinearColor RowRarityColor = NameColor;
+
 		TSharedRef<SWidget> Row =
-			SNew(SBox)
-			.HeightOverride(32.0f)
-			.Padding(FMargin(0, 1))
+			SNew(SSEEItemRowCell)
+			.RarityColor(RowRarityColor)
+			.RowHeight(36.0f)
+			.IsSelected_Lambda([this, EntryIndex]() { return EntryIndex == SelectedIndex; })
 			[
 				// Wrap inner button in a detector so armor rows can be dragged.
 				// SButton itself does not expose OnDragDetected so we overlay an
@@ -568,12 +779,10 @@ void SSEEInventoryScreen::RebuildList()
 
 				+ SOverlay::Slot()
 				[
+					// Hollow button: the SSEEItemRowCell frame draws the background
+					// and selection state; this layer only provides click + hover feel.
 					SNew(SButton)
-					.ButtonStyle(&SEEUIStyle::GetRowButtonStyle())
-					.ButtonColorAndOpacity_Lambda([this, EntryIndex]()
-					{
-						return EntryIndex == SelectedIndex ? SEEUIStyle::RowSelected : SEEUIStyle::RowNormal;
-					})
+					.ButtonStyle(&SEEUIStyle::GetHollowButtonStyle())
 					.OnClicked_Lambda([this, EntryIndex]()
 					{
 						SelectEntry(EntryIndex);
@@ -586,7 +795,7 @@ void SSEEInventoryScreen::RebuildList()
 						+ SHorizontalBox::Slot()
 						.AutoWidth()
 						.VAlign(VAlign_Center)
-						.Padding(6, 0, 8, 0)
+						.Padding(8, 0, 8, 0)
 						[
 							SNew(SBox)
 							.WidthOverride(22.0f)
@@ -614,8 +823,9 @@ void SSEEInventoryScreen::RebuildList()
 						[
 							SNew(STextBlock)
 							.Text(Name)
-							.Font(FCoreStyle::GetDefaultFontStyle("Regular", 11))
+							.Font(FCoreStyle::GetDefaultFontStyle("Bold", 11))
 							.ColorAndOpacity(FSlateColor(NameColor))
+							.OverflowPolicy(ETextOverflowPolicy::Ellipsis)
 						]
 
 						// Equip indicator column
@@ -759,12 +969,17 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 {
 	return SNew(SBorder)
 		.BorderImage(SEEUIStyle::WhiteBrush())
-		.BorderBackgroundColor(SEEUIStyle::PanelDark)
+		.BorderBackgroundColor(SEEUIStyle::RivetLine)
+		.Padding(FMargin(1.0f))
+		[
+		SNew(SBorder)
+		.BorderImage(SEEUIStyle::WhiteBrush())
+		.BorderBackgroundColor(SEEUIStyle::Gunmetal)
 		.Padding(12.0f)
 		[
 			SNew(SVerticalBox)
 
-			// Panel title
+			// Panel title + amber underline
 			+ SVerticalBox::Slot()
 			.AutoHeight()
 			[
@@ -772,6 +987,23 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 				.Text(NSLOCTEXT("HUD", "ItemDetail", "ITEM DETAILS"))
 				.Font(SEEUIStyle::CaptionFont(11))
 				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextHeader))
+			]
+
+			+ SVerticalBox::Slot()
+			.AutoHeight()
+			.HAlign(HAlign_Left)
+			.Padding(0, 4, 0, 2)
+			[
+				SNew(SBox)
+				.HeightOverride(2.0f)
+				.WidthOverride(46.0f)
+				[
+					SNew(SBorder)
+					.BorderImage(SEEUIStyle::WhiteBrush())
+					.BorderBackgroundColor(SEEUIStyle::EngineAmber)
+					.Padding(FMargin(0.0f))
+					[ SNullWidget::NullWidget ]
+				]
 			]
 
 			// Item name
@@ -800,21 +1032,73 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 				.AutoWrapText(true)
 			]
 
-			// Rarity / category line
+			// Rarity pill + category chip
 			+ SVerticalBox::Slot()
 			.AutoHeight()
 			.Padding(0, 0, 0, 8)
 			[
-				SNew(STextBlock)
-				.Text_Lambda([this]()
+				SNew(SHorizontalBox)
+				.Visibility_Lambda([this]()
 				{
-					const FSEEItemData* Data = GetSelectedData();
-					if (!Data) return FText::GetEmpty();
-					return FText::Format(NSLOCTEXT("HUD", "InvRarityCat", "{0}  -  {1}"),
-						GetRarityText(Data->Rarity), GetCategoryText(Data->Category));
+					return GetSelectedData() ? EVisibility::Visible : EVisibility::Collapsed;
 				})
-				.Font(FCoreStyle::GetDefaultFontStyle("Regular", 9))
-				.ColorAndOpacity(FSlateColor(SEEUIStyle::TextDim))
+
+				// Rarity pill (rarity-tinted background, rarity-colored text)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				.Padding(0, 0, 6, 0)
+				[
+					SNew(SBorder)
+					.BorderImage(SEEUIStyle::WhiteBrush())
+					.BorderBackgroundColor_Lambda([this]() -> FLinearColor
+					{
+						const FSEEItemData* Data = GetSelectedData();
+						return SEEUIStyle::Dim(Data ? GetRarityColor(Data->Rarity) : SEEUIStyle::TextDim, 0.20f);
+					})
+					.Padding(FMargin(7, 2))
+					[
+						SNew(STextBlock)
+						.Text_Lambda([this]()
+						{
+							const FSEEItemData* Data = GetSelectedData();
+							return Data ? GetRarityText(Data->Rarity) : FText::GetEmpty();
+						})
+						.Font(SEEUIStyle::CaptionFont(8))
+						.ColorAndOpacity_Lambda([this]() -> FSlateColor
+						{
+							const FSEEItemData* Data = GetSelectedData();
+							return FSlateColor(Data ? GetRarityColor(Data->Rarity) : SEEUIStyle::TextDim);
+						})
+					]
+				]
+
+				// Category chip (category accent color)
+				+ SHorizontalBox::Slot()
+				.AutoWidth()
+				[
+					SNew(SBorder)
+					.BorderImage(SEEUIStyle::WhiteBrush())
+					.BorderBackgroundColor_Lambda([this]() -> FLinearColor
+					{
+						const FSEEItemData* Data = GetSelectedData();
+						return SEEUIStyle::Dim(Data ? GetCategoryBadgeColor(Data->Category) : SEEUIStyle::TextDim, 0.20f);
+					})
+					.Padding(FMargin(7, 2))
+					[
+						SNew(STextBlock)
+						.Text_Lambda([this]()
+						{
+							const FSEEItemData* Data = GetSelectedData();
+							return Data ? GetCategoryText(Data->Category) : FText::GetEmpty();
+						})
+						.Font(SEEUIStyle::CaptionFont(8))
+						.ColorAndOpacity_Lambda([this]() -> FSlateColor
+						{
+							const FSEEItemData* Data = GetSelectedData();
+							return FSlateColor(Data ? GetCategoryBadgeColor(Data->Category) : SEEUIStyle::TextDim);
+						})
+					]
+				]
 			]
 
 			// Description + stats
@@ -840,10 +1124,43 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 						.AutoWrapText(true)
 					]
 
+					// "PROPERTIES" sub-label + divider rule
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0, 12, 0, 3)
+					[
+						SNew(STextBlock)
+						.Visibility_Lambda([this]()
+						{
+							return GetSelectedData() ? EVisibility::Visible : EVisibility::Collapsed;
+						})
+						.Text(NSLOCTEXT("HUD", "DetailProps", "PROPERTIES"))
+						.Font(SEEUIStyle::OverlineFont(8))
+						.ColorAndOpacity(FSlateColor(SEEUIStyle::TextFaint))
+					]
+
+					+ SVerticalBox::Slot()
+					.AutoHeight()
+					.Padding(0, 0, 0, 6)
+					[
+						SNew(SBox)
+						.HeightOverride(1.0f)
+						.Visibility_Lambda([this]()
+						{
+							return GetSelectedData() ? EVisibility::Visible : EVisibility::Collapsed;
+						})
+						[
+							SNew(SBorder)
+							.BorderImage(SEEUIStyle::WhiteBrush())
+							.BorderBackgroundColor(SEEUIStyle::RivetLine)
+							.Padding(FMargin(0.0f))
+							[ SNullWidget::NullWidget ]
+						]
+					]
+
 					// Stats block
 					+ SVerticalBox::Slot()
 					.AutoHeight()
-					.Padding(0, 10, 0, 0)
 					[
 						SNew(STextBlock)
 						.Text_Lambda([this]()
@@ -902,6 +1219,7 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeDetailPanel()
 			[
 				MakeActionButtons()
 			]
+		]
 		];
 }
 
@@ -1060,6 +1378,23 @@ TSharedRef<SWidget> SSEEInventoryScreen::MakeWeightBar()
 const FSEEItemData* SSEEInventoryScreen::GetData(FName ItemID) const
 {
 	return InventoryComp.IsValid() ? InventoryComp->GetItemDataPtr(ItemID) : nullptr;
+}
+
+int32 SSEEInventoryScreen::GetTotalCarriedValue() const
+{
+	if (!InventoryComp.IsValid()) return 0;
+
+	int32 Total = 0;
+	const TArray<FSEEInventorySlot> Slots = InventoryComp->GetAllSlots();
+	for (const FSEEInventorySlot& Slot : Slots)
+	{
+		if (Slot.IsEmpty()) continue;
+		if (const FSEEItemData* Data = InventoryComp->GetItemDataPtr(Slot.ItemID))
+		{
+			Total += Data->Value * Slot.Quantity;
+		}
+	}
+	return Total;
 }
 
 const FSEEItemData* SSEEInventoryScreen::GetSelectedData() const
