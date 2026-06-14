@@ -201,9 +201,10 @@ def cleanup():
 #   (the build_zone1 default) but drive the look with lower_hemisphere colour
 #   so even down-facing fill reads, and a mild occlusion so it stays moody.
 
-SKY_INTENSITY = 0.75
-SKY_COLOR = unreal.LinearColor(0.62, 0.65, 0.72, 1.0)   # desaturated cool-grey
-SKY_LOWER_HEMI = unreal.LinearColor(0.30, 0.31, 0.34, 1.0)  # brighter neutral floor fill
+SKY_INTENSITY = 1.0    # raised 0.75->1.0: more floor/shadow fill now that the
+                       # LIT_Ceiling_ overhead train-light layer carries the room
+SKY_COLOR = unreal.LinearColor(0.64, 0.66, 0.72, 1.0)   # desaturated cool-grey
+SKY_LOWER_HEMI = unreal.LinearColor(0.34, 0.35, 0.38, 1.0)  # brighter neutral floor fill
 
 
 def _configure_skylight_component(sc, source):
@@ -304,11 +305,15 @@ def setup_skylight():
 # Film grain 0.15 (grime; low enough not to crawl or crush visibility).
 
 PP = {
-    # auto-exposure (histogram, raised + widened for navigability)
+    # auto-exposure (histogram). RETUNED -- playtest "still too dark, make it
+    # more train light": now that the LIT_Ceiling_ overhead train-light layer
+    # actually lights every car, NARROW the window to a near-fixed bright
+    # exposure (min~max ~1.35) so adaptation can no longer pump lit cars dark,
+    # plus a small positive bias so the metered image reads bright not crushed.
     "auto_exposure_method": unreal.AutoExposureMethod.AEM_HISTOGRAM,
-    "auto_exposure_min_brightness": 0.80,
-    "auto_exposure_max_brightness": 2.30,
-    "auto_exposure_bias": 0.0,
+    "auto_exposure_min_brightness": 1.30,
+    "auto_exposure_max_brightness": 1.45,
+    "auto_exposure_bias": 0.30,
     "auto_exposure_speed_up": 3.0,
     "auto_exposure_speed_down": 1.5,
     # white balance -- neutral, so the train isn't dyed cold
@@ -388,7 +393,8 @@ def setup_postprocess():
 
     _disable_collision(ppv)
     _note(f"PostProcess ({source}): unbound=True, "
-          f"auto-exposure histogram min=0.80/max=2.30 EV bias=0.0 (brighter), "
+          f"auto-exposure histogram min=1.30/max=1.45 EV bias=0.30 "
+          f"(near-fixed bright -- no dark-adaptation pump on lit cars), "
           f"white_temp=6300K neutral, saturation 0.92, contrast 1.05, "
           f"shadows de-blued (near-neutral) / highlights mildly warm, "
           f"bloom 0.25, vignette 0.35, grain 0.15 ({applied}/{len(PP)} props)")
@@ -416,7 +422,8 @@ def setup_postprocess():
 #                          distance for depth.
 # Spawned as LX_ (idempotent) rather than reusing the dark-car local fog.
 
-FOG_DENSITY = 0.025
+FOG_DENSITY = 0.02     # lowered 0.025->0.02 so the new overhead lights aren't
+                       # hazed out; still gives depth down the 15 long cars
 FOG_HEIGHT_FALLOFF = 0.20
 FOG_INSCATTER = unreal.LinearColor(0.026, 0.027, 0.030, 1.0)  # near-neutral dark grey, faint cool
 FOG_MAX_OPACITY = 0.60
@@ -571,10 +578,13 @@ def run():
     for line in _log:
         unreal.log(f"  - {line}")
     unreal.log("")
-    unreal.log("  Retune (playtest: too dark / too blue): SkyLight 0.25->0.75 &")
-    unreal.log("  de-blued to cool-grey, exposure raised+widened (0.80-2.30, bias 0),")
-    unreal.log("  white balance neutral 6300K, shadow teal push removed, fog blue")
-    unreal.log("  pulled to near-neutral grey.  Cars 10 (Dark) & 11 (Freezer) still")
+    unreal.log("  Retune (playtest: 'still too dark -- make it more train light'):")
+    unreal.log("  SkyLight 0.75->1.0 fill, exposure NARROWED to near-fixed bright")
+    unreal.log("  (min 1.30 / max 1.45, bias +0.30) so the new LIT_Ceiling_ overhead")
+    unreal.log("  train-light layer reads bright and adaptation can't darken lit cars;")
+    unreal.log("  fog density 0.025->0.02 so the lights aren't hazed out.")
+    unreal.log("  white balance stays neutral 6300K, shadow teal push removed, fog")
+    unreal.log("  near-neutral grey.  Cars 10 (Dark) & 11 (Freezer) still")
     unreal.log("  read moodier (relative) but stay navigable, not pure black.")
     unreal.log("  Warm pools come from per-car practicals (TI_/FD_/TAIL_/Light_Z1_*),")
     unreal.log("  left UNTOUCHED & not duplicated; the neutral grade now lets them")
